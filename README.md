@@ -33,7 +33,8 @@
 
 ## 우리 팀만의 협업 방식
 ### 🏢 협업 환경
-![gather_town](https://github.com/user-attachments/assets/602ce57f-9a00-43fa-b662-55d138af5bf5)  
+![gather_town](https://github.com/user-attachments/assets/b934331f-6f2f-42c1-ac94-9477f3a83ad2)
+
 
 - 팀원들과 실시간 상호작용을 통해서 몰입도를 향상 할 수 있습니다.
 - 실제 오프라인 공간처럼 자유롭게 이동하며 소통합니다.
@@ -41,13 +42,13 @@
 - 온라인이지만 오프라인 같은 환경을 지향합니다.
 
 ### 🎨 디자인 협업
-![figma](https://github.com/user-attachments/assets/236bbc0e-fc0e-496c-bdc3-0b7149f406e1)  
+![figma](https://github.com/user-attachments/assets/23299915-0ccc-483a-94d0-191fd509ee14)
 
 - 실시간 공동 작업을 위해 피그마를 사용합니다.
 - 디자인을 같이 확인하고 즉각적인 피드백이 가능합니다.
 
 ### 📝 문서 작성
-![notion](https://github.com/user-attachments/assets/6b9d2375-214b-4212-afd7-d24a6528f703)
+![notion](https://github.com/user-attachments/assets/1c4ea50c-cce9-4a3b-a10b-c5de6070bd9c)
 
 - 문서 관리를 위해서 노션을 사용합니다.
 - 회의록 및 의사결정 과정을 문서화 합니다.
