@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "lefthook": "^1.8.2"
+  },
+  "scripts": {
+    "prepare": "lefthook install"
+  }
+}
