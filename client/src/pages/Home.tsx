@@ -1,7 +1,10 @@
+import Layout from "@/components/layout/Layout";
+import MainContent from "@/components/sections/MainContent";
+
 export default function Home() {
   return (
-    <div>
-      <p className='text-2xl font-bold'>Home</p>
-    </div>
-  )
+    <Layout>
+      <MainContent />
+    </Layout>
+  );
 }
