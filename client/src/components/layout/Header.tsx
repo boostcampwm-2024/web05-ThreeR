@@ -3,6 +3,7 @@ import SearchModal from "../search/SearchModal";
 import SideBar from "./Sidebar";
 import { useState } from "react";
 import SearchButton from "../search/SearchButton";
+import { motion, AnimatePresence } from "framer-motion";
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -39,7 +40,7 @@ export default function Header() {
       </div>
 
       {sidebarOpen && <SideBar setSearchOpen={handleSearchModal} setSidebarOpen={handleSideBar} />}
-      {searchOpen && <SearchModal onClose={handleSearchModal} />}
+      <AnimatePresence>{searchOpen && <SearchModal onClose={handleSearchModal} />}</AnimatePresence>
     </header>
   );
 }
