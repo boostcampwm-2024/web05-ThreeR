@@ -28,7 +28,7 @@ export default function Header() {
       <div className="hidden md:flex h-full items-center gap-x-3 text-sm">
         <SearchButton handleSearchModal={handleSearchModal} />
         <button className="cursor-pointer border h-full px-3 rounded flex items-center">로그인</button>
-        <button className="cursor-pointer primary-div h-full px-3 rounded text-white font-bold flex items-center">
+        <button className="cursor-pointer bg-primary h-full px-3 rounded text-white font-bold flex items-center">
           블로그 등록
         </button>
       </div>
