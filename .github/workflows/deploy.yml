@@ -1,0 +1,34 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**"
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      # public 서버로 ssh 접속
+      - name: ssh connection
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            node -v
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            node -v
+            cd /root/web05-Denamu
+            git pull origin main
+            cd server/
+            npm ci
+            npm build
+            nohup npm run start_server > server.log 2>&1 &
+
+# TODO : 환경변수 추가
