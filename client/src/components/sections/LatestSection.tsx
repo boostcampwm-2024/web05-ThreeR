@@ -3,7 +3,7 @@ import { SectionHeader } from "@/components/common/SectionHeader";
 import { Rss } from "lucide-react";
 import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
 import { Post } from "@/types/post";
-import { fetchPosts } from "@/services/mockApi";
+import { fetchPosts } from "@/api/mockApi";
 import { LoadingIndicator } from "../common/LoadingIndicator";
 
 const fetchPostsAdapter = async (page: number) => {
