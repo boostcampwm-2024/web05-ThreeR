@@ -1,0 +1,30 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**"
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      # public 서버로 ssh 접속
+      - name: ssh connection
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /root/web05-Denamu
+            git pull origin main
+            cd server/
+            npm install
+            npm build
+            pm2 start ecosystem.config.js
+
+# TODO : 환경변수 추가
