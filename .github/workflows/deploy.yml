@@ -20,11 +20,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            node -v
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            node -v
             cd /root/web05-Denamu
             git pull origin main
             cd server/
-            npm install
+            npm ci
             npm build
-            pm2 start ecosystem.config.js
+            nohup npm run start_server > server.log 2>&1 &
 
 # TODO : 환경변수 추가
