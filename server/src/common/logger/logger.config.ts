@@ -7,6 +7,6 @@ const { printf } = winston.format;
 export const logDir = `${process.cwd()}/logs`;
 
 // 로그 출력 포맷 정의 함수
-export const logFormat = printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${label}] ${level}: ${message}`;
+export const logFormat = printf(({ level, message, timestamp }) => {
+  return `${timestamp} ${level}: ${message}`;
 });
