@@ -1,9 +1,14 @@
-type SearchInputProps = {
-  searchParam: string;
-  setSearchParam: (param: string) => void;
-};
+import { useSearchStore } from "@/store/useSearchStore";
+import { useEffect } from "react";
+export default function SearchInput() {
+  const { searchParam, setSearchParam, setPage } = useSearchStore();
 
-export default function SearchInput({ searchParam, setSearchParam }: SearchInputProps) {
+  useEffect(() => {
+    setTimeout(() => {
+      setPage(1);
+    }, 500);
+  }, [searchParam]);
+
   return (
     <div className="flex items-center gap-4 mb-4">
       <input
