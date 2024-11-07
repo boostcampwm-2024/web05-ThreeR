@@ -1,10 +1,15 @@
 import logger from "./logger.js";
+import * as dotenv from "dotenv";
 import { pool, selectAllRss, insertFeeds } from "./db-access.js";
 import { FeedObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 
 const xmlParser = new XMLParser();
+dotenv.config();
+const TIME_INTERVAL = process.env.TIME_INTERVAL
+  ? parseInt(process.env.TIME_INTERVAL)
+  : 1;
 
 const getImageUrl = async (link: string): Promise<string> => {
   try {
@@ -63,7 +68,7 @@ const findNewFeeds = async (
 
     const filteredFeeds = feeds.filter((item) => {
       const pubDate = new Date(item.pubDate).setMinutes(0, 0, 0);
-      const timeDiff = (now - pubDate) / (1000 * 60 * 60 * 24 * 60);
+      const timeDiff = (now - pubDate) / (1000 * 60 * TIME_INTERVAL);
       return timeDiff >= 0 && timeDiff < 1;
     });
 
