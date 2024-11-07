@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "fast-xml-parser": "^4.5.0",
+    "js-yaml": "^4.1.0",
+    "mysql2": "^3.11.3",
+    "node-cron": "^3.0.3",
+    "node-html-parser": "^6.1.13",
+    "rss-parser": "^3.13.0",
+    "winston": "^3.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/node-fetch": "^2.6.11",
+    "@types/winston": "^2.4.4"
+  },
+  "rootDir": "src",
+  "scripts": {
+    "start" : "tsc && node dist/rss-notifier.js"
+  }
+}
