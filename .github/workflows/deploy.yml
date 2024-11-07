@@ -28,17 +28,15 @@ jobs:
             git pull origin main
             cd server/
 
-            mkdir -p server/src/configs
+            mkdir -p src/configs
 
-            echo "DB_TYPE=mysql" > server/src/configs/.env.db.production
-            echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> server/src/configs/.env.db.production
-            echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> server/src/configs/.env.db.production
-            echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> server/src/configs/.env.db.production
-            echo "DB_USERNAME=${{ secrets.PRODUCT_DB_USERNAME }}" >> server/src/configs/.env.db.production
-            echo "DB_PASSWORD=${{ secrets.PRODUCT_DB_PASSWORD }}" >> server/src/configs/.env.db.production
+            echo "DB_TYPE=mysql" > src/configs/.env.db.production
+            echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> src/configs/.env.db.production
+            echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> src/configs/.env.db.production
+            echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> src/configs/.env.db.production
+            echo "DB_USERNAME=${{ secrets.PRODUCT_DB_USERNAME }}" >>src/configs/.env.db.production
+            echo "DB_PASSWORD=${{ secrets.PRODUCT_DB_PASSWORD }}" >> src/configs/.env.db.production
 
-            echo "DB_TYPE=sqlite" > server/src/configs/.env.db.test
-            echo "DB_DATABASE=:memory:" >> server/src/configs/.env.db.test
             npm ci
             npm build
             nohup npm run start_server > server.log 2>&1 &
