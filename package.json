@@ -1,9 +1,18 @@
 {
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
+    "commitizen": "^4.3.1",
+    "cz-cli": "^1.0.0",
+    "cz-customizable": "^7.2.1",
     "lefthook": "^1.8.2"
   },
   "scripts": {
-    "prepare": "lefthook install"
+    "prepare": "lefthook install",
+    "commit": "cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-customizable"
+    }
   }
 }
