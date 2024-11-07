@@ -20,23 +20,21 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            node -v
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            node -v
             cd /root/web05-Denamu
             git pull origin main
             cd server/
 
-            mkdir -p src/configs
+            mkdir -p configs
 
-            echo "DB_TYPE=mysql" > src/configs/.env.db.production
-            echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> src/configs/.env.db.production
-            echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> src/configs/.env.db.production
-            echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> src/configs/.env.db.production
-            echo "DB_USERNAME=${{ secrets.PRODUCT_DB_USERNAME }}" >>src/configs/.env.db.production
-            echo "DB_PASSWORD=${{ secrets.PRODUCT_DB_PASSWORD }}" >> src/configs/.env.db.production
+            echo "DB_TYPE=mysql" > configs/.env.db.production
+            echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> configs/.env.db.production
+            echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> configs/.env.db.production
+            echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> configs/.env.db.production
+            echo "DB_USERNAME=${{ secrets.PRODUCT_DB_USERNAME }}" >> configs/.env.db.production
+            echo "DB_PASSWORD=${{ secrets.PRODUCT_DB_PASSWORD }}" >> configs/.env.db.production
 
             npm ci
-            npm build
+            npm run build
             nohup npm run start > server.log 2>&1 &

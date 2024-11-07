@@ -1,4 +1,3 @@
-import { Blog } from 'src/blog/blog.entity';
 import {
   BaseEntity,
   Column,
@@ -7,6 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Blog } from '../blog/blog.entity';
 
 @Entity({ name: 'feed' })
 export class Feed extends BaseEntity {
@@ -15,7 +15,7 @@ export class Feed extends BaseEntity {
 
   @Column({
     name: 'created_at',
-    type: 'timestamp',
+    type: 'datetime',
     nullable: false,
   })
   createdAt: Date;
