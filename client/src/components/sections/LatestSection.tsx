@@ -1,4 +1,5 @@
-import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import { useEffect, useRef } from "react";
+import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { Rss } from "lucide-react";
 import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
@@ -6,16 +7,32 @@ import { Post } from "@/types/post";
 import { fetchPosts } from "@/api/mockApi";
 import { LoadingIndicator } from "../common/LoadingIndicator";
 
-const fetchPostsAdapter = async (page: number) => {
-  const response = await fetchPosts(page);
-  return {
-    data: response.posts,
-    hasMore: response.hasMore,
-  };
-};
-
 export default function LatestSection() {
-  const { items: posts, loading, observerTarget } = useInfiniteScroll<Post>({ fetchData: fetchPostsAdapter });
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const {
+    items: posts,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteScrollQuery<Post>({ queryKey: "latest-posts", fetchFn: fetchPosts });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  if (isLoading) return <LoadingIndicator />;
 
   return (
     <section className="flex flex-col p-4 min-h-[300px]">
@@ -23,7 +40,7 @@ export default function LatestSection() {
       <div className="flex-1 mt-4 p-4 border border-dashed border-gray-500 rounded-lg">
         <PostCardGrid posts={posts} />
         <div ref={observerTarget} className="h-10 flex items-center justify-center mt-4">
-          {loading && <LoadingIndicator />}
+          {isFetchingNextPage && <LoadingIndicator />}
         </div>
       </div>
     </section>
