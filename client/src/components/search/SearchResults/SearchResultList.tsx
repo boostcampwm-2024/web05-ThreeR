@@ -1,15 +1,19 @@
 import SearchResultItem from "./SearchResultItem";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchStore } from "@/store/useSearchStore";
-
-const pageNumber: number[] = [1, 2, 3, 4];
+import SearchPages from "../searchPages/SearchPages";
+import { Loader } from "lucide-react";
 export default function SearchResults() {
-  const resultPerPage = 4;
-  const { searchParam, currentFilter, page, setPage } = useSearchStore();
-  const { results, loading, error } = useSearch(searchParam, currentFilter, page, resultPerPage);
+  const RESULT_PER_PAGE = 4;
+  const { searchParam, currentFilter, page } = useSearchStore();
+  const { results, totalPages, loading, error } = useSearch(searchParam, currentFilter, page, RESULT_PER_PAGE);
 
   if (loading || !results) {
-    return <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">로딩중..</div>;
+    return (
+      <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">
+        <Loader />
+      </div>
+    );
   }
   if (results.length === 0) {
     return <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">검색결과가 없습니다</div>;
@@ -22,23 +26,7 @@ export default function SearchResults() {
       {results.map((result, index) => (
         <SearchResultItem key={index} {...result} />
       ))}
-      <div className="flex justify-center gap-1">
-        {pageNumber.map((number) => {
-          return (
-            <button
-              key={number}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                page === number ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => {
-                setPage(number);
-              }}
-            >
-              {number}
-            </button>
-          );
-        })}
-      </div>
+      <SearchPages totalPages={totalPages} />
     </div>
   );
 }
