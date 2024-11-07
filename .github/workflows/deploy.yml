@@ -39,4 +39,4 @@ jobs:
 
             npm ci
             npm build
-            nohup npm run start_server > server.log 2>&1 &
+            nohup npm run start > server.log 2>&1 &
