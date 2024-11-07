@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.primary-div {
+.bg-primary {
   background-color: #27ae60;
 }

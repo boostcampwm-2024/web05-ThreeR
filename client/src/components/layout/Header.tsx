@@ -1,15 +1,20 @@
 import logo from "@/assets/logo-denamu-main.svg";
-import searchIcon from "@/assets/searchIcon.svg";
 import SearchModal from "../search/SearchModal";
+import RssRegistrationModal from "../RssRegistration/rssRegistrationModal";
 import SideBar from "./Sidebar";
 import { useState } from "react";
-
+import SearchButton from "../search/SearchButton";
+import { motion, AnimatePresence } from "framer-motion";
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [rssOpen, setRssOpen] = useState<boolean>(false);
 
   const handleSearchModal = () => {
     setSearchOpen((prev) => !prev);
+  };
+  const handleRssModal = () => {
+    setRssOpen((prev) => !prev);
   };
 
   const handleSideBar = () => {
@@ -18,15 +23,21 @@ export default function Header() {
 
   return (
     <header className="mx-7 my-5 flex justify-between items-center h-[50px] relative">
-      <div className="cursor-pointer h-full">
+      <div
+        className="cursor-pointer h-full"
+        onClick={() => {
+          location.reload();
+        }}
+      >
         <img src={logo} alt="Logo" className="h-full" />
       </div>
       <div className="hidden md:flex h-full items-center gap-x-3 text-sm">
-        <button className="cursor-pointer border h-full px-4 rounded flex items-center" onClick={handleSearchModal}>
-          <img src={searchIcon} alt="Search" className="h-5" />
-        </button>
+        <SearchButton handleSearchModal={handleSearchModal} />
         <button className="cursor-pointer border h-full px-3 rounded flex items-center">로그인</button>
-        <button className="cursor-pointer primary-div h-full px-3 rounded text-white font-bold flex items-center">
+        <button
+          className="cursor-pointer bg-primary h-full px-3 rounded text-white font-bold flex items-center"
+          onClick={handleRssModal}
+        >
           블로그 등록
         </button>
       </div>
@@ -37,7 +48,8 @@ export default function Header() {
       </div>
 
       {sidebarOpen && <SideBar setSearchOpen={handleSearchModal} setSidebarOpen={handleSideBar} />}
-      {searchOpen && <SearchModal onClose={handleSearchModal} />}
+      <AnimatePresence>{rssOpen && <RssRegistrationModal onClose={handleRssModal} />}</AnimatePresence>
+      <AnimatePresence>{searchOpen && <SearchModal onClose={handleSearchModal} />}</AnimatePresence>
     </header>
   );
 }
