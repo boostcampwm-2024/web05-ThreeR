@@ -1,5 +1,5 @@
-import { Feed } from 'src/feed/feed.entity';
-import { RssInformation } from 'src/rss/rss.entity';
+import { Feed } from '../feed/feed.entity';
+import { RssInformation } from '../rss/rss.entity';
 import { Entity, OneToMany } from 'typeorm';
 
 @Entity({
