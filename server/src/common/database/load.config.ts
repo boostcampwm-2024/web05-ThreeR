@@ -7,7 +7,7 @@ export function loadDBSetting(configService: ConfigService) {
   const port = configService.get<number>('DB_PORT');
   const username = configService.get<string>('DB_USERNAME');
   const password = configService.get<string>('DB_PASSWORD');
-  const entities = [__dirname + '/../**/*.entity.{js,ts}'];
+  const entities = [`${__dirname}/../../**/*.entity.{js,ts}`];
   const synchronize = true;
   const logging = process.env.NODE_ENV === 'production' ? false : true;
 
