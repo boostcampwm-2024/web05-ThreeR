@@ -1,5 +1,6 @@
 import { Post } from "@/types/post";
 import { Image as ImageIcon } from "lucide-react";
+import { LazyImage } from "@/components/common/LazyImage";
 
 interface PostCardProps {
   post: Post;
@@ -10,7 +11,12 @@ export const PostCard = ({ post }: PostCardProps) => {
     <div className="flex flex-col rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="aspect-[16/9] relative bg-gray-100 flex items-center justify-center">
         {post.thumbnailUrl ? (
-          <img src={post.thumbnailUrl} alt={post.title} className="w-full h-full object-cover" />
+          <LazyImage
+            src={post.thumbnailUrl}
+            alt={post.title}
+            className="w-full h-full object-cover"
+            wrapperClassName="w-full h-full"
+          />
         ) : (
           <div className="text-gray-400">
             <ImageIcon className="w-8 h-8" />

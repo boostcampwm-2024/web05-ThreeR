@@ -7,6 +7,11 @@
     "lefthook": "^1.8.2"
   },
   "scripts": {
+    "prepare": "lefthook install"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
     "prepare": "lefthook install",
     "commit": "cz"
   },
