@@ -1,5 +1,5 @@
-import TrandingSection from "@/components/sections/TrendingSection";
 import LatestSection from "@/components/sections/LatestSection";
+import TrandingSection from "@/components/sections/TrendingSection";
 
 export default function MainContent() {
   return (
