@@ -1,12 +1,11 @@
 import logger from "./logger.js";
-import * as dotenv from "dotenv";
+import 'dotenv/config';
 import { pool, selectAllRss, insertFeeds } from "./db-access.js";
 import { FeedObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 
 const xmlParser = new XMLParser();
-dotenv.config();
 const TIME_INTERVAL = process.env.TIME_INTERVAL
   ? parseInt(process.env.TIME_INTERVAL)
   : 1;
@@ -27,10 +26,10 @@ const getImageUrl = async (link: string): Promise<string> => {
     const root = parse(htmlData);
     const metaImage = root.querySelector('meta[property="og:image"]');
     const imageUrl = metaImage?.getAttribute("content") ?? "";
+    if(imageUrl.length === 0) logger.warn(`${link}에서 사진 추출 실패`);
 
     return imageUrl;
   } catch (err) {
-    logger.warn(`${link}에서 사진 추출 실패`);
     throw new Error(err);
   }
 };
