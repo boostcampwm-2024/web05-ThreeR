@@ -8,4 +8,5 @@ export interface Post {
   likes?: number;
   views?: number;
   thumbnailUrl?: string;
+  authorImageUrl?: string;
 }
