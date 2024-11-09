@@ -23,8 +23,9 @@ export class Feed extends BaseEntity {
   @Column({ name: 'title', nullable: false })
   title: string;
 
-  @Column({ name: 'view_count', nullable: false })
+  @Column({ name: 'view_count', nullable: false, default: 0 })
   viewCount: number;
+
 
   @Column({
     length: 255,
