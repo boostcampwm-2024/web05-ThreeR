@@ -1,5 +1,5 @@
 import logger from "./logger.js";
-import 'dotenv/config';
+import "dotenv/config";
 import { pool, selectAllRss, insertFeeds } from "./db-access.js";
 import { FeedObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
@@ -26,7 +26,7 @@ const getImageUrl = async (link: string): Promise<string> => {
     const root = parse(htmlData);
     const metaImage = root.querySelector('meta[property="og:image"]');
     const imageUrl = metaImage?.getAttribute("content") ?? "";
-    if(imageUrl.length === 0) logger.warn(`${link}에서 사진 추출 실패`);
+    if (imageUrl.length === 0) logger.warn(`${link}에서 사진 추출 실패`);
 
     return imageUrl;
   } catch (err) {
@@ -125,17 +125,3 @@ export const performTask = async () => {
   logger.info(`총 ${result.length}개의 새로운 피드가 있습니다.`);
   await insertFeeds(result);
 };
-
-async function measureExecutionTime() {
-  logger.info("==========작업 시작==========");
-  const startTime = Date.now();
-  await performTask();
-  const endTime = Date.now();
-
-  const executionTime = endTime - startTime;
-  logger.info(`Execution time: ${executionTime / 1000}seconds`);
-  logger.info("==========작업 완료==========");
-  pool.end();
-}
-
-measureExecutionTime();

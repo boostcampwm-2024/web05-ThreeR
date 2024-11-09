@@ -16,6 +16,6 @@
   },
   "rootDir": "src",
   "scripts": {
-    "start" : "tsc && node dist/rss-notifier.js"
+    "start": "tsc && node dist/main.js"
   }
 }
