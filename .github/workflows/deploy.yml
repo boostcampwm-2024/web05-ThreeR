@@ -54,4 +54,6 @@ jobs:
             tsc
 
             cd ..
+
+            pm2 delete all
             pm2 restart ecosystem.config.js
