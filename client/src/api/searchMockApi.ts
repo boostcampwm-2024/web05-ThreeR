@@ -115,8 +115,9 @@ mock.onGet("/api/search").reply((config) => {
       return item.title.includes(find);
     } else if (type === "blogger") {
       return item.author.includes(find);
+    } else {
+      return item.author.includes(find) || item.title.includes(find);
     }
-    return false;
   });
 
   const total_count = filteredData.length;
