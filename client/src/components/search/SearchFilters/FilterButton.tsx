@@ -1,34 +1,39 @@
 import { FilterType } from "@/types/search";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useEffect } from "react";
-const filters: { label: string; value: FilterType }[] = [
-  { label: "게시글 제목", value: "title" },
-  { label: "블로거", value: "blogger" },
-  { label: "블로그 이름", value: "blogName" },
-];
+import { CommandGroup, CommandItem } from "@/components/ui/command";
+import { FileText, User, PanelBottom } from "lucide-react";
 
 export default function FilterButton() {
   const { currentFilter, setFilter, setPage } = useSearchStore();
 
   useEffect(() => {
-    setTimeout(() => {
-      setPage(1);
-    }, 500);
-  }, [currentFilter]);
+    setPage(1);
+  }, [currentFilter, setPage]);
+
+  const getItemClassName = (isActive: boolean) =>
+    `rounded px-4 py-2 text-sm flex items-center gap-2 cursor-pointer ${
+      isActive ? "bg-primary text-white" : "bg-white hover:bg-gray-100 transition-colors duration-200"
+    }`;
+
+  const handleFilterClick = (filter: FilterType) => {
+    setFilter(filter);
+  };
 
   return (
-    <div className="flex gap-2 mb-4">
-      {filters.map((filter) => {
-        return (
-          <button
-            key={filter.value}
-            onClick={() => setFilter(filter.value)}
-            className={`rounded px-4 py-2 text-sm ${currentFilter === filter.value ? "bg-primary text-white" : "bg-gray-200"}`}
-          >
-            {filter.label}
-          </button>
-        );
-      })}
-    </div>
+    <CommandGroup heading="필터">
+      <div className={getItemClassName(currentFilter === "title")} onClick={() => handleFilterClick("title")}>
+        <FileText size={16} />
+        <span>제목</span>
+      </div>
+      <div className={getItemClassName(currentFilter === "blogger")} onClick={() => handleFilterClick("blogger")}>
+        <User size={16} />
+        <span>블로거</span>
+      </div>
+      <div className={getItemClassName(currentFilter === "all")} onClick={() => handleFilterClick("all")}>
+        <PanelBottom size={16} />
+        <span>블로거 + 제목</span>
+      </div>
+    </CommandGroup>
   );
 }
