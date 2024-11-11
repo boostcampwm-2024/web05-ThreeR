@@ -1,5 +1,6 @@
 import logo from "@/assets/logo-denamu-main.svg";
 import SearchModal from "../search/SearchModal";
+import RssRegistrationModal from "../RssRegistration/rssRegistrationModal";
 import SideBar from "./Sidebar";
 import { useState } from "react";
 import SearchButton from "../search/SearchButton";
@@ -8,9 +9,13 @@ import { AnimatePresence } from "framer-motion";
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [rssOpen, setRssOpen] = useState<boolean>(false);
 
   const handleSearchModal = () => {
     setSearchOpen((prev) => !prev);
+  };
+  const handleRssModal = () => {
+    setRssOpen((prev) => !prev);
   };
 
   const handleSideBar = () => {
@@ -40,7 +45,10 @@ export default function Header() {
       <div className="hidden md:flex h-full items-center gap-x-3 text-sm">
         <SearchButton handleSearchModal={handleSearchModal} />
         <button className="cursor-pointer border h-full px-3 rounded flex items-center">로그인</button>
-        <button className="cursor-pointer bg-primary h-full px-3 rounded text-white font-bold flex items-center">
+        <button
+          className="cursor-pointer bg-primary h-full px-3 rounded text-white font-bold flex items-center"
+          onClick={handleRssModal}
+        >
           블로그 등록
         </button>
       </div>
@@ -51,6 +59,7 @@ export default function Header() {
       </div>
 
       {sidebarOpen && <SideBar setSearchOpen={handleSearchModal} setSidebarOpen={handleSideBar} />}
+      <AnimatePresence>{rssOpen && <RssRegistrationModal onClose={handleRssModal} />}</AnimatePresence>
       <AnimatePresence>{searchOpen && <SearchModal onClose={handleSearchModal} />}</AnimatePresence>
     </header>
   );

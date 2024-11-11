@@ -1,5 +1,5 @@
-commit_msg:
-  parallel: true
-  commands:
-    commitlint:
-      run: npx commitlint --edit $1
+commit-msg:
+    parallel: true
+    commands:
+        commitlint:
+            run: npx commitlint --edit {1}

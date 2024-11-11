@@ -1,0 +1,40 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "server/**"
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      # public 서버로 ssh 접속
+      - name: ssh connection
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            cd /root/web05-Denamu
+            git pull origin main
+            cd server/
+
+            mkdir -p configs
+
+            echo "DB_TYPE=mysql" > configs/.env.db.production
+            echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> configs/.env.db.production
+            echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> configs/.env.db.production
+            echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> configs/.env.db.production
+            echo "DB_USERNAME=${{ secrets.PRODUCT_DB_USERNAME }}" >> configs/.env.db.production
+            echo "DB_PASSWORD=${{ secrets.PRODUCT_DB_PASSWORD }}" >> configs/.env.db.production
+
+            npm ci
+            npm run build
+            nohup npm run start > server.log 2>&1 &

@@ -16,7 +16,7 @@ lerna-debug.log*
 .DS_Store
 
 # Tests
-/coverage
+/test/coverage
 /.nyc_output
 
 # IDEs and editors
@@ -36,12 +36,12 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # dotenv environment variable files
-.env
+.env.*
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
-
+!.env.db.test
 # temp directory
 .temp
 .tmp
