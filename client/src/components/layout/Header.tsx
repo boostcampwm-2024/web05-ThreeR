@@ -3,7 +3,8 @@ import SearchModal from "../search/SearchModal";
 import SideBar from "./Sidebar";
 import { useState } from "react";
 import SearchButton from "../search/SearchButton";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { AnimatePresence } from "framer-motion";
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -15,7 +16,17 @@ export default function Header() {
   const handleSideBar = () => {
     setSidebarOpen((prev) => !prev);
   };
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
 
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
   return (
     <header className="mx-7 my-5 flex justify-between items-center h-[50px] relative">
       <div
