@@ -1,7 +1,9 @@
 import logger from "./logger.js";
 import { FeedObj, FeedDetail } from "./types.js";
-import "dotenv/config";
+import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
+
+dotenv.config({ path: "./rss-notifier/.env" });
 
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
