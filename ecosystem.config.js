@@ -5,7 +5,7 @@ module.exports = {
     {
       name: "Denamu",
       script: "./server/dist/main.js",
-      instances: "2",
+      instances: "1",
       exec_mode: "cluster",
       watch: false,
       autorestart: true,
@@ -19,7 +19,7 @@ module.exports = {
       script: "./rss-notifier/dist/main.js",
       instances: "1",
       exec_mode: "fork",
-      cron_restart: `*/30 * * * *`, // 30분 마다 rss-notifier 재시작
+      cron_restart: `*/1 * * * *`, // 30분 마다 rss-notifier 재시작
       autorestart: false,
       watch: false,
     },
