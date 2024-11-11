@@ -11,51 +11,43 @@ const TIME_INTERVAL = process.env.TIME_INTERVAL
   : 1;
 
 const getImageUrl = async (link: string): Promise<string> => {
-  try {
-    const response = await fetch(link, {
-      headers: {
-        Accept: "text/html",
-      },
-    });
+  const response = await fetch(link, {
+    headers: {
+      Accept: "text/html",
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`${link}에 GET 요청 실패`);
-    }
-
-    const htmlData = await response.text();
-    const root = parse(htmlData);
-    const metaImage = root.querySelector('meta[property="og:image"]');
-    const imageUrl = metaImage?.getAttribute("content") ?? "";
-    if (imageUrl.length === 0) logger.warn(`${link}에서 사진 추출 실패`);
-
-    return imageUrl;
-  } catch (err) {
-    throw new Error(err);
+  if (!response.ok) {
+    throw new Error(`${link}에 GET 요청 실패`);
   }
+
+  const htmlData = await response.text();
+  const root = parse(htmlData);
+  const metaImage = root.querySelector('meta[property="og:image"]');
+  const imageUrl = metaImage?.getAttribute("content") ?? "";
+  if (imageUrl.length === 0) logger.warn(`${link}에서 사진 추출 실패`);
+
+  return imageUrl;
 };
 
 const fetchRss = async (rss_url: string): Promise<RawFeed[]> => {
-  try {
-    const response = await fetch(rss_url, {
-      headers: {
-        Accept: "application/rss+xml, application/xml, text/xml",
-      },
-    });
+  const response = await fetch(rss_url, {
+    headers: {
+      Accept: "application/rss+xml, application/xml, text/xml",
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`${rss_url}에서 xml 추출 실패`);
-    }
-    const xmlData = await response.text();
-    const objFromXml = xmlParser.parse(xmlData);
-
-    return objFromXml.rss.channel.item.map((item) => ({
-      title: item.title,
-      link: item.link,
-      pubDate: item.pubDate,
-    }));
-  } catch (err) {
-    throw new Error(err);
+  if (!response.ok) {
+    throw new Error(`${rss_url}에서 xml 추출 실패`);
   }
+  const xmlData = await response.text();
+  const objFromXml = xmlParser.parse(xmlData);
+
+  return objFromXml.rss.channel.item.map((item) => ({
+    title: item.title,
+    link: item.link,
+    pubDate: item.pubDate,
+  }));
 };
 
 const findNewFeeds = async (
