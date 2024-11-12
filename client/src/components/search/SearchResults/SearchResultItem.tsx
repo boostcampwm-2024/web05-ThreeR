@@ -1,5 +1,7 @@
-import { SearchData } from "@/types/search";
 import { CommandItem } from "@/components/ui/command";
+
+import { SearchData } from "@/types/search";
+
 export default function SearchResultItem({ title, author }: SearchData) {
   return (
     <CommandItem className="flex flex-col items-start">
@@ -8,16 +10,3 @@ export default function SearchResultItem({ title, author }: SearchData) {
     </CommandItem>
   );
 }
-
-// <CommandItem>
-//   <User />
-//   <span>Profile</span>
-// </CommandItem>
-// <CommandItem>
-//   <CreditCard />
-//   <span>Billing</span>
-// </CommandItem>
-// <CommandItem>
-//   <Settings />
-//   <span>Settings</span>
-// </CommandItem>

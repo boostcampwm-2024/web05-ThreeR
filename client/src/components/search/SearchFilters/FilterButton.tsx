@@ -1,8 +1,11 @@
-import { FilterType } from "@/types/search";
-import { useSearchStore } from "@/store/useSearchStore";
 import { useEffect } from "react";
-import { CommandGroup, CommandItem } from "@/components/ui/command";
+
 import { FileText, User, PanelBottom } from "lucide-react";
+
+import { CommandGroup } from "@/components/ui/command";
+
+import { useSearchStore } from "@/store/useSearchStore";
+import { FilterType } from "@/types/search";
 
 export default function FilterButton() {
   const { currentFilter, setFilter, setPage } = useSearchStore();

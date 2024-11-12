@@ -1,5 +1,5 @@
-import SearchInput from "@/components/search/SearchHeader/SearchInput";
 import FilterButton from "@/components/search/SearchFilters/FilterButton";
+import SearchInput from "@/components/search/SearchHeader/SearchInput";
 import SearchResultList from "@/components/search/SearchResults/SearchResultList";
 import { Command, CommandSeparator } from "@/components/ui/command";
 

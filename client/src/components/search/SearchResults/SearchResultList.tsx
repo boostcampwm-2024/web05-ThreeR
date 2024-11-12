@@ -1,9 +1,13 @@
-import SearchResultItem from "./SearchResultItem";
-import { useSearch } from "@/hooks/useSearch";
-import { useSearchStore } from "@/store/useSearchStore";
-import SearchPages from "../searchPages/SearchPages";
 import { Loader } from "lucide-react";
+
 import { CommandList, CommandEmpty, CommandGroup } from "@/components/ui/command";
+
+import { useSearch } from "@/hooks/useSearch";
+
+import SearchPages from "../searchPages/SearchPages";
+import SearchResultItem from "./SearchResultItem";
+import { useSearchStore } from "@/store/useSearchStore";
+
 export default function SearchResults() {
   const RESULT_PER_PAGE = 4;
   const { searchParam, currentFilter, page } = useSearchStore();

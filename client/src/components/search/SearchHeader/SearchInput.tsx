@@ -1,6 +1,9 @@
-import { useSearchStore } from "@/store/useSearchStore";
 import { useEffect } from "react";
+
 import { X } from "lucide-react";
+
+import { useSearchStore } from "@/store/useSearchStore";
+
 export default function SearchInput({ onClose }: { onClose: () => void }) {
   const { searchParam, setSearchParam, setPage } = useSearchStore();
 

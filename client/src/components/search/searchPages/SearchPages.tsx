@@ -1,4 +1,3 @@
-import { useSearchStore } from "@/store/useSearchStore";
 import {
   Pagination,
   PaginationContent,
@@ -8,6 +7,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+
+import { useSearchStore } from "@/store/useSearchStore";
 
 export default function SearchPages({ totalPages }: { totalPages: number }) {
   const { page, setPage } = useSearchStore();
