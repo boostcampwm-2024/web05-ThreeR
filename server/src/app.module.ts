@@ -9,7 +9,9 @@ import { loadDBSetting } from './common/database/load.config';
     winstonModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${process.cwd()}/configs/.env.db.${process.env.NODE_ENV === 'test' ? 'test' : 'production'}`,
+      envFilePath:
+        process.env.ENV_PATH ||
+        `${process.cwd()}/configs/.env.db.${process.env.NODE_ENV === 'test' ? 'test' : 'production'}`,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
