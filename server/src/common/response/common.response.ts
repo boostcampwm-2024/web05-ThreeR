@@ -1,5 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class ApiResponse<T> {
+    @ApiProperty({ description: 'HTTP 상태 코드' })
     private readonly statusCode: number;
+
+    @ApiProperty({ description: '응답 데이터', required: false})
     private readonly data: T | undefined;
 
     private constructor(
