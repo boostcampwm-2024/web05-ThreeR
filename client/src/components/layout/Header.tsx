@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
 
 import RssRegistrationModal from "@/components/RssRegistration/RssRegistrationModal";
+import SideBar from "@/components/layout/Sidebar";
 import SearchButton from "@/components/search/SearchButton";
 import SearchModal from "@/components/search/SearchModal";
 import { Button } from "@/components/ui/button";
@@ -24,18 +25,6 @@ export default function Header() {
 
   const handleSearchModal = () => setSearchOpen((prev) => !prev);
   const handleRssModal = () => setRssOpen((prev) => !prev);
-
-  const MobileMenu = () => (
-    <div className="flex flex-col gap-4 p-4">
-      <SearchButton handleSearchModal={handleSearchModal} />
-      <Button variant="outline" className="w-full">
-        로그인
-      </Button>
-      <Button className="w-full" onClick={handleRssModal}>
-        블로그 등록
-      </Button>
-    </div>
-  );
 
   return (
     <div className="border-b">
@@ -86,7 +75,7 @@ export default function Header() {
                 <SheetHeader>
                   <SheetTitle>메뉴</SheetTitle>
                 </SheetHeader>
-                <MobileMenu />
+                <SideBar handleRssModal={handleRssModal} handleSearchModal={handleSearchModal} />
               </SheetContent>
             </Sheet>
           </div>
