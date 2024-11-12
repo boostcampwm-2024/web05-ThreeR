@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "server/**"
+  workflow_dispatch: # 수동 실행을 허용하는 이벤트
 
 jobs:
   deployment:
