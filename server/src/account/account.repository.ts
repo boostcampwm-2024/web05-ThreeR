@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Admin } from './login.entity';
+import { Admin } from './account.entity';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 
 @Injectable()
-export class LoginRepository extends Repository<Admin> {
+export class AccountRepository extends Repository<Admin> {
   constructor(private dataSource: DataSource) {
     super(Admin, dataSource.createEntityManager());
   }

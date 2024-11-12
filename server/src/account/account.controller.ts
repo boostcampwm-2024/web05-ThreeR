@@ -6,7 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { LoginService } from './login.service';
+import { AccountService } from './account.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { RegisterAdminDto } from './dto/register-admin.dto';
@@ -14,9 +14,9 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Account')
 @Controller()
-export class LoginController {
+export class AccountController {
   constructor(
-    private readonly loginService: LoginService,
+    private readonly loginService: AccountService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 

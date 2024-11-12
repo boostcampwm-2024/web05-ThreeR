@@ -1,11 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import type { RegisterAdminDto } from './dto/register-admin.dto';
-import { LoginRepository } from './login.repository';
+import { AccountRepository } from './account.repository';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class LoginService {
-  constructor(private loginRepository: LoginRepository) {}
+export class AccountService {
+  constructor(private loginRepository: AccountRepository) {}
 
   async registerAdmin(registerAdminDto: RegisterAdminDto) {
     let { loginId, password } = registerAdminDto;
