@@ -4,7 +4,7 @@ module.exports = {
   apps: [
     {
       name: "Denamu",
-      script: "./server/dist/main.js",
+      script: "./server/dist/src/main.js",
       instances: "max",
       exec_mode: "cluster",
       watch: false,
