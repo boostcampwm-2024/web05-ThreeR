@@ -3,6 +3,7 @@ import { winstonModule } from './common/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadDBSetting } from './common/database/load.config';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { loadDBSetting } from './common/database/load.config';
       useFactory: (configService: ConfigService) =>
         loadDBSetting(configService),
     }),
+    RedisModule,
   ],
   controllers: [],
   providers: [],
