@@ -19,7 +19,7 @@ module.exports = {
       script: "./rss-notifier/dist/main.js",
       instances: "1",
       exec_mode: "fork",
-      cron_restart: `*/1 * * * *`, // 30분 마다 rss-notifier 재시작
+      cron_restart: `*/30 * * * *`, // 30분 마다 rss-notifier 재시작
       autorestart: false,
       watch: false,
     },
