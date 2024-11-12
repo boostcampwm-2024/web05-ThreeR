@@ -13,7 +13,7 @@ export default function FilterButton() {
 
   const getItemClassName = (isActive: boolean) =>
     `rounded px-4 py-2 text-sm flex items-center gap-2 cursor-pointer ${
-      isActive ? "bg-primary text-white" : "bg-white hover:bg-gray-100 transition-colors duration-200"
+      isActive ? "bg-accent " : "bg-white hover:bg-gray-100 transition-colors duration-200"
     }`;
 
   const handleFilterClick = (filter: FilterType) => {
@@ -22,17 +22,19 @@ export default function FilterButton() {
 
   return (
     <CommandGroup heading="필터">
-      <div className={getItemClassName(currentFilter === "title")} onClick={() => handleFilterClick("title")}>
-        <FileText size={16} />
-        <span>제목</span>
-      </div>
-      <div className={getItemClassName(currentFilter === "blogger")} onClick={() => handleFilterClick("blogger")}>
-        <User size={16} />
-        <span>블로거</span>
-      </div>
-      <div className={getItemClassName(currentFilter === "all")} onClick={() => handleFilterClick("all")}>
-        <PanelBottom size={16} />
-        <span>블로거 + 제목</span>
+      <div className="flex flex-col gap-1">
+        <div className={getItemClassName(currentFilter === "title")} onClick={() => handleFilterClick("title")}>
+          <FileText size={16} />
+          <span>제목</span>
+        </div>
+        <div className={getItemClassName(currentFilter === "blogger")} onClick={() => handleFilterClick("blogger")}>
+          <User size={16} />
+          <span>블로거</span>
+        </div>
+        <div className={getItemClassName(currentFilter === "all")} onClick={() => handleFilterClick("all")}>
+          <PanelBottom size={16} />
+          <span>블로거 + 제목</span>
+        </div>
       </div>
     </CommandGroup>
   );
