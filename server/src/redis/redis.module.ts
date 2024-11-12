@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RedisService } from './redis.service';
 import Redis from 'ioredis';
 import Redis_Mock from 'ioredis-mock';
 
@@ -26,6 +27,7 @@ import Redis_Mock from 'ioredis-mock';
         return redis;
       },
     },
+    RedisService,
   ],
   exports: ['REDIS_CLIENT'],
 })
