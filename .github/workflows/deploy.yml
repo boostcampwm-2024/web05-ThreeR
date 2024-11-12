@@ -22,6 +22,7 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
+
             cd /root/web05-Denamu
             git pull origin main
             cd server/
@@ -37,4 +38,22 @@ jobs:
 
             npm ci
             npm run build
-            nohup npm run start > server.log 2>&1 &
+
+            cd ..
+            cd rss-notifier/
+
+            echo "PORT"=${{ secrets.RSS_NOTIFIER_PORT }} > .env
+            echo "DB_HOST=${{ secrets.RSS_NOTIFIER_DB_HOST }} >> .env
+            echo "DB_NAME=${{ secrets.RSS_NOTIFIER_DB_DATABASE }} >> .env
+            echo "DB_USER=${{ secrets.RSS_NOTIFIER_DB_USER }} >> .env
+            echo "DB_PASS=${{ secrets.RSS_NOTIFIER_DB_PASSWORD }} >> .env
+            echo "DB_TABLE=${{ secrets.RSS_NOTIFIER_DB_TABLE }} >> .env
+            echo "TIME_INTERVAL=${{ vars.RSS_NOTIFIER_TIME_INTERVAL }} >> .env
+
+            npm ci
+            tsc
+
+            cd ..
+
+            pm2 delete all
+            pm2 start ecosystem.config.js
