@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import FormInput from "@/components/RssRegistration/FormInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,29 +8,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import { validateRssUrl, validateName, validateEmail, validateBlogger } from "./RssValidation";
 import { useRegisterModalStore } from "@/store/useRegisterModalStrore";
 
 export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: () => void; rssOpen: boolean }) {
-  const { rssUrl, bloggerName, userName, email, setRssUrl, setBloggerName, setUserName, setEmail, resetInputs } =
-    useRegisterModalStore();
-  const [rssUrlValid, setRssUrlValid] = useState<boolean>(false);
-  const [bloggerNameValid, setBloggerNameValid] = useState<boolean>(false);
-  const [userNameValid, setUserNameValid] = useState<boolean>(false);
-  const [emailValid, setEmailValid] = useState<boolean>(false);
-
-  const handleInputChange = (
-    value: string,
-    setValue: (v: string) => void,
-    setValid: (v: boolean) => void,
-    validate: (v: string) => boolean
-  ) => {
-    setValue(value);
-    setValid(validate(value));
-  };
+  const {
+    rssUrl,
+    bloggerName,
+    userName,
+    email,
+    rssUrlValid,
+    bloggerNameValid,
+    userNameValid,
+    emailValid,
+    setRssUrl,
+    setBloggerName,
+    setUserName,
+    setEmail,
+    setRssUrlValid,
+    setBloggerNameValid,
+    setUserNameValid,
+    setEmailValid,
+    resetInputs,
+    handleInputChange,
+    isFormValid,
+  } = useRegisterModalStore();
 
   return (
     <Dialog open={rssOpen} onOpenChange={onClose}>
@@ -44,66 +46,42 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Label htmlFor="rss" className="text-sm font-medium">
-              RSS URL
-            </Label>
-            <Input
-              id="rss"
-              value={rssUrl}
-              onChange={(e) => handleInputChange(e.target.value, setRssUrl, setRssUrlValid, validateRssUrl)}
-              placeholder="https://example.com/rss"
-              className="flex-grow  w-auto"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Label htmlFor="blog" className="text-sm font-medium ">
-              블로그명
-            </Label>
-            <Input
-              id="blog"
-              value={bloggerName}
-              onChange={(e) => handleInputChange(e.target.value, setBloggerName, setBloggerNameValid, validateBlogger)}
-              placeholder="블로그명을 입력하세요"
-              className="flex-grow  w-auto"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Label htmlFor="name" className="text-sm font-medium ">
-              신청자 이름
-            </Label>
-            <Input
-              id="name"
-              value={userName}
-              onChange={(e) => handleInputChange(e.target.value, setUserName, setUserNameValid, validateName)}
-              placeholder="이름을 입력하세요"
-              className="flex-grow w-auto"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Label htmlFor="email" className="text-sm font-medium ">
-              이메일
-            </Label>
-            <Input
-              id="email"
-              value={email}
-              onChange={(e) => handleInputChange(e.target.value, setEmail, setEmailValid, validateEmail)}
-              placeholder="example@denamu.com"
-              className="flex-grow  w-auto"
-            />
-          </div>
+          <FormInput
+            id="rss"
+            label="RSS URL"
+            onChange={(value: string) => handleInputChange(value, setRssUrl, setRssUrlValid, validateRssUrl)}
+            placeholder="https://example.com/rss"
+            value={rssUrl}
+          />
+          <FormInput
+            id="blog"
+            label="블로그명"
+            onChange={(value: string) => handleInputChange(value, setBloggerName, setBloggerNameValid, validateBlogger)}
+            placeholder="블로그명을 입력하세요"
+            value={bloggerName}
+          />
+          <FormInput
+            id="name"
+            label="신청자 이름"
+            onChange={(value: string) => handleInputChange(value, setUserName, setUserNameValid, validateName)}
+            placeholder="이름을 입력하세요"
+            value={userName}
+          />
+          <FormInput
+            id="email"
+            label="이메일"
+            onChange={(value: string) => handleInputChange(value, setEmail, setEmailValid, validateEmail)}
+            placeholder="example@denamu.com"
+            value={email}
+          />
         </div>
         <DialogFooter>
           <Button
             type="submit"
             onClick={() => {
-              console.log(rssUrlValid, bloggerNameValid, userNameValid, emailValid);
               resetInputs();
             }}
-            disabled={!rssUrlValid || !bloggerNameValid || !userNameValid || !emailValid}
+            disabled={!isFormValid()}
             className="bg-black hover:bg-gray-800 text-white"
           >
             등록
