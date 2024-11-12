@@ -33,6 +33,14 @@ export class AccountController {
   @ApiResponse({
     status: 201,
     description: '관리자 계정 생성 성공',
+    schema: {
+      example: {
+        statusCode: 201,
+        data: {
+          message: '성공적으로 관리자 계정이 생성되었습니다.',
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 400,
@@ -46,7 +54,6 @@ export class AccountController {
     const result = await this.loginService.registerAdmin(registerAdminDto);
     this.logger.info(`admin 등록: ${result.loginId}`);
     return {
-      status: 201,
       message: `성공적으로 관리자 계정이 생성되었습니다.`,
     };
   }
