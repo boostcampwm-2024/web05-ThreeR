@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import type { RegisterAdminDto } from './dto/register-admin.dto';
 import { LoginRepository } from './login.repository';
 import * as bcrypt from 'bcrypt';
@@ -15,7 +15,7 @@ export class LoginService {
     });
 
     if (existingAdmin) {
-      throw new BadRequestException('이미 존재하는 아이디입니다.');
+      throw new ConflictException('이미 존재하는 아이디입니다.');
     }
 
     const saltRounds = 10;
