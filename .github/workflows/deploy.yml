@@ -36,8 +36,8 @@ jobs:
             echo "DB_PASSWORD=${{ secrets.PRODUCT_DB_PASSWORD }}" >> configs/.env.db.production
             echo "REDIS_HOST=${{secrets.REDIS_HOST }}" >> configs/.env.db.production
             echo "REDIS_PORT=${{secrets.REDIS_PORT}}" >> configs/.env.db.production
-            echo "REDIS_USERNAME=${{secrets.REDIS_USERNAME}}" >> configs/.env.db.production"
-            echo "REDIS_PASSWORD=${{secrets.REDIS_PASSWORD}}" >> configs/.env.db.production"
+            echo "REDIS_USERNAME=${{secrets.REDIS_USERNAME}}" >> configs/.env.db.production
+            echo "REDIS_PASSWORD=${{secrets.REDIS_PASSWORD}}" >> configs/.env.db.production
 
             npm ci
             npm run build
