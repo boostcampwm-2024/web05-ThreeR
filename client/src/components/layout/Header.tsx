@@ -95,7 +95,7 @@ export default function Header() {
 
       {/* Modals */}
       <AnimatePresence>
-        {rssOpen && <RssRegistrationModal onClose={handleRssModal} />}
+        {rssOpen && <RssRegistrationModal onClose={handleRssModal} rssOpen={rssOpen} />}
         {searchOpen && <SearchModal onClose={handleSearchModal} />}
       </AnimatePresence>
     </div>
