@@ -5,7 +5,7 @@ module.exports = {
     {
       name: "Denamu",
       script: "./server/dist/main.js",
-      instances: "1",
+      instances: "max",
       exec_mode: "cluster",
       watch: false,
       autorestart: true,
