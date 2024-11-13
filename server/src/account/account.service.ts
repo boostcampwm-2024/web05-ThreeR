@@ -24,15 +24,15 @@ export class AccountService {
   async loginAdmin(registerAdminDto: RegisterAdminDto, response: Response) {
     const { loginId, password } = registerAdminDto;
 
-    const target = await this.loginRepository.findOne({
+    const admin = await this.loginRepository.findOne({
       where: { loginId },
     });
 
-    if (!target) {
+    if (!admin) {
       throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
     }
 
-    if (!(await bcrypt.compare(password, target.password))) {
+    if (!(await bcrypt.compare(password, admin.password))) {
       throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
     }
 
@@ -40,7 +40,7 @@ export class AccountService {
 
     await this.redisService.set(
       sessionId,
-      target.loginId,
+      admin.loginId,
       `EX`,
       this.SESSION_TTL,
     );
