@@ -13,9 +13,7 @@ import { ApiResponse } from '../response/common.response';
 @Catch()
 export class GlobalExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const response = host.switchToHttp().getResponse<Response>();
 
     let statusCode: number;
     let message: string;
@@ -38,8 +36,8 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
       message = '알수 없는 서버 예외 발생';
     }
 
-    const apiResponse = ApiResponse.responseWithNoContent(statusCode, message);
+    const apiResponse = ApiResponse.responseWithNoContent(message);
 
-    response.status(HttpStatus.OK).json(apiResponse);
+    response.status(statusCode).json(apiResponse);
   }
 }
