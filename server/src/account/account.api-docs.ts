@@ -2,9 +2,13 @@ import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
+import { RegisterAdminDto } from './dto/register-admin.dto';
+import { ApiResponse } from '../common/response/common.response';
 
 export function ApiPostRegisterAdmin() {
   return applyDecorators(
@@ -32,6 +36,38 @@ export function ApiPostRegisterAdmin() {
       schema: {
         example: {
           message: '이미 존재하는 계정입니다.',
+        },
+      },
+    }),
+  );
+}
+
+export function ApiPostLoginAdmin() {
+  return applyDecorators(
+    ApiOperation({
+      summary: `관리자 로그인 API`,
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        example: {
+          message: '로그인이 성공적으로 처리되었습니다.',
+        },
+      },
+    }),
+    ApiBadRequestResponse({
+      description: 'Bad Request',
+      schema: {
+        example: {
+          message: '오류 메세지 출력',
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      description: 'Unauthorized',
+      schema: {
+        example: {
+          message: '아이디 혹은 비밀번호가 잘못되었습니다.',
         },
       },
     }),

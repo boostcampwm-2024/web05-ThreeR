@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupSwagger } from './common/swagger/swagger';
 import * as cookieParser from 'cookie-parser';
-import * as cookieParser from 'cookie-parser';
 import { GlobalExceptionsFilter } from './common/filters/global-exceptions.filter';
 
 async function bootstrap() {
