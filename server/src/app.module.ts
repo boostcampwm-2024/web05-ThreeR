@@ -3,13 +3,17 @@ import { winstonModule } from './common/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadDBSetting } from './common/database/load.config';
+import { AccountModule } from './account/account.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
     winstonModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${process.cwd()}/configs/.env.db.${process.env.NODE_ENV === 'test' ? 'test' : 'production'}`,
+      envFilePath:
+        process.env.ENV_PATH ||
+        `${process.cwd()}/configs/.env.db.${process.env.NODE_ENV === 'test' ? 'test' : 'production'}`,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -17,6 +21,8 @@ import { loadDBSetting } from './common/database/load.config';
       useFactory: (configService: ConfigService) =>
         loadDBSetting(configService),
     }),
+    AccountModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [],

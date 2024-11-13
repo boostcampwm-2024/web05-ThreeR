@@ -1,9 +1,14 @@
-import searchIcon from "@/assets/searchIcon.svg";
+import { Search } from "lucide-react";
+
+import { NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 
 export default function SearchButton({ handleSearchModal }: { handleSearchModal: () => void }) {
   return (
-    <button className="cursor-pointer border h-full px-4 rounded flex items-center" onClick={handleSearchModal}>
-      <img src={searchIcon} alt="Search" className="h-5" />
-    </button>
+    <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={handleSearchModal} href="#">
+      <div className="flex items-center gap-2">
+        <Search size={16} />
+        <span>검색</span>
+      </div>
+    </NavigationMenuLink>
   );
 }
