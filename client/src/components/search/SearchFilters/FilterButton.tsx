@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { FileText, User, PanelBottom } from "lucide-react";
 
 import { CommandGroup } from "@/components/ui/command";
@@ -7,12 +5,20 @@ import { CommandGroup } from "@/components/ui/command";
 import { useSearchStore } from "@/store/useSearchStore";
 import { FilterType } from "@/types/search";
 
+interface FilterOption {
+  label: string;
+  filter: FilterType;
+  icon: JSX.Element;
+}
+
 export default function FilterButton() {
   const { currentFilter, setFilter, setPage } = useSearchStore();
 
-  useEffect(() => {
-    setPage(1);
-  }, [currentFilter, setPage]);
+  const filterOptions: FilterOption[] = [
+    { label: "제목", filter: "title", icon: <FileText size={16} /> },
+    { label: "블로거", filter: "blogger", icon: <User size={16} /> },
+    { label: "블로거 + 제목", filter: "all", icon: <PanelBottom size={16} /> },
+  ];
 
   const getItemClassName = (isActive: boolean) =>
     `rounded px-4 py-2 text-sm flex items-center gap-2 cursor-pointer ${
@@ -21,23 +27,22 @@ export default function FilterButton() {
 
   const handleFilterClick = (filter: FilterType) => {
     setFilter(filter);
+    setPage(1);
   };
 
   return (
     <CommandGroup heading="필터">
       <div className="flex flex-col gap-1">
-        <div className={getItemClassName(currentFilter === "title")} onClick={() => handleFilterClick("title")}>
-          <FileText size={16} />
-          <span>제목</span>
-        </div>
-        <div className={getItemClassName(currentFilter === "blogger")} onClick={() => handleFilterClick("blogger")}>
-          <User size={16} />
-          <span>블로거</span>
-        </div>
-        <div className={getItemClassName(currentFilter === "all")} onClick={() => handleFilterClick("all")}>
-          <PanelBottom size={16} />
-          <span>블로거 + 제목</span>
-        </div>
+        {filterOptions.map(({ label, filter, icon }) => (
+          <div
+            key={filter}
+            className={getItemClassName(currentFilter === filter)}
+            onClick={() => handleFilterClick(filter)}
+          >
+            {icon}
+            <span>{label}</span>
+          </div>
+        ))}
       </div>
     </CommandGroup>
   );
