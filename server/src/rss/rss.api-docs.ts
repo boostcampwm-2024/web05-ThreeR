@@ -3,6 +3,7 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiBadRequestResponse,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
 
 export function ApiPostRegisterRss() {
@@ -14,8 +15,7 @@ export function ApiPostRegisterRss() {
       description: 'Created',
       schema: {
         example: {
-          status: 201,
-          message: '생성 완료',
+          message: '신청이 완료되었습니다.',
         },
       },
     }),
@@ -23,8 +23,15 @@ export function ApiPostRegisterRss() {
       description: 'Bad Request',
       schema: {
         example: {
-          status: 400,
-          message: '오류 메세지',
+          message: '값 검증 오류 메세지',
+        },
+      },
+    }),
+    ApiConflictResponse({
+      description: 'Conflict',
+      schema: {
+        example: {
+          message: '이미 등록된 RSS URL입니다.',
         },
       },
     }),
