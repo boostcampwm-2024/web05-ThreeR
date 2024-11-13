@@ -8,8 +8,9 @@ import SearchPages from "../searchPages/SearchPages";
 import SearchResultItem from "./SearchResultItem";
 import { useSearchStore } from "@/store/useSearchStore";
 
+const RESULT_PER_PAGE = 4;
+
 export default function SearchResults() {
-  const RESULT_PER_PAGE = 4;
   const { searchParam, currentFilter, page } = useSearchStore();
   const { results, totalPages, totalItems, loading, error } = useSearch(
     searchParam,
