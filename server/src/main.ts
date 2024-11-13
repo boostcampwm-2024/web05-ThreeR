@@ -6,6 +6,7 @@ import { GlobalExceptionsFilter } from './common/filters/global-exceptions.filte
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   setupSwagger(app);
+  app.setGlobalPrefix('api');
   app.useGlobalFilters(new GlobalExceptionsFilter());
   await app.listen(process.env.PORT ?? 3000);
 }
