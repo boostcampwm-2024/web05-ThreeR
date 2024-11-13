@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadDBSetting } from './common/database/load.config';
 import { RedisModule } from './redis/redis.module';
+import { RssModule } from './rss/rss.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RedisModule } from './redis/redis.module';
         loadDBSetting(configService),
     }),
     RedisModule,
+    RssModule,
   ],
   controllers: [],
   providers: [],
