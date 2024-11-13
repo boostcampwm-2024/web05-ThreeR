@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import React from "react";
+import { useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
@@ -22,8 +21,6 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 
-import SideBar from "./Sidebar";
-
 export default function Header() {
   const [modals, setModals] = useState({ search: false, rss: false });
 
@@ -31,8 +28,7 @@ export default function Header() {
     setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
   };
 
-  useKeyboardShortcut("k", () => setSearchOpen(true));
-  useKeyboardShortcut("Escape", () => setSearchOpen(false));
+  useKeyboardShortcut("k", () => toggleModal("search"));
 
   return (
     <div className="border-b">
