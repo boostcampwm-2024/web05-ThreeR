@@ -14,6 +14,7 @@ import { WINSTON_MODULE_PROVIDER, WinstonLogger } from 'nest-winston';
 import { RssRegisterDto } from './dto/rss-register.dto';
 import { ApiGetRss, ApiPostRegisterRss } from './rss.api-docs';
 import { Rss } from './rss.entity';
+import { ApiResponse } from '../common/response/common.response';
 
 @ApiTags('RSS')
 @Controller('rss')
@@ -40,7 +41,10 @@ export class RssController {
   @ApiGetRss()
   @Get()
   @HttpCode(200)
-  getRss(): Promise<Rss[]> {
-    return this.rssService.getAllRss();
+  getRss(): ApiResponse<Promise<Rss[]>> {
+    return ApiResponse.responseWithData(
+      'Rss 조회 완료',
+      this.rssService.getAllRss(),
+    );
   }
 }
