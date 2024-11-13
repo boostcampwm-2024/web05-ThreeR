@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { X } from "lucide-react";
 
 import { useSearchStore } from "@/store/useSearchStore";
