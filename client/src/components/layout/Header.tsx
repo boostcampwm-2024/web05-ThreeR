@@ -20,11 +20,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import logo from "@/assets/logo-denamu-main.svg";
 
 export default function Header() {
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [rssOpen, setRssOpen] = useState(false);
+  const [modals, setModals] = useState({ search: false, rss: false });
 
-  const handleSearchModal = () => setSearchOpen((prev) => !prev);
-  const handleRssModal = () => setRssOpen((prev) => !prev);
+  const toggleModal = (modalType: "search" | "rss") => {
+    setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
+  };
 
   return (
     <div className="border-b">
@@ -36,57 +36,69 @@ export default function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center">
-            <NavigationMenu>
-              <NavigationMenuList className="gap-2">
-                {/* Search Button */}
-                <NavigationMenuItem>
-                  <div className="flex h-full items-center">
-                    <SearchButton handleSearchModal={handleSearchModal} />
-                  </div>
-                </NavigationMenuItem>
-
-                {/* Login Menu */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()} href="#">
-                    로그인
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Blog Registration Menu */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={handleRssModal} href="#">
-                    블로그 등록
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
+          <DesktopNavigation toggleModal={toggleModal} />
 
           {/* Mobile Navigation */}
-          <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>메뉴</SheetTitle>
-                </SheetHeader>
-                <SideBar handleRssModal={handleRssModal} handleSearchModal={handleSearchModal} />
-              </SheetContent>
-            </Sheet>
-          </div>
+          <MobileNavigation toggleModal={toggleModal} />
         </div>
       </div>
 
       {/* Modals */}
       <AnimatePresence>
-        {rssOpen && <RssRegistrationModal onClose={handleRssModal} rssOpen={rssOpen} />}
-        {searchOpen && <SearchModal onClose={handleSearchModal} />}
+        {modals.rss && <RssRegistrationModal onClose={() => toggleModal("rss")} rssOpen={modals.rss} />}
+        {modals.search && <SearchModal onClose={() => toggleModal("search")} />}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" | "rss") => void }) {
+  return (
+    <div className="hidden md:flex md:items-center">
+      <NavigationMenu>
+        <NavigationMenuList className="gap-2">
+          {/* Search Button */}
+          <NavigationMenuItem>
+            <div className="flex h-full items-center">
+              <SearchButton handleSearchModal={() => toggleModal("search")} />
+            </div>
+          </NavigationMenuItem>
+
+          {/* Login Menu */}
+          <NavigationMenuItem>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()} href="#">
+              로그인
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+
+          {/* Blog Registration Menu */}
+          <NavigationMenuItem>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={() => toggleModal("rss")} href="#">
+              블로그 등록
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  );
+}
+
+function MobileNavigation({ toggleModal }: { toggleModal: (modalType: "search" | "rss") => void }) {
+  return (
+    <div className="md:hidden">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon">
+            <Menu className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>메뉴</SheetTitle>
+          </SheetHeader>
+          <SideBar handleRssModal={() => toggleModal("rss")} handleSearchModal={() => toggleModal("search")} />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
