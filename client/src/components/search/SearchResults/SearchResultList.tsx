@@ -18,29 +18,37 @@ export default function SearchResults() {
     RESULT_PER_PAGE
   );
 
-  if (loading) {
-    return (
+  const renderContent = {
+    // 검색 로딩
+    loading: (
       <CommandEmpty className="flex gap-4 h-[25rem] justify-center items-center">
         <Loader />
       </CommandEmpty>
-    );
-  }
-  if (results.length === 0) {
-    return (
+    ),
+    // 검색 결과 없음
+    searchEmpty: (
       <CommandEmpty className="flex  gap-4 h-[30rem] justify-center items-center">검색결과가 없습니다</CommandEmpty>
-    );
-  }
-  if (error) {
-    <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">에러발생</div>;
-  }
-  return (
-    <CommandGroup heading={`검색결과 (총 ${totalItems}건)`}>
-      <CommandList>
-        {results.map((result, index) => (
-          <SearchResultItem key={index} {...result} />
-        ))}
-      </CommandList>
-      <SearchPages totalPages={totalPages} />
-    </CommandGroup>
-  );
+    ),
+    // 에러발생
+    error: <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">에러발생</div>,
+    // 정상적인 상황
+    default: (
+      <CommandGroup heading={`검색결과 (총 ${totalItems}건)`}>
+        <CommandList>
+          {results.map((result, index) => (
+            <SearchResultItem key={index} {...result} />
+          ))}
+        </CommandList>
+        <SearchPages totalPages={totalPages} />
+      </CommandGroup>
+    ),
+  };
+  const getRenderKey = () => {
+    if (loading || !results) return "loading";
+    if (results.length === 0) return "searchEmpty";
+    if (error) return "error";
+    return "default";
+  };
+
+  return renderContent[getRenderKey()];
 }
