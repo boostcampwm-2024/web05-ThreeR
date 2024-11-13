@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Inject,
+  Param,
+  ParseIntPipe,
   Post,
   UsePipes,
   ValidationPipe,
@@ -42,5 +45,19 @@ export class RssController {
       'Rss 조회 완료',
       await this.rssService.getAllRss(),
     );
+  }
+
+  @Post('accept/:id')
+  @HttpCode(201)
+  async acceptRss(@Param('id', ParseIntPipe) id: number) {
+    await this.rssService.acceptRss(id);
+    return ApiResponse.responseWithNoContent('승인이 완료되었습니다.');
+  }
+
+  @Delete('reject/:id')
+  @HttpCode(204)
+  async rejectRss(@Param('id', ParseIntPipe) id: number) {
+    await this.rssService.rejectRss(id);
+    return ApiResponse.responseWithNoContent('거절이 완료되었습니다.');
   }
 }
