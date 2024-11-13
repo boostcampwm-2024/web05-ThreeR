@@ -6,6 +6,7 @@ import * as request from 'supertest';
 import { GlobalExceptionsFilter } from '../../src/common/filters/global-exceptions.filter';
 import { DataSource } from 'typeorm';
 import { Rss } from '../../src/rss/rss.entity';
+import { Blog } from '../../src/blog/blog.entity';
 
 describe('Rss Register E2E Test : POST /api/rss', () => {
   let app: INestApplication;
@@ -51,6 +52,23 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
 
     it('이미 신청했던 RSS를 또 신청한다.', async () => {
       await request(app.getHttpServer()).post('/api/rss').send(input);
+      const response = await request(app.getHttpServer())
+        .post('/api/rss')
+        .send(input);
+      expect(response.status).toBe(409);
+      expect(response.body.message).toBe('이미 등록된 RSS URL입니다.');
+    });
+
+    it('이미 등록된 RSS를 또 신청한다.', async () => {
+      const blogRepository = dataSource.getRepository(Blog);
+      const blog = blogRepository.create({
+        name: input.blog,
+        userName: input.name,
+        email: input.email,
+        rssURL: input.rssURL,
+      });
+      await blogRepository.save(blog);
+
       const response = await request(app.getHttpServer())
         .post('/api/rss')
         .send(input);
