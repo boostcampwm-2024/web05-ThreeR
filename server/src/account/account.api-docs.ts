@@ -15,10 +15,7 @@ export function ApiPostRegisterAdmin() {
       description: 'Created',
       schema: {
         example: {
-          statusCode: 201,
-          data: {
-            message: '성공적으로 관리자 계정이 생성되었습니다.',
-          },
+          message: '성공적으로 관리자 계정이 생성되었습니다.',
         },
       },
     }),
@@ -26,10 +23,7 @@ export function ApiPostRegisterAdmin() {
       description: 'Bad Request',
       schema: {
         example: {
-          statusCode: 400,
-          data: {
-            message: '오류 메세지',
-          },
+          message: '오류 메세지 출력',
         },
       },
     }),
@@ -37,10 +31,7 @@ export function ApiPostRegisterAdmin() {
       description: 'Conflict',
       schema: {
         example: {
-          statusCode: 409,
-          data: {
-            message: '이미 존재하는 계정입니다.',
-          },
+          message: '이미 존재하는 계정입니다.',
         },
       },
     }),

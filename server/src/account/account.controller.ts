@@ -12,6 +12,7 @@ import { Logger } from 'winston';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiPostRegisterAdmin } from './account.api-docs';
+import { ApiResponse } from '../common/response/common.response';
 
 @ApiTags('Account')
 @Controller()
@@ -27,9 +28,8 @@ export class AccountController {
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
     const result = await this.loginService.registerAdmin(registerAdminDto);
     this.logger.info(`admin 등록: ${result.loginId}`);
-    return {
-      message: `성공적으로 관리자 계정이 생성되었습니다.`,
-      statusCode: 201,
-    };
+    return ApiResponse.responseWithNoContent(
+      '성공적으로 관리자 계정이 생성되었습니다.',
+    );
   }
 }
