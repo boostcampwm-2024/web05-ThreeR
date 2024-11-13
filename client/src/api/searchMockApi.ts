@@ -1,5 +1,6 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
+
 import { SearchData } from "@/types/search";
 
 const mock = new MockAdapter(axios);
@@ -110,7 +111,7 @@ const mockData: SearchData[] = [
 mock.onGet("/api/search").reply((config) => {
   const { find, type, limit = 4, page = 1 } = config.params;
 
-  let filteredData = mockData.filter((item) => {
+  const filteredData = mockData.filter((item) => {
     if (type === "title") {
       return item.title.includes(find);
     } else if (type === "blogger") {
