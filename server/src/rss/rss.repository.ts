@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Rss } from './rss.entity';
 import { RssRegisterDto } from './dto/rss-register.dto';
