@@ -8,40 +8,36 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+import generatePage from "@/utils/pagination";
+
 import { useSearchStore } from "@/store/useSearchStore";
 
 export default function SearchPages({ totalPages }: { totalPages: number }) {
   const { page, setPage } = useSearchStore();
+  const pageNumber = generatePage(page, totalPages);
 
-  const INIT_PAGE_ARRAY = Array.from({ length: Math.min(3, totalPages) }, (_, i) => i + 1);
-  const LAST_PAGE_ARRAY = Array.from({ length: Math.min(3, totalPages) }, (_, i) => totalPages - 2 + i);
-  const MIDDLE_PAGE_ARRAY = [page - 1, page, page + 1].filter((p) => p > 0 && p <= totalPages);
-
-  const pageNumber: number[] =
-    page <= 2 ? INIT_PAGE_ARRAY : page >= totalPages - 2 ? LAST_PAGE_ARRAY : MIDDLE_PAGE_ARRAY;
-
-  const handlePage = ({ mode }: { mode: number | "prev" | "next" }) => {
-    if (mode === "prev" && page > 1) {
-      setPage(page - 1);
-    } else if (mode === "next" && page < totalPages) {
-      setPage(page + 1);
-    } else if (typeof mode === "number") {
-      setPage(mode);
+  const handlePage = (mode: number | "prev" | "next") => {
+    switch (mode) {
+      case "prev":
+        if (page > 1) setPage(page - 1);
+        break;
+      case "next":
+        if (page < totalPages) setPage(page + 1);
+        break;
+      default:
+        if (typeof mode === "number") setPage(mode);
     }
   };
 
   return (
     <Pagination className="flex gap-4">
-      <PaginationPrevious
-        onClick={() => handlePage({ mode: "prev" })}
-        className="border-none min-w-[100px]"
-      ></PaginationPrevious>
+      <PaginationPrevious onClick={() => handlePage("prev")} className="border-none min-w-[100px]" />
 
       <PaginationContent>
         {page > 2 && <PaginationEllipsis />}
         {pageNumber.map((number) => (
           <PaginationItem key={number}>
-            <PaginationLink onClick={() => handlePage({ mode: number })} className={page === number ? "border" : ""}>
+            <PaginationLink onClick={() => handlePage(number)} className={page === number ? "border" : ""}>
               {number}
             </PaginationLink>
           </PaginationItem>
@@ -49,10 +45,7 @@ export default function SearchPages({ totalPages }: { totalPages: number }) {
         {page < totalPages - 2 && <PaginationEllipsis />}
       </PaginationContent>
 
-      <PaginationNext
-        onClick={() => handlePage({ mode: "next" })}
-        className="border-none min-w-[100px]"
-      ></PaginationNext>
+      <PaginationNext onClick={() => handlePage("next")} className="border-none min-w-[100px]" />
     </Pagination>
   );
 }
