@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import React from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
@@ -16,7 +17,11 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+
 import logo from "@/assets/logo-denamu-main.svg";
+
+import SideBar from "./Sidebar";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -36,6 +41,9 @@ export default function Header() {
       </Button>
     </div>
   );
+
+  useKeyboardShortcut("k", () => setSearchOpen(true));
+  useKeyboardShortcut("Escape", () => setSearchOpen(false));
 
   return (
     <div className="border-b">

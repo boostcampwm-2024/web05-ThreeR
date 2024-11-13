@@ -1,30 +1,49 @@
+import { FileText, User, PanelBottom } from "lucide-react";
+
+import { CommandGroup } from "@/components/ui/command";
+
+import { useSearchStore } from "@/store/useSearchStore";
 import { FilterType } from "@/types/search";
 
-type FilterButtonType = {
-  currentFilter: FilterType;
-  setFilter: (filter: FilterType) => void;
-};
+interface FilterOption {
+  label: string;
+  filter: FilterType;
+  icon: JSX.Element;
+}
 
-const filters: { label: string; value: FilterType }[] = [
-  { label: "게시글 제목", value: "title" },
-  { label: "블로거", value: "blogger" },
-  { label: "블로그 이름", value: "blogName" },
-];
+export default function FilterButton() {
+  const { currentFilter, setFilter, setPage } = useSearchStore();
 
-export default function FilterButton({ currentFilter, setFilter }: FilterButtonType) {
+  const filterOptions: FilterOption[] = [
+    { label: "제목", filter: "title", icon: <FileText size={16} /> },
+    { label: "블로거", filter: "blogger", icon: <User size={16} /> },
+    { label: "블로거 + 제목", filter: "all", icon: <PanelBottom size={16} /> },
+  ];
+
+  const getItemClassName = (isActive: boolean) =>
+    `rounded px-4 py-2 text-sm flex items-center gap-2 cursor-pointer ${
+      isActive ? "bg-accent " : "bg-white hover:bg-gray-100 transition-colors duration-200"
+    }`;
+
+  const handleFilterClick = (filter: FilterType) => {
+    setFilter(filter);
+    setPage(1);
+  };
+
   return (
-    <div className="flex gap-2 mb-4">
-      {filters.map((filter) => {
-        return (
-          <button
-            key={filter.value}
-            onClick={() => setFilter(filter.value)}
-            className={`rounded px-4 py-2 text-sm ${currentFilter === filter.value ? "bg-primary text-white" : "bg-gray-200"}`}
+    <CommandGroup heading="필터">
+      <div className="flex flex-col gap-1">
+        {filterOptions.map(({ label, filter, icon }) => (
+          <div
+            key={filter}
+            className={getItemClassName(currentFilter === filter)}
+            onClick={() => handleFilterClick(filter)}
           >
-            {filter.label}
-          </button>
-        );
-      })}
-    </div>
+            {icon}
+            <span>{label}</span>
+          </div>
+        ))}
+      </div>
+    </CommandGroup>
   );
 }

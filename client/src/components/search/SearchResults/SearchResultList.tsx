@@ -1,41 +1,55 @@
-import { button, p } from "framer-motion/client";
+import { Loader } from "lucide-react";
+
+import { CommandList, CommandEmpty, CommandGroup } from "@/components/ui/command";
+
+import { useSearch } from "@/hooks/useSearch";
+
+import SearchPages from "../searchPages/SearchPages";
 import SearchResultItem from "./SearchResultItem";
-import { SearchData } from "@/types/search";
-type SearchResultsProps = {
-  searchPost: SearchData[] | undefined;
-  page: number;
-  setPage: (page: number) => void;
-};
-const pageNumber: number[] = [1, 2, 3, 4];
-export default function SearchResults({ searchPost, page, setPage }: SearchResultsProps) {
-  if (!searchPost) {
-    return <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">로딩중..</div>;
-  }
-  if (searchPost.length === 0) {
-    return <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">검색결과가 없습니다</div>;
-  }
-  return (
-    <div className="flex flex-col gap-4 h-[25rem]">
-      {searchPost.map((result, index) => (
-        <SearchResultItem key={index} {...result} />
-      ))}
-      <div className="flex justify-center gap-1">
-        {pageNumber.map((number) => {
-          return (
-            <button
-              key={number}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                page === number ? "bg-primary text-white" : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => {
-                setPage(number);
-              }}
-            >
-              {number}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+import { useSearchStore } from "@/store/useSearchStore";
+
+const RESULT_PER_PAGE = 4;
+
+export default function SearchResults() {
+  const { searchParam, currentFilter, page } = useSearchStore();
+  const { results, totalPages, totalItems, loading, error } = useSearch(
+    searchParam,
+    currentFilter,
+    page,
+    RESULT_PER_PAGE
   );
+
+  const renderContent = {
+    // 검색 로딩
+    loading: (
+      <CommandEmpty className="flex gap-4 h-[25rem] justify-center items-center">
+        <Loader />
+      </CommandEmpty>
+    ),
+    // 검색 결과 없음
+    searchEmpty: (
+      <CommandEmpty className="flex  gap-4 h-[30rem] justify-center items-center">검색결과가 없습니다</CommandEmpty>
+    ),
+    // 에러발생
+    error: <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">에러발생</div>,
+    // 정상적인 상황
+    default: (
+      <CommandGroup heading={`검색결과 (총 ${totalItems}건)`}>
+        <CommandList>
+          {results.map((result, index) => (
+            <SearchResultItem key={index} {...result} />
+          ))}
+        </CommandList>
+        <SearchPages totalPages={totalPages} />
+      </CommandGroup>
+    ),
+  };
+  const getRenderKey = () => {
+    if (loading || !results) return "loading";
+    if (results.length === 0) return "searchEmpty";
+    if (error) return "error";
+    return "default";
+  };
+
+  return renderContent[getRenderKey()];
 }
