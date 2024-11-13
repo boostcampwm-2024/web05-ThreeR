@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 
 import { AnimatePresence } from "framer-motion";
@@ -16,6 +16,8 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 
@@ -39,17 +41,10 @@ export default function Header() {
       </Button>
     </div>
   );
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setSearchOpen((open) => !open);
-      }
-    };
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
+  useKeyboardShortcut("k", () => setSearchOpen(true));
+  useKeyboardShortcut("Escape", () => setSearchOpen(false));
+
   return (
     <div className="border-b">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
