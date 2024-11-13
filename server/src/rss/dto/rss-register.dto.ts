@@ -4,35 +4,32 @@ import { IsEmail, IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 export class RssRegisterDto {
   @ApiProperty({
     example: 'seok3765.log',
-    description: '블로그 이름을 입력해주세요',
-  })
-  @IsNotEmpty({
-    message: '빈 문자열은 들어올 수 없습니다.',
+    description: '블로그 이름을 입력해주세요.',
   })
   @IsString({
-    message: '문자열을 입력해주세요',
+    message: '문자열로 입력해주세요.',
+  })
+  @IsNotEmpty({
+    message: '블로그 이름이 없습니다.',
   })
   blog: string;
 
   @ApiProperty({
     example: 'J235_조민석',
-    description: '실명을 입력해주세요',
-  })
-  @IsNotEmpty({
-    message: '이름은 비어 있을 수 없습니다.',
-  })
-  @IsString({
-    message: '문자열로 입력해주세요',
+    description: '실명을 입력해주세요.',
   })
   @Length(2, 50, { message: '이름 길이가 올바르지 않습니다.' })
+  @IsString({
+    message: '문자열로 입력해주세요.',
+  })
+  @IsNotEmpty({
+    message: '실명이 없습니다.',
+  })
   name: string;
 
   @ApiProperty({
     example: 'seok3765@naver.com',
-    description: '이메일을 입력해주세요',
-  })
-  @IsNotEmpty({
-    message: '이메일은 비어 있을 수 없습니다.',
+    description: '이메일을 입력해주세요.',
   })
   @IsEmail(
     {},
@@ -40,14 +37,14 @@ export class RssRegisterDto {
       message: '이메일 주소 형식에 맞춰서 작성해주세요.',
     },
   )
+  @IsNotEmpty({
+    message: '이메일이 없습니다.',
+  })
   email: string;
 
   @ApiProperty({
     example: 'https://v2.velog.io/rss/@seok3765',
-    description: 'rss 주소를 입력해주세요.',
-  })
-  @IsNotEmpty({
-    message: 'RSS URL은 비어 있을 수 없습니다.',
+    description: 'RSS 주소를 입력해주세요.',
   })
   @IsUrl(
     {
@@ -58,5 +55,8 @@ export class RssRegisterDto {
       message: 'http, https 프로토콜과 URL 형식을 맞춰주세요.',
     },
   )
+  @IsNotEmpty({
+    message: 'RSS URL이 없습니다.',
+  })
   rssURL: string;
 }
