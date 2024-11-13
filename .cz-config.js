@@ -32,6 +32,10 @@ module.exports = {
       value: "📦 chore",
       name: "📦 chore: 개발 환경 구축, 설정 시 사용",
     },
+    {
+      value: "🧼 clean",
+      name: "🧼 clean: 사소한 코드 수정, 코드 정리",
+    },
   ],
   messages: {
     type: "커밋 메세지 타입을 선택해주세요: ",
