@@ -41,10 +41,10 @@ export class RssController {
   @ApiGetRss()
   @Get()
   @HttpCode(200)
-  getRss(): ApiResponse<Promise<Rss[]>> {
+  async getRss(): Promise<ApiResponse<Rss[]>> {
     return ApiResponse.responseWithData(
       'Rss 조회 완료',
-      this.rssService.getAllRss(),
+      await this.rssService.getAllRss(),
     );
   }
 }
