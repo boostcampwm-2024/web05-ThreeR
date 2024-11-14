@@ -1,11 +1,15 @@
 import { useEffect, useRef } from "react";
-import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
-import { SectionHeader } from "@/components/common/SectionHeader";
+
 import { Rss } from "lucide-react";
+
 import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
+import { LoadingIndicator } from "@/components/common/LoadingIndicator";
+import { SectionHeader } from "@/components/common/SectionHeader";
+
+import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
+
+import { postsApi } from "@/api/posts";
 import { Post } from "@/types/post";
-import { fetchPosts } from "@/api/mockApi";
-import { LoadingIndicator } from "../common/LoadingIndicator";
 
 export default function LatestSection() {
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -15,7 +19,7 @@ export default function LatestSection() {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteScrollQuery<Post>({ queryKey: "latest-posts", fetchFn: fetchPosts });
+  } = useInfiniteScrollQuery<Post>({ queryKey: "latest-posts", fetchFn: postsApi.fetchPosts });
 
   useEffect(() => {
     const observer = new IntersectionObserver(

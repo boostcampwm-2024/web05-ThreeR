@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadDBSetting } from './common/database/load.config';
 import { AccountModule } from './account/account.module';
 import { RedisModule } from './redis/redis.module';
+import { RssModule } from './rss/rss.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RedisModule } from './redis/redis.module';
     }),
     AccountModule,
     RedisModule,
+    RssModule,
   ],
   controllers: [],
   providers: [],

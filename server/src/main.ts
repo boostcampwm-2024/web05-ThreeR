@@ -10,6 +10,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new GlobalExceptionsFilter());
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://denamu.netlify.app/'],
+    credentials: true,
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 
