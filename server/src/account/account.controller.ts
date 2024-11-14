@@ -17,6 +17,7 @@ import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './account.api-docs';
 import { ApiResponse } from '../common/response/common.response';
+import { LoginAdminDto } from './dto/login-admin.dto';
 
 @ApiTags('Account')
 @Controller()
@@ -31,10 +32,12 @@ export class AccountController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async loginAdmin(
-    @Body() registerAdminDto: RegisterAdminDto,
+    @Body() loginAdminDto: LoginAdminDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    await this.loginService.loginAdmin(registerAdminDto, response);
+    await this.loginService.loginAdmin(loginAdminDto, response);
+    this.logger.info(`admin 로그인: ${loginAdminDto.loginId}`);
+    
     return ApiResponse.responseWithNoContent(
       '로그인이 성공적으로 처리되었습니다.',
     );

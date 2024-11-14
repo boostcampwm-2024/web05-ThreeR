@@ -10,6 +10,8 @@ import * as bcrypt from 'bcrypt';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import * as uuid from 'uuid';
 import { RedisService } from '../redis/redis.service';
+import type { LoginAdminDto } from './dto/login-admin.dto';
+
 
 @Injectable()
 export class AccountService {
@@ -21,16 +23,12 @@ export class AccountService {
     private readonly redisService: RedisService,
   ) {}
 
-  async loginAdmin(registerAdminDto: RegisterAdminDto, response: Response) {
-    const { loginId, password } = registerAdminDto;
+  async loginAdmin(loginAdminDto: LoginAdminDto, response: Response) {
+    const { loginId, password } = loginAdminDto;
 
     const admin = await this.loginRepository.findOne({
       where: { loginId },
     });
-
-    if (!admin) {
-      throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
-    }
 
     if (!(await bcrypt.compare(password, admin.password))) {
       throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
