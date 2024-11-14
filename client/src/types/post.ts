@@ -10,3 +10,17 @@ export interface Post {
   thumbnailUrl?: string;
   authorImageUrl?: string;
 }
+
+export interface PostsApiResponse {
+  message: string;
+  data: {
+    result: Post[];
+    last_id: number | null;
+  };
+}
+
+export interface InfiniteScrollResponse<T> {
+  posts: T[];
+  hasMore: boolean;
+  nextPage: number | null;
+}
