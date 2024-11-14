@@ -5,7 +5,6 @@ import { Menu } from "lucide-react";
 
 import RssRegistrationModal from "@/components/RssRegistration/RssRegistrationModal";
 import SideBar from "@/components/layout/Sidebar";
-import LoginModal from "@/components/login/LoginModal";
 import SearchButton from "@/components/search/SearchButton";
 import SearchModal from "@/components/search/SearchModal";
 import { Button } from "@/components/ui/button";
@@ -52,7 +51,6 @@ export default function Header() {
       <AnimatePresence>
         {modals.rss && <RssRegistrationModal onClose={() => toggleModal("rss")} rssOpen={modals.rss} />}
         {modals.search && <SearchModal onClose={() => toggleModal("search")} />}
-        {modals.login && <LoginModal onClose={() => toggleModal("login")} loginOpen={modals.login} />}
       </AnimatePresence>
     </div>
   );
