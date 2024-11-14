@@ -1,11 +1,15 @@
 import { useEffect, useRef } from "react";
-import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
-import { SectionHeader } from "@/components/common/SectionHeader";
+
 import { Rss } from "lucide-react";
+
 import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
-import { Post } from "@/types/post";
-import { postsApi } from "@/api/posts";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
+import { SectionHeader } from "@/components/common/SectionHeader";
+
+import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
+
+import { postsApi } from "@/api/posts";
+import { Post } from "@/types/post";
 
 export default function LatestSection() {
   const observerTarget = useRef<HTMLDivElement>(null);
