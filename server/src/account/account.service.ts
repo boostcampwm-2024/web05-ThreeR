@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import * as uuid from 'uuid';
 import { RedisService } from '../redis/redis.service';
+import { LoginAdminDto } from './dto/login-admin.dto';
 
 @Injectable()
 export class AccountService {
@@ -21,8 +22,8 @@ export class AccountService {
     private readonly redisService: RedisService,
   ) {}
 
-  async loginAdmin(registerAdminDto: RegisterAdminDto, response: Response) {
-    const { loginId, password } = registerAdminDto;
+  async loginAdmin(loginAdminDto: LoginAdminDto, response: Response) {
+    const { loginId, password } = loginAdminDto;
 
     const admin = await this.loginRepository.findOne({
       where: { loginId },

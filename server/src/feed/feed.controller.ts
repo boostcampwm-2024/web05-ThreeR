@@ -24,16 +24,16 @@ export class FeedController {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  @Get('')
   @ApiGetFeedList()
+  @Get('')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(ValidationPipe)
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
     this.logger.info(JSON.stringify(queryFeedDto));
     const feedList = await this.feedService.getFeedList(queryFeedDto);
     const lastId = this.feedService.getLastIdFromFeedList(feedList);
     const data = { result: feedList, lastId: lastId };
-    this.logger.info(lastId);
+    this.logger.info(JSON.stringify(data));
     return ApiResponse.responseWithData('피드 조회 완료', data);
   }
 }

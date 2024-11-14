@@ -1,4 +1,4 @@
-import { DataSource, LessThan, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Feed } from './feed.entity';
 import { Injectable } from '@nestjs/common';
 import type { QueryFeedDto } from './dto/query-feed.dto';

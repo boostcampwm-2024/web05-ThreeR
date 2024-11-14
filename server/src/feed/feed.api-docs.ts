@@ -9,7 +9,7 @@ import { applyDecorators } from '@nestjs/common';
 export function ApiGetFeedList() {
   return applyDecorators(
     ApiOperation({
-      summary: `메인 화면 무한 스크롤 게시글 목록 API`,
+      summary: `메인 화면 게시글 조회 API`,
     }),
     ApiQuery({
       name: 'lastId',
@@ -30,7 +30,7 @@ export function ApiGetFeedList() {
       description: 'Ok',
       schema: {
         example: {
-          message: '성공적으로 관리자 계정이 생성되었습니다.',
+          message: '피드 조회 완료',
           data: {
             result: [
               {
