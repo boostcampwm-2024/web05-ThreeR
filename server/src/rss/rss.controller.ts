@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpCode,
   Inject,
   Post,
   UsePipes,
@@ -10,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { RssService } from './rss.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { RssRegisterDto } from './dto/rss-register.dto';
-import { ApiPostRegisterRss } from './rss.api-docs';
+import { ApiPostRegisterRss, ApiGetRss } from './rss.api-docs';
 import { Logger } from 'winston';
 import { ApiResponse } from '../common/response/common.response';
 
@@ -30,5 +32,15 @@ export class RssController {
     this.logger.info(JSON.stringify(rssRegisterDto));
     await this.rssService.registerRss(rssRegisterDto);
     return ApiResponse.responseWithNoContent('신청이 완료되었습니다.');
+  }
+
+  @ApiGetRss()
+  @Get()
+  @HttpCode(200)
+  async getRss() {
+    return ApiResponse.responseWithData(
+      'Rss 조회 완료',
+      await this.rssService.getAllRss(),
+    );
   }
 }
