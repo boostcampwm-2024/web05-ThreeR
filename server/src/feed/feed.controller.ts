@@ -33,7 +33,7 @@ export class FeedController {
     const feedList = await this.feedService.getFeedList(queryFeedDto);
     const lastId = this.feedService.getLastIdFromFeedList(feedList);
     const data = { result: feedList, lastId: lastId };
-    this.logger.info(JSON.stringify(data));
+    this.logger.info(JSON.stringify(`lastId: ${lastId}`));
     return ApiResponse.responseWithData('피드 조회 완료', data);
   }
 }

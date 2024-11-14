@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, LessThan, Repository } from 'typeorm';
 import { Feed } from './feed.entity';
 import { Injectable } from '@nestjs/common';
 import type { QueryFeedDto } from './dto/query-feed.dto';
@@ -11,12 +11,10 @@ export class FeedRepository extends Repository<Feed> {
   async findFeed(queryFeedDto: QueryFeedDto) {
     const { lastId, limit } = queryFeedDto;
 
-    console.time('query1');
     return await this.createQueryBuilder('feed')
       .where(lastId ? `feed.id < ${lastId}` : ``)
       .limit(limit)
       .addOrderBy('feed.id', 'DESC')
-      .execute();
-    console.timeEnd('query1');
+      .getMany();
   }
 }

@@ -14,6 +14,6 @@ export class FeedService {
   getLastIdFromFeedList(feedList: Feed[]) {
     const lastFeed = feedList.pop();
     feedList.push(lastFeed);
-    return lastFeed['feed_id'];
+    return lastFeed.id;
   }
 }
