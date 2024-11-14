@@ -33,4 +33,8 @@ export class RssService {
 
     await this.rssRepository.insertNewRss(rssRegisterDto);
   }
+
+  async getAllRss() {
+    return await this.rssRepository.find();
+  }
 }

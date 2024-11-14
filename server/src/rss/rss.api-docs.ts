@@ -37,3 +37,23 @@ export function ApiPostRegisterRss() {
     }),
   );
 }
+
+export function ApiGetRss() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'RSS 전체 조회 API',
+    }),
+    ApiCreatedResponse({
+      description: 'OK',
+      schema: {
+        example: {
+          id: 1,
+          name: '안성윤',
+          userName: '성윤',
+          email: 'a@a.com',
+          rssURL: 'url',
+        },
+      },
+    }),
+  );
+}
