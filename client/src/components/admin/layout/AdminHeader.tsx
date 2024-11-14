@@ -15,7 +15,7 @@ import logo from "@/assets/logo-denamu-main.svg";
 
 import { AdminNavigationMenu } from "./AdminNavigationMenu";
 
-export const AdminHeader = () => {
+export const AdminHeader = ({ setLogin }: { setLogin: () => void }) => {
   return (
     <>
       <header className="border-b">
@@ -54,7 +54,7 @@ export const AdminHeader = () => {
                     <Settings className="mr-2 h-4 w-4" />
                     설정
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem className="text-red-600" onClick={setLogin}>
                     <LogOut className="mr-2 h-4 w-4" />
                     로그아웃
                   </DropdownMenuItem>
