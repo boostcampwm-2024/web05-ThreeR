@@ -10,7 +10,8 @@ import * as bcrypt from 'bcrypt';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import * as uuid from 'uuid';
 import { RedisService } from '../redis/redis.service';
-import { LoginAdminDto } from './dto/login-admin.dto';
+import type { LoginAdminDto } from './dto/login-admin.dto';
+
 
 @Injectable()
 export class AccountService {
