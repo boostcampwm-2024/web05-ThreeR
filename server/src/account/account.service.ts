@@ -1,11 +1,52 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { Response } from 'express';
 import type { RegisterAdminDto } from './dto/register-admin.dto';
 import { AccountRepository } from './account.repository';
 import * as bcrypt from 'bcrypt';
+import { cookieConfig } from '../common/cookie/cookie.config';
+import * as uuid from 'uuid';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class AccountService {
-  constructor(private loginRepository: AccountRepository) {}
+  // 12시간 후 자동 만료
+  private readonly SESSION_TTL = 60 * 60 * 12;
+
+  constructor(
+    private readonly loginRepository: AccountRepository,
+    private readonly redisService: RedisService,
+  ) {}
+
+  async loginAdmin(registerAdminDto: RegisterAdminDto, response: Response) {
+    const { loginId, password } = registerAdminDto;
+
+    const admin = await this.loginRepository.findOne({
+      where: { loginId },
+    });
+
+    if (!admin) {
+      throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
+    }
+
+    if (!(await bcrypt.compare(password, admin.password))) {
+      throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
+    }
+
+    const sessionId = uuid.v4();
+
+    await this.redisService.set(
+      sessionId,
+      admin.loginId,
+      `EX`,
+      this.SESSION_TTL,
+    );
+
+    response.cookie('sessionId', sessionId, cookieConfig[process.env.NODE_ENV]);
+  }
 
   async registerAdmin(registerAdminDto: RegisterAdminDto) {
     let { loginId, password } = registerAdminDto;

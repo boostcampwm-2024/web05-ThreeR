@@ -1,17 +1,21 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Inject,
   Post,
+  Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AccountService } from './account.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiPostRegisterAdmin } from './account.api-docs';
+import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './account.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 
 @ApiTags('Account')
@@ -21,6 +25,20 @@ export class AccountController {
     private readonly loginService: AccountService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
+
+  @ApiPostLoginAdmin()
+  @Post('/login/admin')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationPipe)
+  async loginAdmin(
+    @Body() registerAdminDto: RegisterAdminDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.loginService.loginAdmin(registerAdminDto, response);
+    return ApiResponse.responseWithNoContent(
+      '로그인이 성공적으로 처리되었습니다.',
+    );
+  }
 
   @ApiPostRegisterAdmin()
   @Post('/register/admin')
