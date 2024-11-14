@@ -6,6 +6,7 @@ import { loadDBSetting } from './common/database/load.config';
 import { AccountModule } from './account/account.module';
 import { RedisModule } from './redis/redis.module';
 import { RssModule } from './rss/rss.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RssModule } from './rss/rss.module';
     AccountModule,
     RedisModule,
     RssModule,
+    FeedModule,
   ],
   controllers: [],
   providers: [],
