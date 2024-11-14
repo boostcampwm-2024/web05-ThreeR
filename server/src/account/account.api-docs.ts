@@ -7,6 +7,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
+import { RegisterAdminDto } from './dto/register-admin.dto';
+import { ApiResponse } from '../common/response/common.response';
 
 export function ApiPostRegisterAdmin() {
   return applyDecorators(
