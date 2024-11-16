@@ -4,10 +4,9 @@ import { AccountService } from './account.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from './account.entity';
 import { AccountRepository } from './account.repository';
-import { RedisModule } from '../common/redis/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin]), RedisModule],
+  imports: [TypeOrmModule.forFeature([Admin])],
   controllers: [AccountController],
   providers: [AccountService, AccountRepository],
 })
