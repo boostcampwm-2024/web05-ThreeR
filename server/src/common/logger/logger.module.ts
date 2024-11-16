@@ -1,18 +1,16 @@
 import { WinstonModule } from 'nest-winston';
-import { logDir, logFormat } from './logger.config';
+import { logDir, logFormat, productionFlag } from './logger.config';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 import * as winston from 'winston';
+import { Module } from '@nestjs/common';
+import { WinstonLoggerService } from './logger.service';
 
-import * as process from 'node:process';
-
-const { combine, timestamp } = winston.format;
-
-// production 환경과 development 환경을 구분하기 위한 flag
-const productionFlag = process.env.NODE_ENV === 'production';
-
-export const winstonModule = WinstonModule.forRoot({
+const winstonModule = WinstonModule.forRoot({
   // 로그 출력 형식에 대한 정의
-  format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat),
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    logFormat,
+  ),
 
   transports: [
     ...(productionFlag
@@ -41,10 +39,17 @@ export const winstonModule = WinstonModule.forRoot({
           new winston.transports.Console({
             format: winston.format.combine(
               winston.format.colorize(),
-              timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+              winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
               logFormat,
             ),
           }),
         ]),
   ],
 });
+
+@Module({
+  imports: [winstonModule],
+  providers: [WinstonLoggerService],
+  exports: [WinstonLoggerService],
+})
+export class WinstonLoggerModule {}
