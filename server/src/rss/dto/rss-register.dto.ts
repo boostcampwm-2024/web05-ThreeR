@@ -59,6 +59,4 @@ export class RssRegisterDto {
     message: 'RSS URL이 없습니다.',
   })
   rssURL: string;
-
-  public static;
 }
