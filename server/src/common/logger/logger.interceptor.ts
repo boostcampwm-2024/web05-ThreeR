@@ -13,13 +13,17 @@ export class LoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler<any>) {
     const startTime = Date.now();
     const request = context.switchToHttp().getRequest();
-    this.logger.log(
-      JSON.stringify({
-        method: request.method,
-        url: request.url,
-        body: request.body,
-      }),
-    );
+    const url = request.url;
+
+    if (!url.includes('register') && !url.includes('login')) {
+      this.logger.log(
+        JSON.stringify({
+          method: request.method,
+          url: request.url,
+          body: request.body,
+        }),
+      );
+    }
     return next.handle().pipe(
       finalize(() => {
         if (process.env.NODE_ENV === 'development') {
