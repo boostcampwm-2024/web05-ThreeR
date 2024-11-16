@@ -2,7 +2,7 @@ import { WinstonModule } from 'nest-winston';
 import { logDir, logFormat, productionFlag } from './logger.config';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 import * as winston from 'winston';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { WinstonLoggerService } from './logger.service';
 
 const winstonModule = WinstonModule.forRoot({
@@ -47,6 +47,7 @@ const winstonModule = WinstonModule.forRoot({
   ],
 });
 
+@Global()
 @Module({
   imports: [winstonModule],
   providers: [WinstonLoggerService],

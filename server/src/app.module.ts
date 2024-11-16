@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { winstonModule } from './common/logger/logger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadDBSetting } from './common/database/load.config';
@@ -7,10 +6,9 @@ import { AccountModule } from './account/account.module';
 import { RedisModule } from './common/redis/redis.module';
 import { RssModule } from './rss/rss.module';
 import { FeedModule } from './feed/feed.module';
-
+import { WinstonLoggerModule } from './common/logger/logger.module';
 @Module({
   imports: [
-    winstonModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
@@ -23,12 +21,11 @@ import { FeedModule } from './feed/feed.module';
       useFactory: (configService: ConfigService) =>
         loadDBSetting(configService),
     }),
-    AccountModule,
     RedisModule,
+    WinstonLoggerModule,
+    AccountModule,
     RssModule,
     FeedModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
