@@ -10,12 +10,12 @@ export class RssRepository extends Repository<Rss> {
   }
 
   async insertNewRss(rssRegisterDto: RssRegisterDto) {
-    const { blog, name, email, rssURL } = rssRegisterDto;
+    const { blog, name, email, rssUrl } = rssRegisterDto;
     const rssObj = this.create({
       name: blog,
       userName: name,
       email,
-      rssURL,
+      rssUrl,
     });
     await this.save(rssObj);
   }
