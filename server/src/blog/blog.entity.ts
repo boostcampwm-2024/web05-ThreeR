@@ -1,7 +1,7 @@
 import { Feed } from '../feed/feed.entity';
 import { RssInformation } from '../rss/rss.entity';
 import { Entity, OneToMany } from 'typeorm';
-import { Rss } from '../rss/rss.entity';
+import type { Rss } from '../rss/rss.entity';
 
 @Entity({
   name: 'blog',
