@@ -3,10 +3,13 @@ import { AppModule } from '../../src/app.module';
 import { INestApplication } from '@nestjs/common';
 import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
 import * as request from 'supertest';
-import { GlobalExceptionsFilter } from '../../src/common/filters/global-exceptions.filter';
 import { DataSource } from 'typeorm';
 import { Rss } from '../../src/rss/rss.entity';
 import { Blog } from '../../src/blog/blog.entity';
+import { HttpExceptionsFilter } from './../../src/common/filters/http-exception.filter';
+import { InternalExceptionsFilter } from '../../src/common/filters/internal-exceptions.filter';
+import { LoggingInterceptor } from '../../src/common/logger/logger.interceptor';
+import { WinstonLoggerService } from '../../src/common/logger/logger.service';
 
 describe('Rss Register E2E Test : POST /api/rss', () => {
   let app: INestApplication;
@@ -20,8 +23,13 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    const logger = app.get(WinstonLoggerService);
     app.setGlobalPrefix('api');
-    app.useGlobalFilters(new GlobalExceptionsFilter());
+    app.useGlobalInterceptors(new LoggingInterceptor(logger));
+    app.useGlobalFilters(
+      new InternalExceptionsFilter(logger),
+      new HttpExceptionsFilter(),
+    );
     await app.init();
   });
 
@@ -33,7 +41,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
       blog: 'seok3765.log',
       name: 'J235_조민석',
       email: 'seok3765@naver.com',
-      rssURL: 'https://example.com/rss',
+      rssUrl: 'https://example.com/rss',
     };
   });
 
@@ -65,7 +73,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
         name: input.blog,
         userName: input.name,
         email: input.email,
-        rssURL: input.rssURL,
+        rssUrl: input.rssUrl,
       });
       await blogRepository.save(blog);
 
@@ -186,7 +194,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
 
     describe('RSS URL을 올바르게 입력하지 않는다.', () => {
       it('RSS URL이 없다.', async () => {
-        delete input.rssURL;
+        delete input.rssUrl;
         const response = await request(app.getHttpServer())
           .post('/api/rss')
           .send(input);
@@ -195,7 +203,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
       });
 
       it('RSS URL이 빈 문자열이다.', async () => {
-        input.rssURL = '';
+        input.rssUrl = '';
         const response = await request(app.getHttpServer())
           .post('/api/rss')
           .send(input);
@@ -204,7 +212,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
       });
 
       it('RSS URL 형식이 잘못되었다.', async () => {
-        input.rssURL = 'invalid-url';
+        input.rssUrl = 'invalid-url';
         const response = await request(app.getHttpServer())
           .post('/api/rss')
           .send(input);
@@ -215,7 +223,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
       });
 
       it('http, https 프로토콜을 제외한 다른 프로토콜을 입력한다.', async () => {
-        input.rssURL = 'ftp://example.com/rss';
+        input.rssUrl = 'ftp://example.com/rss';
         const response = await request(app.getHttpServer())
           .post('/api/rss')
           .send(input);
