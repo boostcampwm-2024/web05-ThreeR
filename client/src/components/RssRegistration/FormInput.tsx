@@ -20,7 +20,8 @@ export default function FormInput({ id, label, value, placeholder, onChange }: F
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="flex-grow  w-auto"
+        autoComplete="off"
+        className="flex-grow w-auto "
       />
     </div>
   );
