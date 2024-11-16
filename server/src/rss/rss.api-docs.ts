@@ -75,7 +75,7 @@ export function ApiAcceptRss() {
       description: '승인 성공 시',
       schema: {
         example: {
-          message: '승인이 완료되었습니다.',
+          message: '승인처리 되었습니다.',
         },
       },
     }),
@@ -107,7 +107,7 @@ export function ApiRejectRss() {
       description: '승인 거절 시',
       schema: {
         example: {
-          message: '거절이 완료되었습니다.',
+          message: '거절처리 되었습니다.',
         },
       },
     }),
