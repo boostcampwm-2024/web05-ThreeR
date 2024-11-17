@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AccountController } from './account.controller';
-import { AccountService } from './account.service';
+import { AdminController } from './admin.controller';
+import { AdminService } from './admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Admin } from './account.entity';
-import { AccountRepository } from './account.repository';
+import { Admin } from './admin.entity';
+import { AdminRepository } from './admin.repository';
 import { winstonModule } from '../common/logger/logger.module';
 import { RedisModule } from '../redis/redis.module';
 import { EmailModule } from '../common/email/email.module';
@@ -15,7 +15,7 @@ import { EmailModule } from '../common/email/email.module';
     RedisModule,
     EmailModule,
   ],
-  controllers: [AccountController],
-  providers: [AccountService, AccountRepository],
+  controllers: [AdminController],
+  providers: [AdminService, AdminRepository],
 })
-export class AccountModule {}
+export class AdminModule {}

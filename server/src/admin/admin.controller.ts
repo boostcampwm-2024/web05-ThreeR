@@ -10,20 +10,20 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AccountService } from './account.service';
+import { AdminService } from './admin.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './account.api-docs';
+import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './admin.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { LoginAdminDto } from './dto/login-admin.dto';
 
 @ApiTags('Admin')
 @Controller('admin')
-export class AccountController {
+export class AdminController {
   constructor(
-    private readonly loginService: AccountService,
+    private readonly loginService: AdminService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
