@@ -5,16 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from './admin.entity';
 import { AdminRepository } from './admin.repository';
 import { winstonModule } from '../common/logger/logger.module';
-import { RedisModule } from '../redis/redis.module';
-import { EmailModule } from '../common/email/email.module';
 
 @Module({
-  imports: [
-    winstonModule,
-    TypeOrmModule.forFeature([Admin]),
-    RedisModule,
-    EmailModule,
-  ],
+  imports: [winstonModule, TypeOrmModule.forFeature([Admin])],
   controllers: [AdminController],
   providers: [AdminService, AdminRepository],
 })
