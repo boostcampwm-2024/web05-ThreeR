@@ -30,10 +30,17 @@ export class FeedController {
   @UsePipes(ValidationPipe)
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
     this.logger.info(JSON.stringify(queryFeedDto));
+
     const feedList = await this.feedService.getFeedList(queryFeedDto);
+    const hasMore = this.feedService.existNextFeed(
+      feedList,
+      queryFeedDto.limit,
+    );
     const lastId = this.feedService.getLastIdFromFeedList(feedList);
-    const data = { result: feedList, lastId: lastId };
+    const data = { result: feedList, lastId, hasMore };
+
     this.logger.info(`lastId: ${lastId}`);
+
     return ApiResponse.responseWithData('피드 조회 완료', data);
   }
 }

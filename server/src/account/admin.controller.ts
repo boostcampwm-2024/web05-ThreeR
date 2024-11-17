@@ -19,8 +19,8 @@ import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './account.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { LoginAdminDto } from './dto/login-admin.dto';
 
-@ApiTags('Account')
-@Controller()
+@ApiTags('Admin')
+@Controller('admin')
 export class AccountController {
   constructor(
     private readonly loginService: AccountService,
@@ -28,7 +28,7 @@ export class AccountController {
   ) {}
 
   @ApiPostLoginAdmin()
-  @Post('/login/admin')
+  @Post('/login')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async loginAdmin(
@@ -36,19 +36,19 @@ export class AccountController {
     @Res({ passthrough: true }) response: Response,
   ) {
     await this.loginService.loginAdmin(loginAdminDto, response);
-    this.logger.info(`admin 로그인: ${loginAdminDto.loginId}`);
-    
+    this.logger.info(`admin 로그인: ${loginAdminDto['login-id']}`);
+
     return ApiResponse.responseWithNoContent(
       '로그인이 성공적으로 처리되었습니다.',
     );
   }
 
   @ApiPostRegisterAdmin()
-  @Post('/register/admin')
+  @Post('/register')
   @UsePipes(ValidationPipe)
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
     const result = await this.loginService.registerAdmin(registerAdminDto);
-    this.logger.info(`admin 등록: ${result.loginId}`);
+    this.logger.info(`admin 등록: ${result['login-id']}`);
     return ApiResponse.responseWithNoContent(
       '성공적으로 관리자 계정이 생성되었습니다.',
     );
