@@ -36,7 +36,7 @@ export class AdminController {
     @Res({ passthrough: true }) response: Response,
   ) {
     await this.loginService.loginAdmin(loginAdminDto, response);
-    this.logger.info(`admin 로그인: ${loginAdminDto['login-id']}`);
+    this.logger.info(`admin 로그인: ${loginAdminDto.loginId}`);
 
     return ApiResponse.responseWithNoContent(
       '로그인이 성공적으로 처리되었습니다.',
@@ -47,8 +47,8 @@ export class AdminController {
   @Post('/register')
   @UsePipes(ValidationPipe)
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
-    const result = await this.loginService.registerAdmin(registerAdminDto);
-    this.logger.info(`admin 등록: ${result['login-id']}`);
+    await this.loginService.registerAdmin(registerAdminDto);
+    this.logger.info(`admin 등록: ${registerAdminDto.loginId}`);
     return ApiResponse.responseWithNoContent(
       '성공적으로 관리자 계정이 생성되었습니다.',
     );
