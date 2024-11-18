@@ -7,12 +7,14 @@ import { RssRepository } from './rss.repository';
 import { RssRegisterDto } from './dto/rss-register.dto';
 import { BlogRepository } from '../blog/blog.repository';
 import { Blog } from '../blog/blog.entity';
+import { EmailService } from '../common/email/email.service';
 
 @Injectable()
 export class RssService {
   constructor(
     private readonly rssRepository: RssRepository,
     private readonly blogRepository: BlogRepository,
+    private readonly emailService: EmailService,
   ) {}
 
   async registerRss(rssRegisterDto: RssRegisterDto) {
@@ -56,13 +58,19 @@ export class RssService {
 
     await this.rssRepository.delete(id);
     await this.blogRepository.save(Blog.fromRss(rss));
+    await this.emailService.sendMail(rss.email, rss.userName);
   }
 
   async rejectRss(id: number) {
-    const result = await this.rssRepository.delete(id);
+    const rss = await this.rssRepository.findOne({
+      where: { id: id },
+    });
 
-    if (result.affected === 0) {
+    if (!rss) {
       throw new NotFoundException('존재하지 않는 rss 입니다.');
     }
+
+    const result = await this.rssRepository.remove(rss);
+    await this.emailService.sendMail(result.email, result.userName, false);
   }
 }
