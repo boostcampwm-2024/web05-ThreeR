@@ -5,11 +5,9 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiResponse } from '../response/common.response';
-import { WinstonLoggerService } from '../logger/logger.service';
 
 @Catch(HttpException)
 export class HttpExceptionsFilter implements ExceptionFilter {
