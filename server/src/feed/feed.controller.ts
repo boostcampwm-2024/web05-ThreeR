@@ -32,6 +32,7 @@ export class FeedController {
       feedList,
       queryFeedDto.limit,
     );
+    if (hasMore) feedList.pop();
     const lastId = this.feedService.getLastIdFromFeedList(feedList);
     const data = { result: feedList, lastId, hasMore };
     return ApiResponse.responseWithData('피드 조회 완료', data);

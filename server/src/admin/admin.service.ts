@@ -29,7 +29,7 @@ export class AdminService {
       where: { loginId },
     });
 
-    if (!(await bcrypt.compare(password, admin.password))) {
+    if (!admin || !(await bcrypt.compare(password, admin.password))) {
       throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
     }
 
