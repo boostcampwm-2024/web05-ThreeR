@@ -3,10 +3,13 @@ import { AppModule } from '../../src/app.module';
 import { INestApplication } from '@nestjs/common';
 import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
 import * as request from 'supertest';
-import { GlobalExceptionsFilter } from '../../src/common/filters/global-exceptions.filter';
 import { DataSource } from 'typeorm';
 import { Rss } from '../../src/rss/rss.entity';
 import { Blog } from '../../src/blog/blog.entity';
+import { HttpExceptionsFilter } from './../../src/common/filters/http-exception.filter';
+import { InternalExceptionsFilter } from '../../src/common/filters/internal-exceptions.filter';
+import { LoggingInterceptor } from '../../src/common/logger/logger.interceptor';
+import { WinstonLoggerService } from '../../src/common/logger/logger.service';
 
 describe('Rss Register E2E Test : POST /api/rss', () => {
   let app: INestApplication;
@@ -20,8 +23,13 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    const logger = app.get(WinstonLoggerService);
     app.setGlobalPrefix('api');
-    app.useGlobalFilters(new GlobalExceptionsFilter());
+    app.useGlobalInterceptors(new LoggingInterceptor(logger));
+    app.useGlobalFilters(
+      new InternalExceptionsFilter(logger),
+      new HttpExceptionsFilter(),
+    );
     await app.init();
   });
 
