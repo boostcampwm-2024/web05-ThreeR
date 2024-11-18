@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Inject,
+  Param,
+  ParseIntPipe,
   Post,
   UsePipes,
   ValidationPipe,
@@ -12,7 +15,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { RssService } from './rss.service';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { RssRegisterDto } from './dto/rss-register.dto';
-import { ApiPostRegisterRss, ApiGetRss } from './rss.api-docs';
+import {
+  ApiPostRegisterRss,
+  ApiGetRss,
+  ApiAcceptRss,
+  ApiRejectRss,
+} from './rss.api-docs';
 import { Logger } from 'winston';
 import { ApiResponse } from '../common/response/common.response';
 
@@ -42,5 +50,21 @@ export class RssController {
       'Rss 조회 완료',
       await this.rssService.getAllRss(),
     );
+  }
+
+  @ApiAcceptRss()
+  @Post('accept/:id')
+  @HttpCode(201)
+  async acceptRss(@Param('id', ParseIntPipe) id: number) {
+    await this.rssService.acceptRss(id);
+    return ApiResponse.responseWithNoContent('승인이 완료되었습니다.');
+  }
+
+  @ApiRejectRss()
+  @Delete('reject/:id')
+  @HttpCode(204)
+  async rejectRss(@Param('id', ParseIntPipe) id: number) {
+    await this.rssService.rejectRss(id);
+    return ApiResponse.responseWithNoContent('거절이 완료되었습니다.');
   }
 }
