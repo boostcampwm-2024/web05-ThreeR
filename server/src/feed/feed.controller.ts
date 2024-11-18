@@ -27,14 +27,9 @@ export class FeedController {
     }),
   )
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedService.getFeedList(queryFeedDto);
-    const hasMore = this.feedService.existNextFeed(
-      feedList,
-      queryFeedDto.limit,
+    return ApiResponse.responseWithData(
+      '피드 조회 완료',
+      await this.feedService.getFeedData(queryFeedDto),
     );
-    if (hasMore) feedList.pop();
-    const lastId = this.feedService.getLastIdFromFeedList(feedList);
-    const data = { result: feedList, lastId, hasMore };
-    return ApiResponse.responseWithData('피드 조회 완료', data);
   }
 }
