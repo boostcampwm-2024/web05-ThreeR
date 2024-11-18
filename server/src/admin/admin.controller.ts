@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Res,
   UsePipes,
@@ -30,6 +31,8 @@ export class AdminController {
     @Res({ passthrough: true }) response: Response,
   ) {
     await this.loginService.loginAdmin(loginAdminDto, response);
+    this.logger.info(`admin 로그인: ${loginAdminDto.loginId}`);
+    
     return ApiResponse.responseWithNoContent(
       '로그인이 성공적으로 처리되었습니다.',
     );
