@@ -8,6 +8,7 @@ abstract class UserInformation extends BaseEntity {
     name: 'login_id',
     length: 255,
     nullable: false,
+    unique: true,
   })
   loginId: string;
 
