@@ -30,7 +30,8 @@ jobs:
 
             mkdir -p configs
 
-            echo "DB_TYPE=mysql" > configs/.env.db.production
+            echo "PORT=${{ secrets.PRODUCT_PORT }}" > configs/.env.db.production
+            echo "DB_TYPE=mysql" >> configs/.env.db.production
             echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> configs/.env.db.production
             echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> configs/.env.db.production
             echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> configs/.env.db.production

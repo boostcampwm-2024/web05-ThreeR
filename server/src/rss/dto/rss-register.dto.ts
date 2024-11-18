@@ -58,5 +58,5 @@ export class RssRegisterDto {
   @IsNotEmpty({
     message: 'RSS URL이 없습니다.',
   })
-  rssURL: string;
+  rssUrl: string;
 }

@@ -18,13 +18,13 @@ export class RssService {
   async registerRss(rssRegisterDto: RssRegisterDto) {
     const alreadyURLRss = await this.rssRepository.findOne({
       where: {
-        rssURL: rssRegisterDto.rssURL,
+        rssUrl: rssRegisterDto.rssUrl,
       },
     });
 
     const alreadyURLBlog = await this.blogRepository.findOne({
       where: {
-        rssURL: rssRegisterDto.rssURL,
+        rssUrl: rssRegisterDto.rssUrl,
       },
     });
 

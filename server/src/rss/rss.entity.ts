@@ -30,7 +30,7 @@ export abstract class RssInformation extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  rssURL: string;
+  rssUrl: string;
 }
 
 @Entity({
