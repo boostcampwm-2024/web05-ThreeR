@@ -9,7 +9,9 @@ import {
   Post,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
+import { CookieAuthGuard } from '../common/guard/auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { RssService } from './rss.service';
 import { RssRegisterDto } from './dto/rss-register.dto';
@@ -45,6 +47,7 @@ export class RssController {
   }
 
   @ApiAcceptRss()
+  @UseGuards(CookieAuthGuard)
   @Post('accept/:id')
   @HttpCode(201)
   async acceptRss(@Param('id', ParseIntPipe) id: number) {
@@ -53,6 +56,7 @@ export class RssController {
   }
 
   @ApiRejectRss()
+  @UseGuards(CookieAuthGuard)
   @Delete('reject/:id')
   @HttpCode(204)
   async rejectRss(@Param('id', ParseIntPipe) id: number) {
