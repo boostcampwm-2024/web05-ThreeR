@@ -64,7 +64,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
         .post('/api/rss')
         .send(input);
       expect(response.status).toBe(409);
-      expect(response.body.message).toBe('이미 등록된 RSS URL입니다.');
+      expect(response.body.message).toBe('이미 신청된 RSS URL입니다.');
     });
 
     it('이미 등록된 RSS를 또 신청한다.', async () => {
