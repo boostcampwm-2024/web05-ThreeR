@@ -75,6 +75,7 @@ export function ApiGetFeedList() {
               },
             ],
             lastId: 38,
+            hasMore: true,
           },
         },
       },
