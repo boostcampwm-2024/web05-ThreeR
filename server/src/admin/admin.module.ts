@@ -4,10 +4,9 @@ import { AdminService } from './admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from './admin.entity';
 import { AdminRepository } from './admin.repository';
-import { winstonModule } from '../common/logger/logger.module';
 
 @Module({
-  imports: [winstonModule, TypeOrmModule.forFeature([Admin])],
+  imports: [TypeOrmModule.forFeature([Admin])],
   controllers: [AdminController],
   providers: [AdminService, AdminRepository],
 })
