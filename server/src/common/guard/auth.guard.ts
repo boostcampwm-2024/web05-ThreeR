@@ -15,14 +15,9 @@ export class CookieAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const sid = request.cookies['sessionId'];
-
-    if (!sid) {
-      throw new UnauthorizedException('인증되지 않은 요청입니다.');
-    }
-
     const loginId = await this.redisService.get(sid);
     if (!loginId) {
-      throw new ForbiddenException('세션이 유효하지 않은 요청입니다.');
+      throw new UnauthorizedException('인증되지 않은 요청입니다.');
     }
 
     request['user'] = { loginId };
