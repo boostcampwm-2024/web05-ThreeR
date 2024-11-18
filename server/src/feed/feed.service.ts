@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
-import type { QueryFeedDto } from './dto/query-feed.dto';
+import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
 
 @Injectable()
