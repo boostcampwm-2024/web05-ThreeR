@@ -11,9 +11,13 @@ export class FeedService {
     return result;
   }
 
+  existNextFeed(feedList: Feed[], limit: number) {
+    return feedList.length > limit;
+  }
+
   getLastIdFromFeedList(feedList: Feed[]) {
-    const lastFeed = feedList.pop();
-    feedList.push(lastFeed);
+    if (feedList.length === 0) return 0;
+    const lastFeed = feedList[feedList.length - 1];
     return lastFeed.id;
   }
 }

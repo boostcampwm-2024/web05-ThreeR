@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import type { RegisterAdminDto } from './dto/register-admin.dto';
-import { AccountRepository } from './account.repository';
+import { AdminRepository } from './admin.repository';
 import * as bcrypt from 'bcrypt';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import * as uuid from 'uuid';
@@ -13,12 +13,12 @@ import { RedisService } from '../common/redis/redis.service';
 import type { LoginAdminDto } from './dto/login-admin.dto';
 
 @Injectable()
-export class AccountService {
+export class AdminService {
   // 12시간 후 자동 만료
   private readonly SESSION_TTL = 60 * 60 * 12;
 
   constructor(
-    private readonly loginRepository: AccountRepository,
+    private readonly loginRepository: AdminRepository,
     private readonly redisService: RedisService,
   ) {}
 

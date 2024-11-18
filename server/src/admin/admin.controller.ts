@@ -9,20 +9,20 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AccountService } from './account.service';
+import { AdminService } from './admin.service';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './account.api-docs';
+import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './admin.api-docs';
 import { ApiResponse } from '../common/response/common.response';
-import { LoginAdminDto } from './dto/login-admin.dto';
+import type { LoginAdminDto } from './dto/login-admin.dto';
 
-@ApiTags('Account')
-@Controller()
-export class AccountController {
-  constructor(private readonly loginService: AccountService) {}
+@ApiTags('Admin')
+@Controller('admin')
+export class AdminController {
+  constructor(private readonly loginService: AdminService) {}
 
   @ApiPostLoginAdmin()
-  @Post('/login/admin')
+  @Post('/login')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   async loginAdmin(
@@ -36,7 +36,7 @@ export class AccountController {
   }
 
   @ApiPostRegisterAdmin()
-  @Post('/register/admin')
+  @Post('/register')
   @UsePipes(ValidationPipe)
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
     await this.loginService.registerAdmin(registerAdminDto);
