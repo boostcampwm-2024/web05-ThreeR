@@ -29,6 +29,6 @@ import Redis_Mock from 'ioredis-mock';
     },
     RedisService,
   ],
-  exports: ['REDIS_CLIENT', RedisService],
+  exports: [RedisService],
 })
 export class RedisModule {}
