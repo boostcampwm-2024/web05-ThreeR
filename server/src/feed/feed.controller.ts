@@ -21,7 +21,11 @@ export class FeedController {
   @ApiGetFeedList()
   @Get('')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
     const feedList = await this.feedService.getFeedList(queryFeedDto);
     const hasMore = this.feedService.existNextFeed(
