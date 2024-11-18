@@ -7,7 +7,7 @@ import { AdminModule } from './admin/admin.module';
 import { RedisModule } from './redis/redis.module';
 import { RssModule } from './rss/rss.module';
 import { FeedModule } from './feed/feed.module';
-
+import { WinstonLoggerModule } from './common/logger/logger.module';
 @Module({
   imports: [
     winstonModule,
@@ -25,6 +25,7 @@ import { FeedModule } from './feed/feed.module';
     }),
     AdminModule,
     RedisModule,
+    WinstonLoggerModule,
     RssModule,
     FeedModule,
   ],
