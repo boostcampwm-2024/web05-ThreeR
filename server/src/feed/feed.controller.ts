@@ -29,7 +29,7 @@ export class FeedController {
       queryFeedDto.limit,
     );
     const lastId = this.feedService.getLastIdFromFeedList(feedList);
-    const data = { result: feedList, lastId: lastId };
+    const data = { result: feedList, lastId, hasMore };
     return ApiResponse.responseWithData('피드 조회 완료', data);
   }
 }
