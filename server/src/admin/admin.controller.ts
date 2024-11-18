@@ -14,7 +14,7 @@ import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './admin.api-docs';
 import { ApiResponse } from '../common/response/common.response';
-import { LoginAdminDto } from './dto/login-admin.dto';
+import type { LoginAdminDto } from './dto/login-admin.dto';
 
 @ApiTags('Admin')
 @Controller('admin')

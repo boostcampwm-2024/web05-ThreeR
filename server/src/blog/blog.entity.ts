@@ -15,7 +15,7 @@ export class Blog extends RssInformation {
     blog.name = rss.name;
     blog.userName = rss.userName;
     blog.email = rss.email;
-    blog.rssURL = rss.rssURL;
+    blog.rssUrl = rss.rssUrl;
     blog.feeds = [];
 
     return blog;

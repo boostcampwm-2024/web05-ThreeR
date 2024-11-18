@@ -9,7 +9,7 @@ import { AdminRepository } from './admin.repository';
 import * as bcrypt from 'bcrypt';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import * as uuid from 'uuid';
-import { RedisService } from '../redis/redis.service';
+import { RedisService } from '../common/redis/redis.service';
 import type { LoginAdminDto } from './dto/login-admin.dto';
 
 @Injectable()
