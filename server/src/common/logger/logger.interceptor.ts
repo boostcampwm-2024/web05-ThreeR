@@ -18,6 +18,10 @@ export class LoggingInterceptor implements NestInterceptor {
     if (!url.includes('register') && !url.includes('login')) {
       this.logger.log(
         JSON.stringify({
+          host:
+            request.headers['x-forwarded-for'] ||
+            request.socket.remoteAddress ||
+            request.connection.remoteAddress,
           method: request.method,
           url: request.url,
           body: request.body,
