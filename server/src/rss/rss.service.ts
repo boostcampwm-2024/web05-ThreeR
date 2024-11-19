@@ -57,8 +57,8 @@ export class RssService {
     await Promise.all([
       this.rssRepository.delete(id),
       this.blogRepository.save(Blog.fromRss(rss)),
-      this.emailService.sendMail(rss.email, rss.userName, true),
     ]);
+    this.emailService.sendMail(rss.email, rss.userName, true);
   }
 
   async rejectRss(id: number) {
@@ -71,6 +71,6 @@ export class RssService {
     }
 
     const result = await this.rssRepository.remove(rss);
-    await this.emailService.sendMail(result.email, result.userName, false);
+    this.emailService.sendMail(result.email, result.userName, false);
   }
 }
