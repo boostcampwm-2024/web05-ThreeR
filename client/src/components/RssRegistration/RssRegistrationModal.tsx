@@ -47,7 +47,7 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
 
   const handleRegister = () => {
     const data: RegisterRss = {
-      rssURL: rssUrl,
+      rssUrl: rssUrl,
       blog: bloggerName,
       name: userName,
       email: email,
