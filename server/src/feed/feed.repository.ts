@@ -16,6 +16,7 @@ export class FeedRepository extends Repository<Feed> {
       where: whereCondition,
       order: { id: 'DESC' },
       take: limit + 1,
+      relations: ['blog'],
     });
   }
 
