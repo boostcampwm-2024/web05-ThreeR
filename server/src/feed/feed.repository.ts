@@ -1,6 +1,7 @@
 import { DataSource, LessThan, Repository } from 'typeorm';
 import { Feed } from './feed.entity';
 import { Injectable } from '@nestjs/common';
+import { QueryFeedDto } from './dto/query-feed.dto';
 
 @Injectable()
 export class FeedRepository extends Repository<Feed> {
@@ -11,9 +12,8 @@ export class FeedRepository extends Repository<Feed> {
   async findFeed(queryFeedDto: QueryFeedDto) {
     const { lastId, limit } = queryFeedDto;
 
-    const whereCondition: any = lastId ? { id: LessThan(lastId) } : {};
     return await this.find({
-      where: whereCondition,
+      where: lastId ? { id: LessThan(lastId) } : {},
       order: { id: 'DESC' },
       take: limit + 1,
       relations: ['blog'],
@@ -27,5 +27,3 @@ export class FeedRepository extends Repository<Feed> {
     });
   }
 }
-
-import { QueryFeedDto } from './dto/query-feed.dto';
