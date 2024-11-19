@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Replace with the Node.js version used in your project
+          node-version: '22'
           cache: 'npm'
 
       # 3. 의존성 설치
