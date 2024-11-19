@@ -12,6 +12,7 @@ import {
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { ApiGetFeedList } from './feed.api-docs';
+import { SearchFeedDto } from './dto/search-feed.dto';
 
 @ApiTags('Feed')
 @Controller('feed')
@@ -31,5 +32,12 @@ export class FeedController {
       '피드 조회 완료',
       await this.feedService.getFeedData(queryFeedDto),
     );
+  }
+
+  @Get('search')
+  @HttpCode(HttpStatus.OK)
+  async searchFeed(@Query() searchFeedDto: SearchFeedDto) {
+    await this.feedService.search(searchFeedDto);
+    return ApiResponse.responseWithData('test', { a: 'test' });
   }
 }
