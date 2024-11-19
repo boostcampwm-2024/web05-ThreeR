@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface RejectModalProps {
   blogName?: string;
-  onSubmit: (reason: string) => void;
+  onSubmit: () => void;
   onCancel: () => void;
 }
 
@@ -14,10 +14,8 @@ export const RejectModal = ({ blogName, onSubmit, onCancel }: RejectModalProps) 
   const [reason, setReason] = useState("");
 
   const handleSubmit = () => {
-    if (reason.trim()) {
-      onSubmit(reason);
-      setReason("");
-    }
+    onSubmit();
+    setReason("");
   };
 
   return (

@@ -12,3 +12,22 @@ export interface RssRequest {
   approvedAt?: string; // 승인 시간
   rejectedAt?: string; // 거부 시간
 }
+
+export interface AdminRssData {
+  id: number;
+  name: string;
+  userName: string;
+  email: string;
+  rssUrl: string;
+}
+export interface AdminRss {
+  message: string;
+  data: AdminRssData[];
+}
+
+export type AdminResponse = {
+  message: string;
+};
+export type AdminRequest = {
+  id: number;
+};

@@ -3,12 +3,12 @@ import { CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { RssRequest } from "@/types/rss";
+import { RssRequest, AdminRssData } from "@/types/rss";
 
 interface RssRequestCardProps {
-  request: RssRequest;
-  onApprove: (request: RssRequest) => void;
-  onReject: (request: RssRequest) => void;
+  request: AdminRssData;
+  onApprove: (request: AdminRssData) => void;
+  onReject: (request: AdminRssData) => void;
 }
 
 export const RssRequestCard = ({ request, onApprove, onReject }: RssRequestCardProps) => {
@@ -17,14 +17,10 @@ export const RssRequestCard = ({ request, onApprove, onReject }: RssRequestCardP
       <Card key={request.id}>
         <CardContent className="flex justify-between p-6">
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">{request.blogName}</h3>
+            <h3 className="text-lg font-semibold">{request.name}</h3>
             <p className="text-sm text-muted-foreground">{request.rssUrl}</p>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">신청자: {request.blogName}</span>
-              <span className="text-sm text-muted-foreground flex items-center">
-                <Clock className="mr-1 h-4 w-4" />
-                {request.requestedAt}
-              </span>
+              <span className="text-sm text-muted-foreground">신청자: {request.userName}</span>
             </div>
           </div>
           <div className="flex space-x-2">
