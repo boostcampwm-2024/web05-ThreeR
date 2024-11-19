@@ -2,53 +2,46 @@ import { Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
-
-type Post = {
-  id: number;
-  author: string;
-  title: string;
-  path: string;
-  createAt: Date;
-  thumbnail: string;
-  viewCount: number;
-};
+import { RedisService } from '../common/redis/redis.service';
 
 @Injectable()
 export class FeedService {
-  constructor(private readonly feedRepository: FeedRepository) {}
+  constructor(
+    private readonly feedRepository: FeedRepository,
+    private readonly redisService: RedisService,
+  ) {}
 
-  async getPostData(queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedRepository.findFeed(queryFeedDto);
-    const result = this.mapFeedsToPost(feedList);
+  async getFeedData(queryFeedDto: QueryFeedDto) {
+    const result = await this.feedRepository.findFeed(queryFeedDto);
     const hasMore = this.existNextFeed(result, queryFeedDto.limit);
     if (hasMore) result.pop();
     const lastId = this.getLastIdFromFeedList(result);
     return { result, lastId, hasMore };
   }
 
-  private existNextFeed(postList: Post[], limit: number) {
-    return postList.length > limit;
+  private existNextFeed(feedList: Feed[], limit: number) {
+    return feedList.length > limit;
   }
 
-  private getLastIdFromFeedList(postList: Post[]) {
-    if (postList.length === 0) return 0;
-    const lastFeed = postList[postList.length - 1];
+  private getLastIdFromFeedList(feedList: Feed[]) {
+    if (feedList.length === 0) return 0;
+    const lastFeed = feedList[feedList.length - 1];
     return lastFeed.id;
   }
 
-  private mapFeedToPost(feed: Feed): Post {
-    return {
-      id: feed.id,
-      author: feed.blog.userName,
-      title: feed.title,
-      path: feed.path,
-      createAt: feed.createdAt,
-      thumbnail: feed.thumbnail,
-      viewCount: feed.viewCount,
-    };
-  }
-
-  private mapFeedsToPost(FeedList: Feed[]) {
-    return FeedList.map(this.mapFeedToPost);
+  async getTrendList() {
+    const trendFeedIdList = await this.redisService.zrange('feed:trend', 0, 3);
+    const trendFeeds = await Promise.all(
+      trendFeedIdList.map(async (feedId) => {
+        const feed = await this.feedRepository.findTrendFeed(parseInt(feedId));
+        if (!feed) {
+          return null;
+        }
+        feed['author'] = feed.blog['userName'];
+        delete feed.blog;
+        return feed;
+      }),
+    );
+    return trendFeeds.filter((feed) => feed !== null);
   }
 }

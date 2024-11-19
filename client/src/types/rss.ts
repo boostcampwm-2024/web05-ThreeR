@@ -16,7 +16,7 @@ export interface RegisterRss {
   blog: string; // 블로거명
   name: string; // 신청자 이름
   email: string; // 신청자 이메일
-  rssURL: string; // 블로그 Rss URL
+  rssUrl: string; // 블로그 Rss URL
 }
 
 export interface RegisterResponse {

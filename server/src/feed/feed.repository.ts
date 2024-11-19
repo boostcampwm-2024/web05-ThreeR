@@ -18,6 +18,13 @@ export class FeedRepository extends Repository<Feed> {
       take: limit + 1,
     });
   }
+
+  async findTrendFeed(feedId: number) {
+    return this.findOne({
+      where: { id: feedId },
+      relations: ['blog'],
+    });
+  }
 }
 
 import { QueryFeedDto } from './dto/query-feed.dto';
