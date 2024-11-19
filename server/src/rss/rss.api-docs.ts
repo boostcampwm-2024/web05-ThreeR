@@ -6,6 +6,7 @@ import {
   ApiConflictResponse,
   ApiParam,
   ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 export function ApiPostRegisterRss() {
@@ -79,13 +80,19 @@ export function ApiAcceptRss() {
         },
       },
     }),
+    ApiUnauthorizedResponse({
+      description: '유효한 사용자 세션이 존재하지 않는 경우',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
+        },
+      },
+    }),
     ApiNotFoundResponse({
       description: '해당 ID의 RSS가 존재하지 않는 경우',
       schema: {
         example: {
-          statusCode: 404,
           message: '존재하지 않는 rss 입니다.',
-          error: 'Not Found',
         },
       },
     }),
@@ -111,13 +118,19 @@ export function ApiRejectRss() {
         },
       },
     }),
+    ApiUnauthorizedResponse({
+      description: '유효한 사용자 세션이 존재하지 않는 경우',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
+        },
+      },
+    }),
     ApiNotFoundResponse({
       description: '해당 ID의 RSS가 존재하지 않는 경우',
       schema: {
         example: {
-          statusCode: 404,
           message: '존재하지 않는 rss 입니다.',
-          error: 'Not Found',
         },
       },
     }),

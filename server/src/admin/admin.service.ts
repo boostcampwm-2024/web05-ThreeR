@@ -3,14 +3,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import type { Response } from 'express';
-import type { RegisterAdminDto } from './dto/register-admin.dto';
+import { Response } from 'express';
+import { RegisterAdminDto } from './dto/register-admin.dto';
 import { AdminRepository } from './admin.repository';
 import * as bcrypt from 'bcrypt';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import * as uuid from 'uuid';
 import { RedisService } from '../common/redis/redis.service';
-import type { LoginAdminDto } from './dto/login-admin.dto';
+import { LoginAdminDto } from './dto/login-admin.dto';
 
 @Injectable()
 export class AdminService {
@@ -29,7 +29,7 @@ export class AdminService {
       where: { loginId },
     });
 
-    if (!(await bcrypt.compare(password, admin.password))) {
+    if (!admin || !(await bcrypt.compare(password, admin.password))) {
       throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
     }
 

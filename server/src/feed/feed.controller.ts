@@ -21,15 +21,15 @@ export class FeedController {
   @ApiGetFeedList()
   @Get('')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedService.getFeedList(queryFeedDto);
-    const hasMore = this.feedService.existNextFeed(
-      feedList,
-      queryFeedDto.limit,
+    return ApiResponse.responseWithData(
+      '피드 조회 완료',
+      await this.feedService.getFeedData(queryFeedDto),
     );
-    const lastId = this.feedService.getLastIdFromFeedList(feedList);
-    const data = { result: feedList, lastId, hasMore };
-    return ApiResponse.responseWithData('피드 조회 완료', data);
   }
 }
