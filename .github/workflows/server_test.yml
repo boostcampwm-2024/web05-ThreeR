@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  pull_request:
+    paths:
+      - 'server/**'
+    branches:
+      - [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 현재 PR 브랜치로 체크아웃 하기
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      # 2. Node.js 환경 설정
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # Replace with the Node.js version used in your project
+          cache: 'npm'
+
+      # 3. 의존성 설치
+      - name: Install dependencies
+        working-directory: ./server
+        run: npm install
+
+      # 4. 통합 테스트 실행
+      - name: Run Integration Test
+        working-directory: ./server
+        run: npm run test
