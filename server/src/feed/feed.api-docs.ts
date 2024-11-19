@@ -154,5 +154,13 @@ export function ApiSearchFeed() {
         },
       },
     }),
+    ApiBadRequestResponse({
+      description: 'Bad Request',
+      schema: {
+        example: {
+          message: '오류 메세지 출력',
+        },
+      },
+    }),
   );
 }

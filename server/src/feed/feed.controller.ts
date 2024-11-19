@@ -37,6 +37,11 @@ export class FeedController {
   @ApiSearchFeed()
   @Get('search')
   @HttpCode(HttpStatus.OK)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
   async searchFeed(@Query() searchFeedReq: SearchFeedReq) {
     const data = await this.feedService.search(searchFeedReq);
     return ApiResponse.responseWithData('검색 결과 조회 완료', data);
