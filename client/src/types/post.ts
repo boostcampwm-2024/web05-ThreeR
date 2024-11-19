@@ -1,5 +1,5 @@
 export interface Post {
-  id: string;
+  id: number;
   title: string;
   description?: string;
   author: string;
@@ -15,12 +15,13 @@ export interface PostsApiResponse {
   message: string;
   data: {
     result: Post[];
-    last_id: number | null;
+    hasMore: boolean;
+    lastId: number | null;
   };
 }
 
 export interface InfiniteScrollResponse<T> {
-  posts: T[];
+  result: T[];
   hasMore: boolean;
-  nextPage: number | null;
+  lastId: number | null;
 }
