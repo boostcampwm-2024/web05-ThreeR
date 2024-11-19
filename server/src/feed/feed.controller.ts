@@ -29,7 +29,7 @@ export class FeedController {
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
     return ApiResponse.responseWithData(
       '피드 조회 완료',
-      await this.feedService.getPostData(queryFeedDto),
+      await this.feedService.getFeedData(queryFeedDto),
     );
   }
 }
