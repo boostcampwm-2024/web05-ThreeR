@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { ApiGetFeedList } from './feed.api-docs';
+import { ApiGetFeedList, ApiSearchFeed } from './feed.api-docs';
 import { SearchFeedReq } from './dto/search-feed.dto';
 
 @ApiTags('Feed')
@@ -34,10 +34,11 @@ export class FeedController {
     );
   }
 
+  @ApiSearchFeed()
   @Get('search')
   @HttpCode(HttpStatus.OK)
   async searchFeed(@Query() searchFeedReq: SearchFeedReq) {
     const data = await this.feedService.search(searchFeedReq);
-    return ApiResponse.responseWithData('test', data);
+    return ApiResponse.responseWithData('검색 결과 조회 완료', data);
   }
 }
