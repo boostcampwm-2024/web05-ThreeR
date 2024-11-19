@@ -20,6 +20,8 @@ export class LoggingInterceptor implements NestInterceptor {
         JSON.stringify({
           host:
             request.headers['x-forwarded-for'] ||
+            request.headers['CF-Connecting-IP'] ||
+            request.request.socket.remoteAddress ||
             request.socket.remoteAddress ||
             request.connection.remoteAddress,
           method: request.method,
