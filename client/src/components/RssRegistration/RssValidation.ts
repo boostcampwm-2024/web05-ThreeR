@@ -1,5 +1,5 @@
 export const validateRssUrl = (url: string) => {
-  const urlRegex = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[\w./?=%&-]*)?$/;
+  const urlRegex = /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
   return urlRegex.test(url) || false;
 };
 

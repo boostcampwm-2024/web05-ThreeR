@@ -9,8 +9,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { useRegisterRss } from "@/hooks/useRegisterRss";
+
 import { validateRssUrl, validateName, validateEmail, validateBlogger } from "./RssValidation";
 import { useRegisterModalStore } from "@/store/useRegisterModalStrore";
+import { RegisterRss } from "@/types/rss";
 
 export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: () => void; rssOpen: boolean }) {
   const {
@@ -30,7 +33,28 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
     handleInputChange,
     isFormValid,
   } = useRegisterModalStore();
+  const onSuccess = () => {
+    alert("RSS 등록이 성공적으로 완료되었습니다.");
+    resetInputs();
+    onClose();
+  };
 
+  const onError = (error: any) => {
+    alert(`RSS 등록에 실패했습니다: ${error.message}`);
+  };
+
+  const { mutate } = useRegisterRss(onSuccess, onError);
+
+  const handleRegister = () => {
+    const data: RegisterRss = {
+      rssURL: rssUrl,
+      blog: bloggerName,
+      name: userName,
+      email: email,
+    };
+
+    mutate(data);
+  };
   return (
     <Dialog open={rssOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -74,9 +98,7 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
         <DialogFooter>
           <Button
             type="submit"
-            onClick={() => {
-              resetInputs();
-            }}
+            onClick={handleRegister}
             disabled={!isFormValid()}
             className="bg-black hover:bg-gray-800 text-white"
           >
