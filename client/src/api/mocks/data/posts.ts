@@ -3,7 +3,7 @@ import { Post } from "@/types/post";
 const PAGE_SIZE = 12;
 
 export const generateMockPost = (id: number): Post => ({
-  id: id.toString(),
+  id: id,
   title: `블로그 포스트 #${id}`,
   author: `작성자 ${(id % 5) + 1}`,
   thumbnailUrl: `https://picsum.photos/640/480?random=${id}`,
