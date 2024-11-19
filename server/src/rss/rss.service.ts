@@ -47,23 +47,23 @@ export class RssService {
 
   async acceptRss(id: number) {
     const rss = await this.rssRepository.findOne({
-      where: {
-        id: id,
-      },
+      where: { id },
     });
 
     if (!rss) {
       throw new NotFoundException('존재하지 않는 rss 입니다.');
     }
 
-    await this.rssRepository.delete(id);
-    await this.blogRepository.save(Blog.fromRss(rss));
-    await this.emailService.sendMail(rss.email, rss.userName);
+    await Promise.all([
+      this.rssRepository.delete(id),
+      this.blogRepository.save(Blog.fromRss(rss)),
+      this.emailService.sendMail(rss.email, rss.userName, true),
+    ]);
   }
 
   async rejectRss(id: number) {
     const rss = await this.rssRepository.findOne({
-      where: { id: id },
+      where: { id },
     });
 
     if (!rss) {

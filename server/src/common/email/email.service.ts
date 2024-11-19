@@ -7,6 +7,7 @@ import { WinstonLoggerService } from '../logger/logger.service';
 export class EmailService {
   private transporter;
   private emailUser;
+
   constructor(
     configService: ConfigService,
     private readonly logger: WinstonLoggerService,
@@ -24,9 +25,9 @@ export class EmailService {
     });
   }
 
-  async sendMail(to: string, clientName: string, successFlag: boolean = true) {
+  async sendMail(to: string, clientName: string, approveFlag: boolean) {
     try {
-      const { subject, content } = this.createEmail(clientName, successFlag);
+      const { subject, content } = this.createEmail(clientName, approveFlag);
       await this.transporter.sendMail({
         from: `Denamu<${this.emailUser}>`,
         to: `${clientName}<${to}>`,
@@ -41,15 +42,12 @@ export class EmailService {
     }
   }
 
-  private createEmail(clientName: string, successFlag: boolean) {
-    if (successFlag) {
-      const subject = `RSS 등록이 승인되었습니다.`;
-      const content = `${clientName}님의 RSS 등록이 승인되었습니다.`;
-      return { subject, content };
-    }
+  private createEmail(clientName: string, approveFlag: boolean) {
+    const result = approveFlag ? `승인` : `거부`;
 
-    const subject = `RSS 등록이 거부되었습니다.`;
-    const content = `${clientName}님의 RSS 등록이 거부되었습니다.`;
-    return { subject, content };
+    return {
+      subject: `RSS 등록이 ${result}되었습니다.`,
+      content: `${clientName}님의 RSS 등록이 ${result}되었습니다.`,
+    };
   }
 }
