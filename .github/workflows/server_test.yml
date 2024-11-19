@@ -5,7 +5,7 @@ on:
     paths:
       - 'server/**'
     branches:
-      - [ "main" ]
+      - main
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
 
       # 2. Node.js 환경 설정
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
@@ -35,3 +35,5 @@ jobs:
       - name: Run Integration Test
         working-directory: ./server
         run: npm run test
+
+      # TODO: 테스트 커버리지, 혹은 테스트 로그 커멘트 작성 로직 추가하기
