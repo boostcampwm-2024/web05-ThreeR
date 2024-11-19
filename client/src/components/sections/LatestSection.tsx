@@ -34,6 +34,8 @@ export default function LatestSection() {
     if (observerTarget.current) {
       observer.observe(observerTarget.current);
     }
+
+    return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) return <LoadingIndicator />;
