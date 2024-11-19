@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 
-export function useKeyboardShortcut(key: string, callback: () => void) {
+export function useKeyboardShortcut(key: string, callback: () => void, withCtrl: boolean = false) {
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === key) {
+      if (e.key === key && (!withCtrl || e.ctrlKey)) {
+        e.preventDefault();
         callback();
       }
     };
@@ -12,5 +13,5 @@ export function useKeyboardShortcut(key: string, callback: () => void) {
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, [key, callback]);
+  }, [key, callback, withCtrl]);
 }

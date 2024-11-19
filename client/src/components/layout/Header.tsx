@@ -29,7 +29,7 @@ export default function Header() {
     setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
   };
 
-  useKeyboardShortcut("k", () => toggleModal("search"));
+  useKeyboardShortcut("k", () => toggleModal("search"), true);
 
   return (
     <div className="border-b">
