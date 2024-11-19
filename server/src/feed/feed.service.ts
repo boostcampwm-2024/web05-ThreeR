@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
-import Fuse from 'fuse.js';
-import { Blog } from '../blog/blog.entity';
-import { SearchFeedDto } from './dto/search-feed.dto';
+import {
+  SearchFeedReq,
+  SearchFeedRes,
+  SearchFeedResult,
+} from './dto/search-feed.dto';
+import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class FeedService {
-  private fuse: Fuse<Feed & { blog: Blog }>;
-
-  constructor(private readonly feedRepository: FeedRepository) {
-    this.initializeFuse();
-  }
+  constructor(private readonly feedRepository: FeedRepository) {}
 
   async getFeedData(queryFeedDto: QueryFeedDto) {
     const result = await this.feedRepository.findFeed(queryFeedDto);
@@ -32,22 +31,45 @@ export class FeedService {
     return lastFeed.id;
   }
 
-  async initializeFuse() {
-    const feeds = await this.feedRepository.find({ relations: ['blog'] });
+  async search(searchFeedReq: SearchFeedReq) {
+    const { find, page, limit, type } = searchFeedReq;
+    const offset = (page - 1) * limit;
 
-    const options = {
-      keys: ['title', 'blog.name'],
-      includeScore: true,
-      threshold: 0.3,
-    };
-    this.fuse = new Fuse(feeds, options);
+    const qb = this.feedRepository
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.blog', 'blog')
+      .orderBy('feed.createdAt', 'DESC')
+      .skip(offset)
+      .take(limit);
+    this.applySearchConditions(qb, type, find);
+
+    const [result, totalCount] = await qb.getManyAndCount();
+    const results = SearchFeedResult.feedsToResults(result);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return new SearchFeedRes(totalCount, results, totalPages, limit);
   }
 
-  async search(searchFeedDto: SearchFeedDto) {
-    if (!this.fuse) {
-      await this.initializeFuse();
+  private applySearchConditions(
+    qb: SelectQueryBuilder<Feed>,
+    type: string,
+    find: string,
+  ) {
+    switch (type) {
+      case 'title':
+        qb.where('MATCH (feed.title) AGAINST (:find)', { find });
+        break;
+      case 'userName':
+        qb.where('MATCH (blog.userName) AGAINST (:find)', { find });
+        break;
+      case 'all':
+        qb.where('MATCH (feed.title) AGAINST (:find)', { find }).orWhere(
+          'MATCH (blog.userName) AGAINST (:find)',
+          { find },
+        );
+        break;
+      default:
+        throw new Error(`Unsupported search type: ${type}`);
     }
-    const results = this.fuse.search(searchFeedDto.find);
-    return results.map((result) => result.item);
   }
 }
