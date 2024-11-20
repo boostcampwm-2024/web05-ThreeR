@@ -1,9 +1,10 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
-import { SearchData } from "@/types/search";
+
+import axios from "axios";
+
 import { debounce } from "@/utils/debounce";
 
-type FilterType = "title" | "blogger" | "all";
+import { SearchData, FilterType } from "@/types/search";
 
 export const useSearch = (query: string, filter: FilterType, page: number, pageSize: number) => {
   const [results, setResults] = useState<SearchData[]>([]);
