@@ -8,7 +8,7 @@ import { RssModule } from './rss/rss.module';
 import { FeedModule } from './feed/feed.module';
 import { WinstonLoggerModule } from './common/logger/logger.module';
 import { EmailModule } from './common/email/email.module';
-import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,8 +29,9 @@ import { ChatGateway } from './chat/chat.gateway';
     RssModule,
     FeedModule,
     EmailModule,
+    ChatModule,
   ],
   controllers: [],
-  providers: [ChatGateway],
+  providers: [],
 })
 export class AppModule {}
