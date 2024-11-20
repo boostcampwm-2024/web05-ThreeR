@@ -8,7 +8,6 @@ import { Rss } from '../../src/rss/rss.entity';
 import { Blog } from '../../src/blog/blog.entity';
 import { HttpExceptionsFilter } from './../../src/common/filters/http-exception.filter';
 import { InternalExceptionsFilter } from '../../src/common/filters/internal-exceptions.filter';
-import { LoggingInterceptor } from '../../src/common/logger/logger.interceptor';
 import { WinstonLoggerService } from '../../src/common/logger/logger.service';
 
 describe('Rss Register E2E Test : POST /api/rss', () => {
@@ -25,7 +24,6 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
     app = moduleFixture.createNestApplication();
     const logger = app.get(WinstonLoggerService);
     app.setGlobalPrefix('api');
-    app.useGlobalInterceptors(new LoggingInterceptor(logger));
     app.useGlobalFilters(
       new InternalExceptionsFilter(logger),
       new HttpExceptionsFilter(),
