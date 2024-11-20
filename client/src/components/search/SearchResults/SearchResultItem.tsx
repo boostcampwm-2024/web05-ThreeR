@@ -2,9 +2,9 @@ import SearchHighlight from "@/components/search/SearchHigilight";
 import { CommandItem } from "@/components/ui/command";
 
 import { useSearchStore } from "@/store/useSearchStore";
-import { SearchData } from "@/types/search";
+import { SearchResult } from "@/types/search";
 
-export default function SearchResultItem({ title, userName, path }: SearchData) {
+export default function SearchResultItem({ title, blogName, path }: SearchResult) {
   const { searchParam } = useSearchStore();
   return (
     <CommandItem className="flex flex-col items-start">
@@ -14,7 +14,7 @@ export default function SearchResultItem({ title, userName, path }: SearchData) 
         </p>
       </a>
       <p className="text-sm text-gray-500">
-        <SearchHighlight text={userName} highlight={searchParam} />
+        <SearchHighlight text={blogName} highlight={searchParam} />
       </p>
     </CommandItem>
   );

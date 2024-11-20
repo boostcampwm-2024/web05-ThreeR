@@ -16,7 +16,7 @@ export default function FilterButton() {
 
   const filterOptions: FilterOption[] = [
     { label: "제목", filter: "title", icon: <FileText size={16} /> },
-    { label: "블로거", filter: "userName", icon: <User size={16} /> },
+    { label: "블로거", filter: "blogName", icon: <User size={16} /> },
     { label: "블로거 + 제목", filter: "all", icon: <PanelBottom size={16} /> },
   ];
 

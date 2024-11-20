@@ -18,10 +18,7 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
       onClick={handleClose}
     >
-      <div
-        className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[35.125rem]"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4" onClick={(e) => e.stopPropagation()}>
         <SearchInput onClose={handleClose} />
         <CommandSeparator />
         <FilterButton />
