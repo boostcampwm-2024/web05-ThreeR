@@ -9,24 +9,31 @@ import {
   Query,
   Req,
   Res,
+  Sse,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
+import { SearchFeedReq } from './dto/search-feed.dto';
 import {
   ApiGetFeedList,
   ApiSearchFeed,
   ApiGetTrendList,
   ApiUpdateFeedViewCount,
+  ApiGetTrendSse,
 } from './feed.api-docs';
-import { SearchFeedReq } from './dto/search-feed.dto';
 import { Response } from 'express';
+import { Observable } from 'rxjs';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @ApiTags('Feed')
 @Controller('feed')
 export class FeedController {
-  constructor(private readonly feedService: FeedService) {}
+  constructor(
+    private readonly feedService: FeedService,
+    private readonly eventService: EventEmitter2,
+  ) {}
 
   @ApiGetFeedList()
   @Get('')
@@ -48,6 +55,21 @@ export class FeedController {
   async getTrendList() {
     const responseData = await this.feedService.getTrendList();
     return ApiResponse.responseWithData('트렌드 피드 조회 완료', responseData);
+  }
+
+  @ApiGetTrendSse()
+  @Sse('trend/sse')
+  async sseTrendList() {
+    return new Observable((observer) => {
+      this.eventService.on('ranking-update', (trendData) => {
+        observer.next({
+          data: {
+            message: '트렌드 피드 수신 완료',
+            trendData,
+          },
+        });
+      });
+    });
   }
 
   @ApiSearchFeed()

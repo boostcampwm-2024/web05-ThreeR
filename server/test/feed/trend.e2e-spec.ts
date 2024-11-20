@@ -98,16 +98,6 @@ describe('Trend API', () => {
         viewCount: 0,
         blog: blogs[2],
       },
-      {
-        id: 5,
-        title: '제목',
-        path: 'https://asn6878.tistory.com/12',
-        createdAt: '2022-09-05T10:00:00.000Z',
-        thumbnail:
-          'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
-        viewCount: 0,
-        blog: blogs[2],
-      },
     ]);
     redisService = app.get(RedisService);
   });
@@ -169,17 +159,6 @@ describe('Trend API', () => {
         message: '트렌드 피드 조회 완료',
         data: [
           {
-            id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
-            viewCount: 0,
-          },
-          {
             id: 2,
             author: '조민석',
             title:
@@ -188,6 +167,17 @@ describe('Trend API', () => {
             createdAt: '2024-08-14T14:07:49.000Z',
             thumbnail:
               'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
+            viewCount: 0,
+          },
+          {
+            id: 1,
+            author: '안성윤',
+            title:
+              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
+            path: 'https://asn6878.tistory.com/9',
+            createdAt: '2022-09-05T09:00:00.000Z',
+            thumbnail:
+              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
             viewCount: 0,
           },
         ],
@@ -207,11 +197,10 @@ describe('Trend API', () => {
         message: '트렌드 피드 조회 완료',
         data: [
           {
-            id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
+            id: 3,
+            author: '박무성',
+            title: '제목',
+            path: 'https://asn6878.tistory.com/10',
             createdAt: '2022-09-05T09:00:00.000Z',
             thumbnail:
               'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
@@ -229,10 +218,11 @@ describe('Trend API', () => {
             viewCount: 0,
           },
           {
-            id: 3,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/10',
+            id: 1,
+            author: '안성윤',
+            title:
+              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
+            path: 'https://asn6878.tistory.com/9',
             createdAt: '2022-09-05T09:00:00.000Z',
             thumbnail:
               'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
@@ -256,11 +246,20 @@ describe('Trend API', () => {
         message: '트렌드 피드 조회 완료',
         data: [
           {
-            id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
+            id: 4,
+            author: '박무성',
+            title: '제목',
+            path: 'https://asn6878.tistory.com/11',
+            createdAt: '2022-09-05T10:00:00.000Z',
+            thumbnail:
+              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            viewCount: 0,
+          },
+          {
+            id: 3,
+            author: '박무성',
+            title: '제목',
+            path: 'https://asn6878.tistory.com/10',
             createdAt: '2022-09-05T09:00:00.000Z',
             thumbnail:
               'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
@@ -278,21 +277,12 @@ describe('Trend API', () => {
             viewCount: 0,
           },
           {
-            id: 3,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/10',
+            id: 1,
+            author: '안성윤',
+            title:
+              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
+            path: 'https://asn6878.tistory.com/9',
             createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
-            viewCount: 0,
-          },
-          {
-            id: 4,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/11',
-            createdAt: '2022-09-05T10:00:00.000Z',
             thumbnail:
               'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
             viewCount: 0,
@@ -316,11 +306,20 @@ describe('Trend API', () => {
         message: '트렌드 피드 조회 완료',
         data: [
           {
-            id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
+            id: 4,
+            author: '박무성',
+            title: '제목',
+            path: 'https://asn6878.tistory.com/11',
+            createdAt: '2022-09-05T10:00:00.000Z',
+            thumbnail:
+              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            viewCount: 0,
+          },
+          {
+            id: 3,
+            author: '박무성',
+            title: '제목',
+            path: 'https://asn6878.tistory.com/10',
             createdAt: '2022-09-05T09:00:00.000Z',
             thumbnail:
               'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
@@ -335,26 +334,6 @@ describe('Trend API', () => {
             createdAt: '2024-08-14T14:07:49.000Z',
             thumbnail:
               'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
-            viewCount: 0,
-          },
-          {
-            id: 3,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/10',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
-            viewCount: 0,
-          },
-          {
-            id: 4,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/11',
-            createdAt: '2022-09-05T10:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
             viewCount: 0,
           },
         ],
