@@ -1,7 +1,9 @@
 import {
   ApiBadRequestResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
@@ -206,6 +208,29 @@ export function ApiGetTrendList() {
               viewCount: 0,
             },
           ],
+        },
+      },
+    }),
+  );
+}
+
+export function ApiUpdateFeedViewCount() {
+  return applyDecorators(
+    ApiOperation({
+      summary: `게시글 조회수 업데이트 API`,
+    }),
+    ApiParam({
+      name: 'feedId',
+      required: true,
+      type: Number,
+      description: '클릭한 피드의 id',
+      example: 1,
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        example: {
+          message: '요청이 성공적으로 처리되었습니다.',
         },
       },
     }),
