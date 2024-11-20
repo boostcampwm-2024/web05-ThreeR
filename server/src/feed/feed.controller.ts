@@ -60,7 +60,7 @@ export class FeedController {
         observer.next({
           data: {
             message: '트렌드 피드 수신 완료',
-            trendData,
+            data: trendData,
           },
         });
       });
