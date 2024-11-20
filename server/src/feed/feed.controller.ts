@@ -41,6 +41,7 @@ export class FeedController {
     new ValidationPipe({
       transform: true,
     }),
+    new ValidationPipe(),
   )
   async searchFeed(@Query() searchFeedReq: SearchFeedReq) {
     const data = await this.feedService.search(searchFeedReq);

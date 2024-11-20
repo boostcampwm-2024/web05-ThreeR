@@ -32,7 +32,6 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.7",
     "cross-env": "^7.0.3",
-    "fuse.js": "^7.0.0",
     "ioredis": "^5.4.1",
     "mysql2": "^3.11.3",
     "nest-winston": "^1.9.7",

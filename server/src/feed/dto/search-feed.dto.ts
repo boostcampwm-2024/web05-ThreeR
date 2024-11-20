@@ -34,25 +34,13 @@ export class SearchFeedReq {
 }
 
 export class SearchFeedResult {
-  id: number;
-  userName: string;
-  title: string;
-  path: string;
-  createdAt: Date;
-
   constructor(
-    id: number,
-    userName: string,
-    title: string,
-    path: string,
-    createdAt: Date,
-  ) {
-    this.id = id;
-    this.userName = userName;
-    this.title = title;
-    this.path = path;
-    this.createdAt = createdAt;
-  }
+    private id: number,
+    private userName: string,
+    private title: string,
+    private path: string,
+    private createdAt: Date,
+  ) {}
 
   static feedsToResults(feeds: Feed[]): SearchFeedResult[] {
     return feeds.map((item) => {
@@ -68,20 +56,10 @@ export class SearchFeedResult {
 }
 
 export class SearchFeedRes {
-  totalCount: number;
-  result: SearchFeedResult[];
-  totalPages: number;
-  limit: number;
-
   constructor(
-    totalCount: number,
-    result: SearchFeedResult[],
-    totalPages: number,
-    limit: number,
-  ) {
-    this.totalCount = totalCount;
-    this.result = result;
-    this.totalPages = totalPages;
-    this.limit = limit;
-  }
+    private totalCount: number,
+    private result: SearchFeedResult[],
+    private totalPages: number,
+    private limit: number,
+  ) {}
 }

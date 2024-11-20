@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
@@ -32,6 +36,8 @@ export class FeedService {
   }
 
   async search(searchFeedReq: SearchFeedReq) {
+    console.log(typeof searchFeedReq.page);
+
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
 
@@ -69,7 +75,7 @@ export class FeedService {
         );
         break;
       default:
-        throw new Error(`Unsupported search type: ${type}`);
+        throw new BadRequestException('검색 타입이 잘못되었습니다.');
     }
   }
 }
