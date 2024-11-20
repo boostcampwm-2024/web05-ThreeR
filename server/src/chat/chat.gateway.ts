@@ -7,9 +7,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RedisService } from '../common/redis/redis.service';
+import { Injectable } from '@nestjs/common';
 
 const CLIENT_KEY_PREFIX = 'socket_client:';
 
+@Injectable()
 @WebSocketGateway({
   cors: {
     origin: '*', // 실제 서비스 시에는 도메인을 명시적으로 설정하는 것이 좋습니다.
@@ -18,8 +20,7 @@ const CLIENT_KEY_PREFIX = 'socket_client:';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
-  private readonly redisService: RedisService;
-  private clients: Map<string, number> = new Map();
+  constructor(private readonly redisService: RedisService) {}
 
   // 연결 시 처리
   async handleConnection(client: Socket) {
@@ -96,7 +97,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private generateRandomUsername(): string {
-    const adjectives = ['빠른', '느린', '행복한', '슬픈', '강한', '약한'];
+    const adjectives = [
+      '빠른',
+      '느린',
+      '행복한',
+      '슬픈',
+      '강한',
+      '약한',
+      '게으른',
+      '부지런한',
+      '',
+    ];
     const nouns = ['사자', '호랑이', '곰', '토끼', '늑대', '여우'];
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
