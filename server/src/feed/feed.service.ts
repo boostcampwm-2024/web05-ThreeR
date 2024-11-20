@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
