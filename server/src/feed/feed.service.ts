@@ -17,7 +17,6 @@ import {
   SearchFeedResult,
 } from './dto/search-feed.dto';
 import { SelectQueryBuilder } from 'typeorm';
-import { WinstonLoggerService } from '../common/logger/logger.service';
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 
@@ -26,7 +25,6 @@ export class FeedService {
   constructor(
     private readonly feedRepository: FeedRepository,
     private readonly redisService: RedisService,
-    private readonly logger: WinstonLoggerService,
     private readonly eventService: EventEmitter2,
   ) {}
 
