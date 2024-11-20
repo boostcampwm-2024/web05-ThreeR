@@ -11,8 +11,8 @@ export class Blog extends RssInformation {
   feeds: Feed[];
 
   @Index({ fulltext: true, parser: 'ngram' })
-  @Column({ name: 'user_name', nullable: false })
-  userName: string;
+  @Column({ name: 'name', nullable: false })
+  name: string;
 
   static fromRss(rss: Rss) {
     const blog = new Blog();

@@ -83,8 +83,6 @@ export class FeedService {
   }
 
   async search(searchFeedReq: SearchFeedReq) {
-    console.log(typeof searchFeedReq.page);
-
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
 
@@ -117,7 +115,7 @@ export class FeedService {
         break;
       case 'all':
         qb.where('MATCH (feed.title) AGAINST (:find)', { find }).orWhere(
-          'MATCH (blog.userName) AGAINST (:find)',
+          'MATCH (blog.name) AGAINST (:find)',
           { find },
         );
         break;

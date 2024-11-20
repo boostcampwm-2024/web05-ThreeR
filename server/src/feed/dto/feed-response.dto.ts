@@ -1,42 +1,20 @@
 import { Feed } from '../feed.entity';
 
 export class FeedResponseDto {
-  id: number;
-
-  author: string;
-
-  title: string;
-
-  path: string;
-
-  createAt: Date;
-
-  thumbnail: string;
-
-  viewCount: number;
-
   private constructor(
-    id: number,
-    author: string,
-    title: string,
-    path: string,
-    ceratedAt: Date,
-    thumbnail: string,
-    viewCount: number,
-  ) {
-    this.id = id;
-    this.author = author;
-    this.title = title;
-    this.path = path;
-    this.createAt = ceratedAt;
-    this.thumbnail = thumbnail;
-    this.viewCount = viewCount;
-  }
+    private id: number,
+    private author: string,
+    private title: string,
+    private path: string,
+    private ceratedAt: Date,
+    private thumbnail: string,
+    private viewCount: number,
+  ) {}
 
   private static mapFeedToFeedResponseDto(feed: Feed) {
     return new FeedResponseDto(
       feed.id,
-      feed.blog.userName,
+      feed.blog.name,
       feed.title,
       feed.path,
       feed.createdAt,

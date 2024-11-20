@@ -29,7 +29,7 @@ export class Feed extends BaseEntity {
   viewCount: number;
 
   @Column({
-    length: 255,
+    length: 512,
     nullable: false,
     unique: true,
   })
