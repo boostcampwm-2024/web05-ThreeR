@@ -31,7 +31,6 @@ export class SearchFeedReq {
   })
   @Type(() => Number)
   limit?: number = 4;
-  lastId?: number; // TODO : FE 담당자와 협의 필요.
 }
 
 export class SearchFeedResult {
