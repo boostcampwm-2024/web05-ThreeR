@@ -152,7 +152,7 @@ export class FeedService {
       return null;
     }
 
-    Promise.all([
+    await Promise.all([
       redis.sadd(`feed:${feedId}:ip`, ip),
       this.feedRepository.update(feedId, {
         viewCount: feed.viewCount + 1,
@@ -174,5 +174,15 @@ export class FeedService {
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
     return tomorrow;
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async resetIpTable() {
+    const redis = this.redisService.redisClient;
+    const keys = await redis.keys(`feed:*:ip`);
+
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
   }
 }
