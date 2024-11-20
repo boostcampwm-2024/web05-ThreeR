@@ -83,8 +83,6 @@ export class FeedService {
   }
 
   async search(searchFeedReq: SearchFeedReq) {
-    console.log(typeof searchFeedReq.page);
-
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
 
