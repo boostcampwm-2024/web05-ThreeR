@@ -96,7 +96,11 @@ export class FeedController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const cookie = request.headers.cookie;
-    const ip = request.headers[`CF-Connecting-IP`];
+    const ip =
+      request.headers['CF-Connecting-IP'] ||
+      request.headers['x-forwarded-for'] ||
+      request.socket?.remoteAddress ||
+      'unknown';
     await this.feedService.updateFeedViewCount(feedId, ip, cookie, response);
     return ApiResponse.responseWithNoContent(
       '요청이 성공적으로 처리되었습니다.',

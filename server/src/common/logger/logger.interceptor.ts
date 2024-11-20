@@ -22,7 +22,6 @@ export class LoggingInterceptor implements NestInterceptor {
             request.headers['x-forwarded-for'] ||
             request.headers['CF-Connecting-IP'] ||
             request.socket?.remoteAddress ||
-            request.connection?.remoteAddress ||
             'unknown',
           method: request.method,
           url: request.url,
