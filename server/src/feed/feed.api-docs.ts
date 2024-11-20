@@ -5,6 +5,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
+import { SearchType } from './dto/search-feed.dto';
 
 export function ApiGetFeedList() {
   return applyDecorators(
@@ -63,6 +64,79 @@ export function ApiGetFeedList() {
             ],
             lastId: 22,
             hasMore: true,
+          },
+        },
+      },
+    }),
+    ApiBadRequestResponse({
+      description: 'Bad Request',
+      schema: {
+        example: {
+          message: '오류 메세지 출력',
+        },
+      },
+    }),
+  );
+}
+
+export function ApiSearchFeed() {
+  return applyDecorators(
+    ApiOperation({
+      summary: `검색 API`,
+    }),
+    ApiQuery({
+      name: 'find',
+      required: true,
+      type: String,
+      description: '검색어',
+      example: '데나무',
+    }),
+    ApiQuery({
+      name: 'type',
+      required: true,
+      enum: SearchType,
+      description: '검색 타입',
+      example: SearchType.ALL,
+    }),
+    ApiQuery({
+      name: 'page',
+      required: true,
+      type: Number,
+      description: '페이지 번호',
+      example: 1,
+    }),
+    ApiQuery({
+      name: 'limit',
+      required: true,
+      type: Number,
+      description: '한 페이지에 보여줄 개수',
+      example: 4,
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        example: {
+          message: '검색 결과 조회 완료',
+          data: {
+            totalCount: 2,
+            result: [
+              {
+                id: 2,
+                userName: '향로',
+                title: '암묵지에서 형식지로',
+                path: 'https://jojoldu.tistory.com/809',
+                createdAt: '2024-10-27T02:08:55.000Z',
+              },
+              {
+                id: 3,
+                userName: '향로',
+                title: '주인이 아닌데 어떻게 주인의식을 가지죠',
+                path: 'https://jojoldu.tistory.com/808',
+                createdAt: '2024-10-12T18:15:06.000Z',
+              },
+            ],
+            totalPages: 3,
+            limit: 2,
           },
         },
       },

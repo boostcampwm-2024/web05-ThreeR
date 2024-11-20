@@ -8,13 +8,13 @@ export const cookieConfig = {
   development: {
     httpOnly: true,
     secure: false,
-    sameSite: 'none',
+    sameSite: 'lax',
     path: '/',
   },
   test: {
     httpOnly: true,
     secure: false,
-    sameSite: 'none',
+    sameSite: 'lax',
     path: '/',
   },
 };
