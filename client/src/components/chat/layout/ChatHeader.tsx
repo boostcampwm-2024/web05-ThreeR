@@ -13,10 +13,10 @@ export default function ChatHeader() {
           <span>
             <Users color="gray" />
           </span>
-          <Badge variant="secondary">42명 참여중</Badge>
+          <Badge variant="secondary">5명 참여중</Badge>
         </div>
       </SheetTitle>
-      <Separator className="" />
+      <Separator />
     </SheetHeader>
   );
 }

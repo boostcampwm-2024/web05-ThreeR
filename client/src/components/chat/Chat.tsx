@@ -1,9 +1,8 @@
+import ChatButton from "@/components/chat/ChatButton";
+import ChatFooter from "@/components/chat/layout/ChatFooter";
+import ChatHeader from "@/components/chat/layout/ChatHeader";
+import ChatSection from "@/components/chat/layout/ChatSection";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-import ChatButton from "./ChatButton";
-import ChatFooter from "./layout/ChatFooter";
-import ChatHeader from "./layout/ChatHeader";
-import ChatSection from "./layout/ChatSection";
 
 export function Chat() {
   return (
