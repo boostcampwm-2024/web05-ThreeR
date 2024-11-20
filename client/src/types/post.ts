@@ -1,14 +1,14 @@
 export interface Post {
   id: number;
-  title: string;
-  description?: string;
-  author: string;
   createdAt: string;
+  title: string;
+  viewCount: number;
+  path: string;
+  author: string;
+  thumbnail?: string;
+  authorImageUrl?: string;
   tags?: string[];
   likes?: number;
-  views?: number;
-  thumbnailUrl?: string;
-  authorImageUrl?: string;
 }
 
 export interface PostsApiResponse {

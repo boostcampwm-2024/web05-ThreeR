@@ -42,7 +42,6 @@ export class Feed extends BaseEntity {
   thumbnail: string;
 
   @ManyToOne((type) => Blog, (blog) => blog.feeds, {
-    eager: true,
     nullable: false,
   })
   @JoinColumn({

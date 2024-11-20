@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { ApiGetFeedList, ApiSearchFeed } from './feed.api-docs';
+import {
+  ApiGetFeedList,
+  ApiSearchFeed,
+  ApiGetTrendList,
+} from './feed.api-docs';
 import { SearchFeedReq } from './dto/search-feed.dto';
 
 @ApiTags('Feed')
@@ -32,6 +36,13 @@ export class FeedController {
       '피드 조회 완료',
       await this.feedService.getFeedData(queryFeedDto),
     );
+  }
+
+  @ApiGetTrendList()
+  @Get('trend')
+  async getTrendList() {
+    const responseData = await this.feedService.getTrendList();
+    return ApiResponse.responseWithData('트렌드 피드 조회 완료', responseData);
   }
 
   @ApiSearchFeed()
