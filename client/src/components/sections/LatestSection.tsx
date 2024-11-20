@@ -8,7 +8,7 @@ import { SectionHeader } from "@/components/common/SectionHeader";
 
 import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
 
-import { postsApi } from "@/api/posts";
+import { postsApi } from "@/api/queries/posts";
 import { Post } from "@/types/post";
 
 export default function LatestSection() {
