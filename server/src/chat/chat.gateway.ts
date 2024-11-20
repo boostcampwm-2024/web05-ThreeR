@@ -11,11 +11,13 @@ import { Injectable } from '@nestjs/common';
 import { getRandomNickname } from '@woowa-babble/random-nickname';
 
 const CLIENT_KEY_PREFIX = 'socket_client:';
+const CHAT_HISTORY_KEY = 'chat:history';
+const CHAT_HISTORY_LIMIT = 20;
 
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: '*', // TODO: 연동 할때 보고 확인 후 설정 해보기
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -23,11 +25,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
   constructor(private readonly redisService: RedisService) {}
 
-  // 연결 시 처리
   async handleConnection(client: Socket) {
     const ip = this.getIp(client);
-
     const clientName = await this.getOrSetClientNameByIp(ip);
+    const recentMessages = await this.redisService.redisClient.lrange(
+      CHAT_HISTORY_KEY,
+      0,
+      CHAT_HISTORY_LIMIT - 1,
+    );
+    const chatHistory = recentMessages.map((msg) => JSON.parse(msg));
+
+    client.emit('chatHistory', chatHistory);
 
     this.server.emit('updateUserCount', {
       userCount: this.server.sockets.sockets.size,
@@ -35,14 +43,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
-  // 연결 해제 시 처리
   handleDisconnect() {
     this.server.emit('updateUserCount', {
       userCount: this.server.sockets.sockets.size,
     });
   }
 
-  // 메시지 수신 시 처리
   @SubscribeMessage('message')
   async handleMessage(client: Socket, payload: { message: string }) {
     const ip = this.getIp(client);
@@ -55,6 +61,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       timestamp: new Date(),
     };
     this.server.emit('message', broadcastPayload);
+
+    await this.redisService.redisClient.lpush(
+      CHAT_HISTORY_KEY,
+      JSON.stringify(broadcastPayload),
+    );
+
+    await this.redisService.redisClient.ltrim(
+      CHAT_HISTORY_KEY,
+      0,
+      CHAT_HISTORY_LIMIT - 1,
+    );
   }
 
   private getIp(client: Socket) {
