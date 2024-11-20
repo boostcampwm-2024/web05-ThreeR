@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { LoggingInterceptor } from '../../src/common/logger/logger.interceptor';
 import { WinstonLoggerService } from '../../src/common/logger/logger.service';
 import { InternalExceptionsFilter } from '../../src/common/filters/internal-exceptions.filter';
 import { HttpExceptionsFilter } from '../../src/common/filters/http-exception.filter';
@@ -22,7 +21,6 @@ describe('Trend API', () => {
     app = moduleFixture.createNestApplication();
     const logger = app.get(WinstonLoggerService);
     app.setGlobalPrefix('api');
-    app.useGlobalInterceptors(new LoggingInterceptor(logger));
     app.useGlobalFilters(
       new InternalExceptionsFilter(logger),
       new HttpExceptionsFilter(),
