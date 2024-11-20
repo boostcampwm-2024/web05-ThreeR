@@ -1,7 +1,9 @@
 import { adminRss } from "@/api/queries/adminRss";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useFetchRss = () => {
+  const queryClient = useQueryClient();
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["adminRss"],
     queryFn: adminRss,
@@ -9,5 +11,8 @@ export const useFetchRss = () => {
     retry: 1,
     refetchInterval: 1000 * 5,
   });
-  return { data, isLoading, error };
+  const refetchRss = () => {
+    queryClient.invalidateQueries({ queryKey: ["adminRss"] });
+  };
+  return { data, isLoading, error, refetchRss };
 };

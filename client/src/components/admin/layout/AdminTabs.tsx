@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import { RejectModal } from "@/components/admin/rss/RejectModal";
+import { RssRequestCard } from "@/components/admin/rss/RssRequestCard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import { useFetchRss } from "@/hooks/useFetchRss";
 import { useAdminAccept, useAdminReject } from "@/hooks/useRssActions";
 
-import { RssRequestCard } from "../rss/RssRequestCard";
 import { AdminRequest } from "@/types/rss";
 
 type SelectedBlogType = {
@@ -16,14 +16,15 @@ type SelectedBlogType = {
 };
 export const AdminTabs = () => {
   const [selectedBlog, setSelectedBlog] = useState<SelectedBlogType>({ blogId: 0, blogName: "" });
-  const { data, isLoading, error } = useFetchRss();
+  const { data, isLoading, error, refetchRss } = useFetchRss();
 
   const onSuccess = () => {
-    console.log();
+    refetchRss();
   };
 
   const onError = (error: any) => {
-    console.log(error);
+    console.error(error);
+    refetchRss();
   };
 
   const { mutate: acceptMutate } = useAdminAccept(onSuccess, onError);
