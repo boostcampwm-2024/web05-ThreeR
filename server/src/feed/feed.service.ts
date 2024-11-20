@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
+import { FeedResponseDto } from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
 
 @Injectable()
@@ -12,10 +13,11 @@ export class FeedService {
   ) {}
 
   async getFeedData(queryFeedDto: QueryFeedDto) {
-    const result = await this.feedRepository.findFeed(queryFeedDto);
-    const hasMore = this.existNextFeed(result, queryFeedDto.limit);
-    if (hasMore) result.pop();
-    const lastId = this.getLastIdFromFeedList(result);
+    const feedList = await this.feedRepository.findFeed(queryFeedDto);
+    const hasMore = this.existNextFeed(feedList, queryFeedDto.limit);
+    if (hasMore) feedList.pop();
+    const lastId = this.getLastIdFromFeedList(feedList);
+    const result = FeedResponseDto.mapFeedsToFeedResponseDtoArray(feedList);
     return { result, lastId, hasMore };
   }
 

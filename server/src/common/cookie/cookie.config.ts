@@ -2,7 +2,7 @@ export const cookieConfig = {
   production: {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     path: '/',
   },
   development: {
