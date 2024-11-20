@@ -1,77 +1,77 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 
-import { SearchData } from "@/types/search";
+import { SearchResult } from "@/types/search";
 
 const mock = new MockAdapter(axios);
 
-const mockData: SearchData[] = [
+const mockData: SearchResult[] = [
   {
     id: 1,
-    userName: "토스",
+    blogName: "토스",
     title: "Next.js 13 마이그레이션 가이드",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 2,
-    userName: "우아한형제들",
+    blogName: "우아한형제들",
     title: "Spring Boot 3.0 업데이트 내용",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 3,
-    userName: "네이버",
+    blogName: "네이버",
     title: "React 18에서 알아야 할 새로운 기능들",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 4,
-    userName: "카카오",
+    blogName: "카카오",
     title: "TypeScript로 더 안전한 코드 작성하기",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 5,
-    userName: "라인",
+    blogName: "라인",
     title: "Node.js 성능 최적화 기법",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 6,
-    userName: "배달의민족",
+    blogName: "배달의민족",
     title: "Flutter를 활용한 크로스 플랫폼 앱 개발",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 7,
-    userName: "삼성",
+    blogName: "삼성",
     title: "Kubernetes로 애플리케이션 배포 자동화하기",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 8,
-    userName: "넷플릭스",
+    blogName: "넷플릭스",
     title: "GraphQL 도입 후의 장단점",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 9,
-    userName: "구글",
+    blogName: "구글",
     title: "Python으로 머신러닝 모델 학습시키기",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
   },
   {
     id: 10,
-    userName: "AWS",
+    blogName: "AWS",
     title: "Docker로 개발 환경 구성하기",
     path: "https://naver.com",
     createdAt: "2024-11-05 13:42:30",
@@ -84,10 +84,10 @@ mock.onGet("/api/search").reply((config) => {
   const filteredData = mockData.filter((item) => {
     if (type === "title") {
       return item.title.includes(find);
-    } else if (type === "userName") {
-      return item.userName.includes(find);
+    } else if (type === "blogName") {
+      return item.blogName.includes(find);
     } else {
-      return item.userName.includes(find) || item.title.includes(find);
+      return item.blogName.includes(find) || item.title.includes(find);
     }
   });
 

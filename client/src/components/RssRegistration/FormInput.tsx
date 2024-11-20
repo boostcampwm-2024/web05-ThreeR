@@ -6,7 +6,7 @@ interface FormInputProps {
   label: string;
   value: string;
   placeholder: string;
-  type: string;
+  type?: string;
   onChange: (value: string) => void;
 }
 
