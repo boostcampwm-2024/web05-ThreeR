@@ -1,24 +1,35 @@
 import { InfiniteScrollResponse } from "@/types/post";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-interface UseInfiniteScrollQueryOptions<T> {
-  queryKey: string;
-  fetchFn: (params: { limit: number; last_id?: number }) => Promise<InfiniteScrollResponse<T>>;
+interface Identifiable {
+  id: number;
 }
 
-export function useInfiniteScrollQuery<T>({ queryKey, fetchFn }: UseInfiniteScrollQueryOptions<T>) {
+interface UseInfiniteScrollQueryOptions<T extends Identifiable> {
+  queryKey: string;
+  fetchFn: (params: { limit: number; lastId: number }) => Promise<InfiniteScrollResponse<T>>;
+}
+
+export function useInfiniteScrollQuery<T extends Identifiable>({
+  queryKey,
+  fetchFn,
+}: UseInfiniteScrollQueryOptions<T>) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useInfiniteQuery({
     queryKey: [queryKey],
-    queryFn: ({ pageParam = null }) =>
+    queryFn: ({ pageParam = 0 }) =>
       fetchFn({
         limit: 12,
-        last_id: pageParam as number,
+        lastId: pageParam as number,
       }),
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: null as number | null,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.hasMore) return undefined;
+      const lastItem = lastPage.result[lastPage.result.length - 1];
+      return lastItem.id;
+    },
+    initialPageParam: 0,
   });
 
-  const items = data?.pages.flatMap((page) => page.posts) ?? [];
+  const items = data?.pages.flatMap((page) => page.result) ?? [];
 
   return {
     items,

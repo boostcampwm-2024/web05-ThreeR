@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { ApiGetFeedList } from './feed.api-docs';
+import { ApiGetFeedList, ApiGetTrendList } from './feed.api-docs';
 
 @ApiTags('Feed')
 @Controller('feed')
@@ -21,11 +21,22 @@ export class FeedController {
   @ApiGetFeedList()
   @Get('')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
   async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedService.getFeedList(queryFeedDto);
-    const lastId = this.feedService.getLastIdFromFeedList(feedList);
-    const data = { result: feedList, lastId: lastId };
-    return ApiResponse.responseWithData('피드 조회 완료', data);
+    return ApiResponse.responseWithData(
+      '피드 조회 완료',
+      await this.feedService.getFeedData(queryFeedDto),
+    );
+  }
+
+  @ApiGetTrendList()
+  @Get('trend')
+  async getTrendList() {
+    const responseData = await this.feedService.getTrendList();
+    return ApiResponse.responseWithData('트렌드 피드 조회 완료', responseData);
   }
 }

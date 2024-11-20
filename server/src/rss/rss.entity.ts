@@ -1,5 +1,4 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { Blog } from '../blog/blog.entity';
 
 export abstract class RssInformation extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -36,6 +35,4 @@ export abstract class RssInformation extends BaseEntity {
 @Entity({
   name: 'rss',
 })
-export class Rss extends RssInformation {
-  toBlog(rss: Rss) {}
-}
+export class Rss extends RssInformation {}
