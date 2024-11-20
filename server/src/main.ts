@@ -18,7 +18,11 @@ async function bootstrap() {
     new HttpExceptionsFilter(),
   );
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://denamu.netlify.app/'],
+    origin: [
+      'http://localhost:5173',
+      'https://denamu.netlify.app/',
+      'https://denamu.shop',
+    ],
     credentials: true,
   });
   setupSwagger(app);

@@ -19,4 +19,11 @@ export class FeedRepository extends Repository<Feed> {
       relations: ['blog'],
     });
   }
+
+  async findTrendFeed(feedId: number) {
+    return this.findOne({
+      where: { id: feedId },
+      relations: ['blog'],
+    });
+  }
 }
