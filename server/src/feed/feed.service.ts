@@ -30,7 +30,11 @@ export class FeedService {
   }
 
   async getTrendList() {
-    const trendFeedIdList = await this.redisService.zrange('feed:trend', 0, 3);
+    const trendFeedIdList = await this.redisService.redisClient.zrange(
+      'feed:trend',
+      0,
+      3,
+    );
     const trendFeeds = await Promise.all(
       trendFeedIdList.map(async (feedId) => {
         const feed = await this.feedRepository.findTrendFeed(parseInt(feedId));
