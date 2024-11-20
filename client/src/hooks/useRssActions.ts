@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-import { adminAcceptRss, adminRejectRss } from "@/api/queries/adminRssApi";
+import { adminAcceptRss, adminRejectRss } from "@/api/queries/adminRss";
 import { AdminResponse, AdminRequest } from "@/types/rss";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 

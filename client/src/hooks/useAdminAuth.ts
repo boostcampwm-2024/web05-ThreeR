@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-import { adminAuth } from "@/api/queries/adminAuthApi";
+import { adminAuth } from "@/api/queries/adminAuth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { AuthApiRequest, AuthApiResponse } from "@/types/auth";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
