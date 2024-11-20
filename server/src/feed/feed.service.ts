@@ -1,9 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { Feed } from './feed.entity';
 import { FeedResponseDto } from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
+import { Feed } from './feed.entity';
+import {
+  SearchFeedReq,
+  SearchFeedRes,
+  SearchFeedResult,
+} from './dto/search-feed.dto';
+import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class FeedService {
@@ -45,5 +51,49 @@ export class FeedService {
       }),
     );
     return trendFeeds.filter((feed) => feed !== null);
+  }
+
+  async search(searchFeedReq: SearchFeedReq) {
+    console.log(typeof searchFeedReq.page);
+
+    const { find, page, limit, type } = searchFeedReq;
+    const offset = (page - 1) * limit;
+
+    const qb = this.feedRepository
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.blog', 'blog')
+      .orderBy('feed.createdAt', 'DESC')
+      .skip(offset)
+      .take(limit);
+    this.applySearchConditions(qb, type, find);
+
+    const [result, totalCount] = await qb.getManyAndCount();
+    const results = SearchFeedResult.feedsToResults(result);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return new SearchFeedRes(totalCount, results, totalPages, limit);
+  }
+
+  private applySearchConditions(
+    qb: SelectQueryBuilder<Feed>,
+    type: string,
+    find: string,
+  ) {
+    switch (type) {
+      case 'title':
+        qb.where('MATCH (feed.title) AGAINST (:find)', { find });
+        break;
+      case 'userName':
+        qb.where('MATCH (blog.userName) AGAINST (:find)', { find });
+        break;
+      case 'all':
+        qb.where('MATCH (feed.title) AGAINST (:find)', { find }).orWhere(
+          'MATCH (blog.userName) AGAINST (:find)',
+          { find },
+        );
+        break;
+      default:
+        throw new BadRequestException('검색 타입이 잘못되었습니다.');
+    }
   }
 }
