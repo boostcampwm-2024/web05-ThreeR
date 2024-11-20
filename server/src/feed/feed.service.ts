@@ -157,6 +157,7 @@ export class FeedService {
       this.feedRepository.update(feedId, {
         viewCount: feed.viewCount + 1,
       }),
+      redis.zincrby('feed:trend', 1, feedId.toString()),
     ]);
   }
 
