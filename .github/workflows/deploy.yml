@@ -30,7 +30,8 @@ jobs:
 
             mkdir -p configs
 
-            echo "DB_TYPE=mysql" > configs/.env.db.production
+            echo "PORT=${{ secrets.PRODUCT_PORT }}" > configs/.env.db.production
+            echo "DB_TYPE=mysql" >> configs/.env.db.production
             echo "DB_DATABASE=${{ secrets.PRODUCT_DB_DATABASE }}" >> configs/.env.db.production
             echo "DB_HOST=${{ secrets.PRODUCT_DB_HOST }}" >> configs/.env.db.production
             echo "DB_PORT=${{ secrets.PRODUCT_DB_PORT }}" >> configs/.env.db.production
@@ -40,6 +41,8 @@ jobs:
             echo "REDIS_PORT=${{secrets.REDIS_PORT}}" >> configs/.env.db.production
             echo "REDIS_USERNAME=${{secrets.REDIS_USERNAME}}" >> configs/.env.db.production
             echo "REDIS_PASSWORD=${{secrets.REDIS_PASSWORD}}" >> configs/.env.db.production
+            echo "EMAIL_USER=${{secrets.EMAIL_USER}}" >> configs/.env.db.production
+            echo "EMAIL_PASSWORD=${{secrets.EMAIL_PASSWORD}}" >> configs/.env.db.production
 
             npm ci
             npm run build

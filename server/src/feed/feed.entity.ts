@@ -26,7 +26,6 @@ export class Feed extends BaseEntity {
   @Column({ name: 'view_count', nullable: false, default: 0 })
   viewCount: number;
 
-
   @Column({
     length: 255,
     nullable: false,
@@ -41,7 +40,6 @@ export class Feed extends BaseEntity {
   thumbnail: string;
 
   @ManyToOne((type) => Blog, (blog) => blog.feeds, {
-    eager: true,
     nullable: false,
   })
   @JoinColumn({

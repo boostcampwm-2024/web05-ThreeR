@@ -12,7 +12,6 @@ export class LoginAdminDto {
   @IsString({
     message: '문자열을 입력해주세요',
   })
-
   loginId: string;
 
   @ApiProperty({
