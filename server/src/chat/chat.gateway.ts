@@ -8,13 +8,14 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RedisService } from '../common/redis/redis.service';
 import { Injectable } from '@nestjs/common';
+import { getRandomNickname } from '@woowa-babble/random-nickname';
 
 const CLIENT_KEY_PREFIX = 'socket_client:';
 
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: '*', // 실제 서비스 시에는 도메인을 명시적으로 설정하는 것이 좋습니다.
+    origin: '*',
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -26,12 +27,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     const ip = this.getIp(client);
 
-    const clientData = await this.getOrSetClientData(ip);
+    const clientName = await this.getOrSetClientNameByIp(ip);
 
     this.server.emit('updateUserCount', {
       userCount: this.server.sockets.sockets.size,
-      name: clientData.name,
-      profile: clientData.profile,
+      name: clientName,
     });
   }
 
@@ -47,19 +47,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(client: Socket, payload: { message: string }) {
     const ip = this.getIp(client);
     const redisKey = CLIENT_KEY_PREFIX + ip;
+    const clientName = await this.redisService.redisClient.get(redisKey);
 
-    const clientInfoJson = await this.redisService.redisClient.get(redisKey);
-    const clientInfo = JSON.parse(clientInfoJson);
-
-    if (clientInfo) {
-      const broadcastPayload = {
-        username: clientInfo.name,
-        profile: clientInfo.profile,
-        message: payload.message,
-        timestamp: new Date(),
-      };
-      this.server.emit('message', broadcastPayload);
-    }
+    const broadcastPayload = {
+      username: clientName,
+      message: payload.message,
+      timestamp: new Date(),
+    };
+    this.server.emit('message', broadcastPayload);
   }
 
   private getIp(client: Socket) {
@@ -70,48 +65,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     return ip;
   }
-  private async getOrSetClientData(ip: string) {
-    const redisKey = CLIENT_KEY_PREFIX + ip;
-    const socketClient = await this.redisService.redisClient.get(redisKey);
 
-    if (socketClient) {
-      return JSON.parse(socketClient);
+  private async getOrSetClientNameByIp(ip: string) {
+    const redisKey = CLIENT_KEY_PREFIX + ip;
+    let clientName = await this.redisService.redisClient.get(redisKey);
+
+    if (clientName) {
+      return clientName;
     }
 
-    const clientData = {
-      name: this.generateRandomUsername(),
-      profile: this.generateRandomProfile(),
-    };
-
+    clientName = this.generateRandomUsername();
     await this.redisService.redisClient.set(
       redisKey,
-      JSON.stringify(clientData),
+      clientName,
       'EX',
       3600 * 24,
     );
-    return clientData;
-  }
-
-  private generateRandomProfile(): string {
-    return Math.floor(Math.random() * 20 + 1).toString();
+    return clientName;
   }
 
   private generateRandomUsername(): string {
-    const adjectives = [
-      '빠른',
-      '느린',
-      '행복한',
-      '슬픈',
-      '강한',
-      '약한',
-      '게으른',
-      '부지런한',
-      '',
-    ];
-    const nouns = ['사자', '호랑이', '곰', '토끼', '늑대', '여우'];
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    const randomNum = Math.floor(Math.random() * 1000);
-    return `${adjective}${noun}${randomNum}`;
+    const type = 'animals';
+
+    return getRandomNickname(type);
   }
 }
