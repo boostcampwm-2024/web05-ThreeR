@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { AxiosError } from "axios";
+
 import { RejectModal } from "@/components/admin/rss/RejectModal";
 import { RssRequestCard } from "@/components/admin/rss/RssRequestCard";
 import { Badge } from "@/components/ui/badge";
@@ -22,8 +24,14 @@ export const AdminTabs = () => {
     refetchRss();
   };
 
-  const onError = (error: any) => {
-    console.error(error);
+  const onError = (error: unknown) => {
+    if (error instanceof AxiosError) {
+      console.error("Axios Error:", error.message, error.response?.data);
+    } else if (error instanceof Error) {
+      console.error("General Error:", error.message);
+    } else {
+      console.error("Unknown Error:", error);
+    }
     refetchRss();
   };
 
@@ -31,11 +39,7 @@ export const AdminTabs = () => {
   const { mutate: rejectMutate } = useAdminReject(onSuccess, onError);
 
   const handleActions = (data: AdminRequest, actions: "accept" | "reject") => {
-    if (actions === "accept") {
-      acceptMutate(data);
-    } else {
-      rejectMutate(data);
-    }
+    actions === "accept" ? acceptMutate(data) : rejectMutate(data);
   };
 
   const handleSelectedBlog = ({ blogName, blogId }: SelectedBlogType) => {
