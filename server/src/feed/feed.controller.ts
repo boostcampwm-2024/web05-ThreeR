@@ -95,7 +95,6 @@ export class FeedController {
     @Req() request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    request.headers[`CF-Connecting-IP`] = `192.168.0.100`;
     const cookie = request.headers.cookie;
     const ip = request.headers[`CF-Connecting-IP`];
     await this.feedService.updateFeedViewCount(feedId, ip, cookie, response);
