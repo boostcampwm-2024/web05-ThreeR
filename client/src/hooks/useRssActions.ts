@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-import { adminAcceptRss, adminRejectRss } from "@/api/queries/adminRss";
+import { admin } from "@/api/queries/admin/rss";
 import { AdminResponse, AdminRequest } from "@/types/rss";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 
@@ -10,7 +10,7 @@ export const useAdminAccept = (
 ): UseMutationResult<AdminResponse, AxiosError<unknown, any>, AdminRequest, unknown> => {
   return useMutation<AdminResponse, AxiosError<unknown, any>, AdminRequest>({
     mutationFn: async (data) => {
-      const response = await adminAcceptRss(data);
+      const response = await admin.acceptRss(data);
       return response;
     },
     onSuccess,
@@ -24,7 +24,7 @@ export const useAdminReject = (
 ): UseMutationResult<AdminResponse, AxiosError<unknown, any>, AdminRequest, unknown> => {
   return useMutation<AdminResponse, AxiosError<unknown, any>, AdminRequest>({
     mutationFn: async (data) => {
-      const response = await adminRejectRss(data);
+      const response = await admin.rejectRss(data);
       return response;
     },
     onSuccess,
