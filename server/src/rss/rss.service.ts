@@ -18,17 +18,18 @@ export class RssService {
   ) {}
 
   async registerRss(rssRegisterDto: RssRegisterDto) {
-    const alreadyURLRss = await this.rssRepository.findOne({
-      where: {
-        rssUrl: rssRegisterDto.rssUrl,
-      },
-    });
-
-    const alreadyURLBlog = await this.blogRepository.findOne({
-      where: {
-        rssUrl: rssRegisterDto.rssUrl,
-      },
-    });
+    const [alreadyURLRss, alreadyURLBlog] = await Promise.all([
+      this.rssRepository.findOne({
+        where: {
+          rssUrl: rssRegisterDto.rssUrl,
+        },
+      }),
+      this.blogRepository.findOne({
+        where: {
+          rssUrl: rssRegisterDto.rssUrl,
+        },
+      }),
+    ]);
 
     if (alreadyURLRss) {
       throw new ConflictException('이미 신청된 RSS URL입니다.');
