@@ -1,9 +1,9 @@
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { RssRequest, AdminRssData } from "@/types/rss";
+import { AdminRssData } from "@/types/rss";
 
 interface RssRequestCardProps {
   request: AdminRssData;

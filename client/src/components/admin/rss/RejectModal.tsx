@@ -16,6 +16,7 @@ export const RejectModal = ({ blogName, onSubmit, onCancel }: RejectModalProps) 
   const handleSubmit = () => {
     onSubmit();
     setReason("");
+    onCancel();
   };
 
   return (
