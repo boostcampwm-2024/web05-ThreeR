@@ -117,7 +117,7 @@ export class FeedService {
         break;
       case 'all':
         qb.where('MATCH (feed.title) AGAINST (:find)', { find }).orWhere(
-          'MATCH (blog.userName) AGAINST (:find)',
+          'MATCH (blog.name) AGAINST (:find)',
           { find },
         );
         break;
