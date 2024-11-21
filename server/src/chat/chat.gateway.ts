@@ -19,6 +19,7 @@ const CHAT_HISTORY_LIMIT = 20;
   cors: {
     origin: '*', // TODO: 연동 할때 보고 확인 후 설정 해보기
   },
+  path: '/chat',
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
