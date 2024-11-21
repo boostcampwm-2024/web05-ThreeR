@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-family: "Pretendard Variable", sans-serif;
+  letter-spacing: -0.02em;
+}
+
 .bg-primary {
   background-color: #27ae60;
 }
