@@ -36,3 +36,14 @@ export abstract class RssInformation extends BaseEntity {
   name: 'rss',
 })
 export class Rss extends RssInformation {}
+
+@Entity({
+  name: 'rss_reject',
+})
+export class RssReject extends RssInformation {
+  @Column({
+    length: 512,
+    nullable: false,
+  })
+  description: string;
+}
