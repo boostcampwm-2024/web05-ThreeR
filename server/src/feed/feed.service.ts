@@ -1,18 +1,25 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
+import { Feed } from './feed.entity';
 import { FeedResponseDto } from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as _ from 'lodash';
-import { Feed } from './feed.entity';
 import {
   SearchFeedReq,
   SearchFeedRes,
   SearchFeedResult,
 } from './dto/search-feed.dto';
 import { SelectQueryBuilder } from 'typeorm';
+import { Response } from 'express';
+import { cookieConfig } from '../common/cookie/cookie.config';
+import { redisKeys } from '../common/redis/redis.constant';
 
 @Injectable()
 export class FeedService {
@@ -43,7 +50,7 @@ export class FeedService {
 
   async getTrendList() {
     const trendFeedIdList = await this.redisService.redisClient.zrevrange(
-      'feed:trend',
+      redisKeys.FEED_TREND_KEY,
       0,
       3,
     );
@@ -63,19 +70,23 @@ export class FeedService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async resetTrendTable() {
-    await this.redisService.redisClient.del('feed:trend');
+    await this.redisService.redisClient.del(redisKeys.FEED_TREND_KEY);
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async analyzeTrend() {
     const [originTrend, nowTrend] = await Promise.all([
-      this.redisService.redisClient.lrange('feed:origin_trend', 0, 3),
-      this.redisService.redisClient.zrevrange('feed:trend', 0, 3),
+      this.redisService.redisClient.lrange(
+        redisKeys.FEED_ORIGIN_TREND_KEY,
+        0,
+        3,
+      ),
+      this.redisService.redisClient.zrevrange(redisKeys.FEED_TREND_KEY, 0, 3),
     ]);
     if (!_.isEqual(originTrend, nowTrend)) {
       const redisPipeline = this.redisService.redisClient.pipeline();
-      redisPipeline.del('feed:origin_trend');
-      redisPipeline.rpush('feed:origin_trend', ...nowTrend);
+      redisPipeline.del(redisKeys.FEED_ORIGIN_TREND_KEY);
+      redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
       const trendFeeds = await this.getTrendList();
       this.eventService.emit('ranking-update', trendFeeds);
@@ -121,6 +132,61 @@ export class FeedService {
         break;
       default:
         throw new BadRequestException('검색 타입이 잘못되었습니다.');
+    }
+  }
+
+  async updateFeedViewCount(feedId: number, ip: string, cookie, response) {
+    const redis = this.redisService.redisClient;
+    const [feed, hasCookie, hasIpFlag] = await Promise.all([
+      this.feedRepository.findOne({ where: { id: feedId } }),
+      Boolean(cookie?.[`View_count_${feedId}`]),
+      redis.sismember(`feed:${feedId}:ip`, ip),
+    ]);
+
+    if (!feed) {
+      throw new NotFoundException(`${feedId}번 피드를 찾을 수 없습니다.`);
+    }
+
+    if (!hasCookie) {
+      this.createCookie(response, feedId);
+    }
+
+    if (hasCookie || hasIpFlag === 1) {
+      return null;
+    }
+
+    await Promise.all([
+      redis.sadd(`feed:${feedId}:ip`, ip),
+      this.feedRepository.update(feedId, {
+        viewCount: feed.viewCount + 1,
+      }),
+      redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
+    ]);
+  }
+
+  private createCookie(response: Response, feedId: number) {
+    const cookieConfigWithExpiration = {
+      ...cookieConfig[process.env.NODE_ENV],
+      expires: this.getExpirationTime(),
+    };
+    response.cookie(`View_count_${feedId}`, feedId, cookieConfigWithExpiration);
+  }
+
+  private getExpirationTime() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    return tomorrow;
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async resetIpTable() {
+    const redis = this.redisService.redisClient;
+    const keys = await redis.keys(redisKeys.FEED_ALL_IP_KEY);
+
+    if (keys.length > 0) {
+      await redis.del(...keys);
     }
   }
 }
