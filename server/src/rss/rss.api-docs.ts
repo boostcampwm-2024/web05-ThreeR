@@ -7,6 +7,7 @@ import {
   ApiParam,
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 
 export function ApiPostRegisterRss() {
@@ -131,6 +132,38 @@ export function ApiRejectRss() {
       schema: {
         example: {
           message: '존재하지 않는 rss 입니다.',
+        },
+      },
+    }),
+  );
+}
+
+export function ApiAcceptHistory() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'RSS 승인 기록 API',
+    }),
+    ApiOkResponse({
+      description: '기록 조회 성공시',
+      schema: {
+        example: {
+          message: 'RSS 승인 기록을 조회하였습니다.',
+          data: [
+            {
+              id: 1,
+              name: 'seok3765.log',
+              userName: 'J235_조민석',
+              email: 'seok3765@naver.com',
+              rssUrl: 'https://v2.velog.io/rss/@seok3765',
+            },
+            {
+              id: 2,
+              name: 'seok3766.log',
+              userName: '조민석',
+              email: 'seok3766@naver.com',
+              rssUrl: 'https://v2.velog.io/rss/@seok3766',
+            },
+          ],
         },
       },
     }),
