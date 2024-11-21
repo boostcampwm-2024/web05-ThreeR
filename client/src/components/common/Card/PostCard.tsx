@@ -3,7 +3,8 @@ import { Image as ImageIcon } from "lucide-react";
 import { LazyImage } from "@/components/common/LazyImage";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+import { formatDate } from "@/utils/date";
 
 import { cn } from "@/lib/utils";
 import { Post } from "@/types/post";
@@ -47,33 +48,18 @@ export const PostCard = ({ post, className }: PostCardProps) => {
 
       <CardContent className="p-0">
         <div className="relative -mt-6 ml-4 mb-3">
-          <TooltipProvider>
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <Avatar className="h-8 w-8 ring-2 ring-background cursor-pointer">
-                  {post.authorImageUrl ? (
-                    <LazyImage
-                      src={post.authorImageUrl}
-                      alt={post.author}
-                      className="w-full h-full object-cover"
-                      wrapperClassName="w-full h-full"
-                    />
-                  ) : (
-                    <AvatarFallback className="text-xs bg-slate-200">{authorInitial}</AvatarFallback>
-                  )}
-                </Avatar>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={12}>
-                <p>{post.author}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Avatar className="h-8 w-8 ring-2 ring-background cursor-pointer">
+            {post.authorImageUrl ? (
+              <img src={post.authorImageUrl} alt={post.author} className="w-full h-full object-cover" />
+            ) : (
+              <AvatarFallback className="text-xs bg-slate-200">{authorInitial}</AvatarFallback>
+            )}
+          </Avatar>
         </div>
-
-        <div className="px-4 pb-4 space-y-2">
-          <h3 className="font-medium text-base leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-            {post.title}
-          </h3>
+        <div className="px-4 pb-4">
+          <p className="font-bold text-xs text-gray-400 pb-1">{post.author}</p>
+          <p className="font-bold text-sm group-hover:text-primary transition-colors">{post.title}</p>
+          <p className="text-[10px] text-gray-400 pt-2">{formatDate(post.createdAt)}</p>
         </div>
       </CardContent>
     </Card>
