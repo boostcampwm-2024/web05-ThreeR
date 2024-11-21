@@ -19,6 +19,7 @@ import {
 import { SelectQueryBuilder } from 'typeorm';
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
+import { redisKeys } from '../common/redis/redis.constant';
 
 @Injectable()
 export class FeedService {
@@ -49,7 +50,7 @@ export class FeedService {
 
   async getTrendList() {
     const trendFeedIdList = await this.redisService.redisClient.zrevrange(
-      'feed:trend',
+      redisKeys.FEED_TREND_KEY,
       0,
       3,
     );
@@ -69,19 +70,23 @@ export class FeedService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async resetTrendTable() {
-    await this.redisService.redisClient.del('feed:trend');
+    await this.redisService.redisClient.del(redisKeys.FEED_TREND_KEY);
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async analyzeTrend() {
     const [originTrend, nowTrend] = await Promise.all([
-      this.redisService.redisClient.lrange('feed:origin_trend', 0, 3),
-      this.redisService.redisClient.zrevrange('feed:trend', 0, 3),
+      this.redisService.redisClient.lrange(
+        redisKeys.FEED_ORIGIN_TREND_KEY,
+        0,
+        3,
+      ),
+      this.redisService.redisClient.zrevrange(redisKeys.FEED_TREND_KEY, 0, 3),
     ]);
     if (!_.isEqual(originTrend, nowTrend)) {
       const redisPipeline = this.redisService.redisClient.pipeline();
-      redisPipeline.del('feed:origin_trend');
-      redisPipeline.rpush('feed:origin_trend', ...nowTrend);
+      redisPipeline.del(redisKeys.FEED_ORIGIN_TREND_KEY);
+      redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
       const trendFeeds = await this.getTrendList();
       this.eventService.emit('ranking-update', trendFeeds);
@@ -157,7 +162,7 @@ export class FeedService {
       this.feedRepository.update(feedId, {
         viewCount: feed.viewCount + 1,
       }),
-      redis.zincrby('feed:trend', 1, feedId.toString()),
+      redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
     ]);
   }
 
@@ -180,7 +185,7 @@ export class FeedService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async resetIpTable() {
     const redis = this.redisService.redisClient;
-    const keys = await redis.keys(`feed:*:ip`);
+    const keys = await redis.keys(redisKeys.FEED_ALL_IP_KEY);
 
     if (keys.length > 0) {
       await redis.del(...keys);
