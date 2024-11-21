@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
 
+import { usePostCardActions } from "@/hooks/common/usePostCardActions";
+
 import { PostCardContent } from "./PostCardContent";
 import { PostCardImage } from "./PostCardImage";
 import { cn } from "@/lib/utils";
@@ -11,15 +13,11 @@ interface PostCardProps {
 }
 
 export const PostCard = ({ post, className }: PostCardProps) => {
-  const handleClick = () => {
-    if (post.path) {
-      window.open(post.path, "_blank", "noopener,noreferrer");
-    }
-  };
+  const { handlePostClick } = usePostCardActions(post);
 
   return (
     <Card
-      onClick={handleClick}
+      onClick={handlePostClick}
       className={cn(
         "group shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 border-none rounded-xl cursor-pointer",
         className
