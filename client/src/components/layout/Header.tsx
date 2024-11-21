@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 

@@ -44,23 +44,17 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
         INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
         VALUES (?, ?, ?, ?, ?)
     `;
-    for (let i = 0; i < resultData.length; i += CONNECTION_LIMIT) {
-      const resultChunk = resultData.slice(i, i + CONNECTION_LIMIT);
 
-      const insertPromiseArray = resultChunk.map((feed) => {
-        return executeQuery(query, [
-          feed.blog_id,
-          feed.pub_date,
-          feed.title,
-          feed.link,
-          feed.imageUrl,
-        ]);
-      });
-      await Promise.allSettled(insertPromiseArray).then((results) => {
-        results.forEach((result) => {
-          if (result.status === "fulfilled") successCount++;
-        });
-      });
+    for (const feed of resultData) {
+      await executeQuery(query, [
+        feed.blog_id,
+        feed.pub_date,
+        feed.title,
+        feed.link,
+        feed.imageUrl,
+      ]);
+      successCount++;
+
     }
   } catch (error) {
     logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
