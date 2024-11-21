@@ -1,0 +1,5 @@
+export const redisKeys = {
+  FEED_ALL_IP_KEY: `feed:*:ip`,
+  FEED_TREND_KEY: `feed:trend`,
+  FEED_ORIGIN_TREND_KEY: 'feed:origin_trend',
+};

@@ -5,7 +5,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Query,
+  Req,
+  Res,
   Sse,
   UsePipes,
   ValidationPipe,
@@ -17,8 +20,10 @@ import {
   ApiGetFeedList,
   ApiSearchFeed,
   ApiGetTrendList,
+  ApiUpdateFeedViewCount,
   ApiGetTrendSse,
 } from './feed.api-docs';
+import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -79,5 +84,26 @@ export class FeedController {
   async searchFeed(@Query() searchFeedReq: SearchFeedReq) {
     const data = await this.feedService.search(searchFeedReq);
     return ApiResponse.responseWithData('검색 결과 조회 완료', data);
+  }
+
+  @ApiUpdateFeedViewCount()
+  @Get('/:feedId')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async updateFeedViewCount(
+    @Param('feedId') feedId: number,
+    @Req() request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const cookie = request.headers.cookie;
+    const ip =
+      request.headers['CF-Connecting-IP'] ||
+      request.headers['x-forwarded-for'] ||
+      request.socket?.remoteAddress ||
+      'unknown';
+    await this.feedService.updateFeedViewCount(feedId, ip, cookie, response);
+    return ApiResponse.responseWithNoContent(
+      '요청이 성공적으로 처리되었습니다.',
+    );
   }
 }
