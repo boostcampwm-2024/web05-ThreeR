@@ -7,8 +7,8 @@ import { RssRequestCard } from "@/components/admin/rss/RssRequestCard";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-import { useFetchRss } from "@/hooks/useFetchRss";
-import { useAdminAccept, useAdminReject } from "@/hooks/useRssActions";
+import { useFetchRss } from "@/hooks/queries/useFetchRss";
+import { useAdminAccept, useAdminReject } from "@/hooks/queries/useRssActions";
 
 import { AdminRequest } from "@/types/rss";
 
