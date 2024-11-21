@@ -57,11 +57,9 @@ export const PostCard = ({ post, className }: PostCardProps) => {
           </Avatar>
         </div>
         <div className="px-4 pb-4">
-          <p className="font-semibold text-xs text-gray-500 pb-1">{post.author}</p>
-          <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-            {post.title}
-          </h3>
-          <p className="text-xs text-gray-400 pt-3">{formatDate(post.createdAt)}</p>
+          <p className="font-bold text-xs text-gray-400 pb-1">{post.author}</p>
+          <p className="font-bold text-sm group-hover:text-primary transition-colors">{post.title}</p>
+          <p className="text-[10px] text-gray-400 pt-2">{formatDate(post.createdAt)}</p>
         </div>
       </CardContent>
     </Card>
