@@ -4,7 +4,7 @@ import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { SectionHeader } from "@/components/common/SectionHeader";
 
-import { useTrendingPosts } from "@/hooks/useTrendingPosts";
+import { useTrendingPosts } from "@/hooks/queries/useTrendingPosts";
 
 export default function TrendingSection() {
   const { posts, isLoading } = useTrendingPosts();

@@ -1,4 +1,4 @@
-import { admin } from "@/api/queries/admin/rss";
+import { admin } from "@/api/services/admin/rss";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useFetchRss = () => {
