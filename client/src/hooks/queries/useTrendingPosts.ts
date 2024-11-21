@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { posts } from "@/api/queries/posts";
+import { posts } from "@/api/services/posts";
 import { TrendingPostsApiResponse } from "@/types/post";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 

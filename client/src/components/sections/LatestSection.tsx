@@ -6,9 +6,9 @@ import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { SectionHeader } from "@/components/common/SectionHeader";
 
-import { useInfiniteScrollQuery } from "@/hooks/useInfiniteScrollQuery";
+import { useInfiniteScrollQuery } from "@/hooks/queries/useInfiniteScrollQuery";
 
-import { posts } from "@/api/queries/posts";
+import { posts } from "@/api/services/posts";
 import { Post } from "@/types/post";
 
 export default function LatestSection() {

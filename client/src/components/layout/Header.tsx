@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
 
 import RssRegistrationModal from "@/components/RssRegistration/RssRegistrationModal";
+import { Chat } from "@/components/chat/Chat";
 import SideBar from "@/components/layout/Sidebar";
 import SearchButton from "@/components/search/SearchButton";
 import SearchModal from "@/components/search/SearchModal";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 
@@ -61,6 +62,12 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
     <div className="hidden md:flex md:items-center">
       <NavigationMenu>
         <NavigationMenuList className="gap-2">
+          <NavigationMenuItem>
+            <div className="flex h-full items-center">
+              <Chat />
+            </div>
+          </NavigationMenuItem>
+
           {/* Search Button */}
           <NavigationMenuItem>
             <div className="flex h-full items-center">

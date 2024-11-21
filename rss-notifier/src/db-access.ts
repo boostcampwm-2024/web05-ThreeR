@@ -5,11 +5,14 @@ import * as mysql from "mysql2/promise";
 
 dotenv.config({ path: "./rss-notifier/.env" });
 
+const CONNECTION_LIMIT = 50;
+
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+  connectionLimit: CONNECTION_LIMIT,
 });
 
 export const executeQuery = async (query: string, params: any[] = []) => {
@@ -51,9 +54,11 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
         feed.imageUrl,
       ]);
       successCount++;
+
     }
   } catch (error) {
     logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
   }
+
   logger.info(`${successCount}개의 피드 데이터가 성공적으로 삽입되었습니다.`);
 };

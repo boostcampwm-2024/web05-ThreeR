@@ -2,7 +2,7 @@ import { Loader } from "lucide-react";
 
 import { CommandList, CommandEmpty, CommandGroup } from "@/components/ui/command";
 
-import { useSearch } from "@/hooks/useSearch";
+import { useSearch } from "@/hooks/queries/useSearch";
 
 import SearchPages from "../searchPages/SearchPages";
 import SearchResultItem from "./SearchResultItem";

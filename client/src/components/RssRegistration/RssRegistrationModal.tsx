@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { useRegisterRss } from "@/hooks/useRegisterRss";
+import { useRegisterRss } from "@/hooks/queries/useRegisterRss";
 
 import { validateRssUrl, validateName, validateEmail, validateBlogger } from "./RssValidation";
 import { useRegisterModalStore } from "@/store/useRegisterModalStrore";
