@@ -56,14 +56,15 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
           feed.imageUrl,
         ]);
       });
-      await Promise.all(insertPromiseArray);
-      successCount++;
+      await Promise.allSettled(insertPromiseArray).then((results) => {
+        results.forEach((result) => {
+          if (result.status === "fulfilled") successCount++;
+        });
+      });
     }
   } catch (error) {
     logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
   }
 
-  logger.info(
-    `약 ${successCount * CONNECTION_LIMIT < resultData.length ? successCount * CONNECTION_LIMIT : resultData.length}개의 피드 데이터가 성공적으로 삽입되었습니다.`,
-  );
+  logger.info(`${successCount}개의 피드 데이터가 성공적으로 삽입되었습니다.`);
 };
