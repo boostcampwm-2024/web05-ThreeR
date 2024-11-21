@@ -6,7 +6,7 @@ export class FeedResponseDto {
     private author: string,
     private title: string,
     private path: string,
-    private ceratedAt: Date,
+    private createdAt: Date,
     private thumbnail: string,
     private viewCount: number,
   ) {}
@@ -14,7 +14,7 @@ export class FeedResponseDto {
   private static mapFeedToFeedResponseDto(feed: Feed) {
     return new FeedResponseDto(
       feed.id,
-      feed.blog.name,
+      feed.blog.userName,
       feed.title,
       feed.path,
       feed.createdAt,
