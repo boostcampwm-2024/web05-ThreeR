@@ -11,13 +11,18 @@ export interface Post {
   likes?: number;
 }
 
-export interface PostsApiResponse {
+export interface LatestPostsApiResponse {
   message: string;
   data: {
     result: Post[];
     hasMore: boolean;
     lastId: number | null;
   };
+}
+
+export interface TrendingPostsApiResponse {
+  message: string;
+  data: Post[];
 }
 
 export interface InfiniteScrollResponse<T> {

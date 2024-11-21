@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 
 export enum SearchType {
   TITLE = 'title',
-  USERNAME = 'userName',
+  BLOGNAME = 'blogName',
   ALL = 'all',
 }
 
@@ -18,7 +18,7 @@ export class SearchFeedReq {
     message: '검색 타입을 입력해주세요.',
   })
   @IsEnum(SearchType, {
-    message: '검색 타입은 title, userName, all 중 하나여야 합니다.',
+    message: '검색 타입은 title, blogName, all 중 하나여야 합니다.',
   })
   type: SearchType;
   @IsInt({
@@ -36,7 +36,7 @@ export class SearchFeedReq {
 export class SearchFeedResult {
   constructor(
     private id: number,
-    private userName: string,
+    private blogName: string,
     private title: string,
     private path: string,
     private createdAt: Date,
@@ -46,7 +46,7 @@ export class SearchFeedResult {
     return feeds.map((item) => {
       return new SearchFeedResult(
         item.id,
-        item.blog.userName,
+        item.blog.name,
         item.title,
         item.path,
         item.createdAt,

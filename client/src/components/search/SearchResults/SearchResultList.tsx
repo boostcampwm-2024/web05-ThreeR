@@ -9,33 +9,35 @@ import SearchResultItem from "./SearchResultItem";
 import { useSearchStore } from "@/store/useSearchStore";
 
 const RESULT_PER_PAGE = 4;
-
+const COMMANDCLASS = "flex min-h-[28rem] justify-center items-center";
 export default function SearchResults() {
   const { searchParam, currentFilter, page } = useSearchStore();
-  const { results, totalPages, totalItems, loading, error } = useSearch(
-    searchParam,
-    currentFilter,
+  const { data, isLoading, error } = useSearch({
+    query: searchParam,
+    filter: currentFilter,
     page,
-    RESULT_PER_PAGE
-  );
-
+    pageSize: RESULT_PER_PAGE,
+  });
+  const totalItems = data?.data.totalCount || 0;
+  const totalPages = data?.data.totalPages || 0;
+  const results = data?.data.result || [];
   const renderContent = {
+    //검색 전
+    noQuery: <CommandEmpty className={COMMANDCLASS}>검색어를 입력해주세요 (최소 2글자)</CommandEmpty>,
     // 검색 로딩
     loading: (
-      <CommandEmpty className="flex gap-4 h-[25rem] justify-center items-center">
+      <CommandEmpty className={COMMANDCLASS}>
         <Loader />
       </CommandEmpty>
     ),
     // 검색 결과 없음
-    searchEmpty: (
-      <CommandEmpty className="flex  gap-4 h-[30rem] justify-center items-center">검색결과가 없습니다</CommandEmpty>
-    ),
+    searchEmpty: <CommandEmpty className={COMMANDCLASS}>검색결과가 없습니다</CommandEmpty>,
     // 에러발생
-    error: <div className="flex flex-col gap-4 h-[25rem] justify-center items-center">에러발생</div>,
+    error: <div className={COMMANDCLASS}>에러발생</div>,
     // 정상적인 상황
     default: (
       <CommandGroup heading={`검색결과 (총 ${totalItems}건)`}>
-        <CommandList>
+        <CommandList className="h-[25rem] ">
           {results.map((result, index) => (
             <SearchResultItem key={index} {...result} />
           ))}
@@ -45,9 +47,10 @@ export default function SearchResults() {
     ),
   };
   const getRenderKey = () => {
-    if (loading || !results) return "loading";
-    if (results.length === 0) return "searchEmpty";
+    if (isLoading || !results) return "loading";
     if (error) return "error";
+    if (searchParam.length === 0) return "noQuery";
+    if (results.length === 0) return "searchEmpty";
     return "default";
   };
 

@@ -1,42 +1,35 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
-import { SearchData } from "@/types/search";
+
 import { debounce } from "@/utils/debounce";
 
-type FilterType = "title" | "blogger" | "all";
+// import axios from "axios"; //mockAPI사용시
+import { getSearch } from "@/api/queries/search";
+import { SearchRequest } from "@/types/search";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useSearch = (query: string, filter: FilterType, page: number, pageSize: number) => {
-  const [results, setResults] = useState<SearchData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [totalItems, setTotalItems] = useState<number>(0);
+export const useSearch = ({ query, filter, page, pageSize }: SearchRequest) => {
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const queryClient = useQueryClient();
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    const fetchData = debounce(async () => {
-      try {
-        const response = await axios.get("/api/search", {
-          params: {
-            find: query,
-            type: filter,
-            limit: pageSize,
-            page: page,
-          },
-        });
-        const { data } = response;
-        setResults(data.data);
-        setTotalPages(data.total_pages);
-        setTotalItems(data.total_count);
-      } catch (error) {
-        setError("데이터를 가져오는 데 문제가 발생했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    }, 500);
+    const handler = debounce((newQuery) => {
+      setDebouncedQuery(newQuery);
+    }, 300);
 
-    fetchData();
-  }, [query, filter, page, pageSize]);
+    handler(query);
 
-  return { results, loading, error, totalPages, totalItems };
+    return () => {
+      handler.cancel && handler.cancel();
+    };
+  }, [query]);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["getSearch", debouncedQuery, filter, page, pageSize],
+    queryFn: () => getSearch({ query, filter, page, pageSize }),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  });
+  const refetchSearch = () => {
+    queryClient.invalidateQueries({ queryKey: ["getSearch"] });
+  };
+  return { data, isLoading, error, refetchSearch };
 };
