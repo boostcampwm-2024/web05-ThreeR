@@ -74,4 +74,8 @@ export class RssService {
     const result = await this.rssRepository.remove(rss);
     this.emailService.sendMail(result.email, result.userName, false);
   }
+
+  async acceptRssHistory() {
+    return await this.blogRepository.find();
+  }
 }

@@ -20,6 +20,7 @@ import {
   ApiGetRss,
   ApiAcceptRss,
   ApiRejectRss,
+  ApiAcceptHistory,
 } from './rss.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 
@@ -62,5 +63,16 @@ export class RssController {
   async rejectRss(@Param('id', ParseIntPipe) id: number) {
     await this.rssService.rejectRss(id);
     return ApiResponse.responseWithNoContent('거절이 완료되었습니다.');
+  }
+
+  @ApiAcceptHistory()
+  @UseGuards(CookieAuthGuard)
+  @Get('history/accept')
+  async getHistoryAcceptRss() {
+    const rssAcceptHistory = await this.rssService.acceptRssHistory();
+    return ApiResponse.responseWithData(
+      '승인 기록 조회가 완료되었습니다.',
+      rssAcceptHistory,
+    );
   }
 }
