@@ -13,11 +13,9 @@ export function Chat() {
 
   // Socket 연결 관리
   useEffect(() => {
-    console.log("Connecting to socket...");
     connect();
     getHistory();
     return () => {
-      console.log("Disconnecting from socket...");
       disconnect();
     };
   }, []);

@@ -28,9 +28,7 @@ export const useChatStore = create<ChatStore>((set) => {
       socket = io(CHAT_SERVER_URL, { path: "/chat", transports: ["websocket"] });
 
       // 서버 연결 성공 시
-      socket.on("connect", () => {
-        console.log("Socket.io 연결 성공");
-      });
+      socket.on("connect", () => {});
       // 서버로부터 메시지 받기
       socket.on("message", (data) => {
         set((state) => ({
@@ -44,9 +42,7 @@ export const useChatStore = create<ChatStore>((set) => {
       });
 
       // 서버 연결 해제 시
-      socket.on("disconnect", () => {
-        console.log("Socket.io 연결 해제");
-      });
+      socket.on("disconnect", () => {});
     },
 
     // Socket 연결 해제 함수
@@ -64,7 +60,6 @@ export const useChatStore = create<ChatStore>((set) => {
           }));
         });
       } else {
-        console.error("Socket.io가 연결되지 않음");
       }
     },
     // 메시지 전송 함수
@@ -72,7 +67,6 @@ export const useChatStore = create<ChatStore>((set) => {
       if (socket) {
         socket.emit("message", { message });
       } else {
-        console.error("Socket.io가 연결되지 않음");
       }
     },
   };
