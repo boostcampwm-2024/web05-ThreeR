@@ -47,7 +47,7 @@ export function ApiGetRss() {
     ApiOperation({
       summary: 'RSS 전체 조회 API',
     }),
-    ApiCreatedResponse({
+    ApiOkResponse({
       description: 'OK',
       schema: {
         example: {
@@ -111,7 +111,7 @@ export function ApiRejectRss() {
       description: '거절할 RSS의 ID',
       example: 1,
     }),
-    ApiCreatedResponse({
+    ApiOkResponse({
       description: '승인 거절 시',
       schema: {
         example: {
@@ -132,6 +132,14 @@ export function ApiRejectRss() {
       schema: {
         example: {
           message: '존재하지 않는 rss 입니다.',
+        },
+      },
+    }),
+    ApiBadRequestResponse({
+      description: '거부 사유가 없을 경우',
+      schema: {
+        example: {
+          message: '거부 사유를 필수로 입력해야 합니다.',
         },
       },
     }),
@@ -162,6 +170,40 @@ export function ApiAcceptHistory() {
               userName: '조민석',
               email: 'seok3766@naver.com',
               rssUrl: 'https://v2.velog.io/rss/@seok3766',
+            },
+          ],
+        },
+      },
+    }),
+  );
+}
+
+export function ApiRejectHistory() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'RSS 거절 기록 API',
+    }),
+    ApiOkResponse({
+      description: '기록 조회 성공시',
+      schema: {
+        example: {
+          message: 'RSS 거절 기록을 조회하였습니다.',
+          data: [
+            {
+              id: 1,
+              name: 'seok3765.log',
+              userName: 'J235_조민석',
+              email: 'seok3765@naver.com',
+              rssUrl: 'https://v2.velog.io/rss/@seok3765',
+              description: '개발 블로그가 아닙니다.',
+            },
+            {
+              id: 2,
+              name: 'seok3766.log',
+              userName: '조민석',
+              email: 'seok3766@naver.com',
+              rssUrl: 'https://v2.velog.io/rss/@seok3766',
+              description: '그냥',
             },
           ],
         },
