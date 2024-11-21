@@ -116,7 +116,11 @@ export const performTask = async () => {
       return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
     }),
   );
-  const result = newFeeds.flat();
+  const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
+    const dateCurrent = new Date(currentFeed.pub_date);
+    const dateNext = new Date(nextFeed.pub_date);
+    return dateCurrent.getTime() - dateNext.getTime();
+  });
 
   if (result.length === 0) {
     logger.info("새로운 피드가 없습니다.");
