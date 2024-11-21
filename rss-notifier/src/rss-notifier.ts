@@ -77,7 +77,7 @@ const findNewFeeds = async (
           blog_id: rssObj.id,
           pub_date: formattedDate,
           title: feed.title,
-          link: feed.link,
+          link: decodeURIComponent(feed.link),
           imageUrl: imageUrl,
         };
       }),
