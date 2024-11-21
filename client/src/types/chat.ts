@@ -1,7 +1,6 @@
 export type ChatType = {
-  chatImg: string;
-  chatName: string;
-  chatTime: string;
-  chatContent: string;
-  chatOther: boolean;
+  chatImg?: string;
+  username: string;
+  timestamp: string;
+  message: string;
 };

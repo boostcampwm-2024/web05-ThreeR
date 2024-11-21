@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
-export default function ChatHeader() {
+export default function ChatHeader({ userCount }: { userCount: number }) {
   return (
     <SheetHeader className="pb-5">
       <SheetTitle>
@@ -13,7 +13,7 @@ export default function ChatHeader() {
           <span>
             <Users color="gray" />
           </span>
-          <Badge variant="secondary">5명 참여중</Badge>
+          <Badge variant="secondary">{userCount}명 참여중</Badge>
         </div>
       </SheetTitle>
       <Separator />
