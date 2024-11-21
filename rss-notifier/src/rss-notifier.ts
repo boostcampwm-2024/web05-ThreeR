@@ -1,6 +1,6 @@
 import logger from "./logger.js";
 import "dotenv/config";
-import { pool, selectAllRss, insertFeeds } from "./db-access.js";
+import { selectAllRss, insertFeeds } from "./db-access.js";
 import { FeedObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
@@ -116,6 +116,7 @@ export const performTask = async () => {
       return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
     }),
   );
+
   const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
     const dateCurrent = new Date(currentFeed.pub_date);
     const dateNext = new Date(nextFeed.pub_date);
