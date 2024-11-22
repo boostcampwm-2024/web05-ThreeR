@@ -3,11 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RssRepository } from './rss.repository';
+import { RssRejectRepository, RssRepository } from './rss.repository';
 import { RssRegisterDto } from './dto/rss-register.dto';
 import { BlogRepository } from '../blog/blog.repository';
 import { Blog } from '../blog/blog.entity';
 import { EmailService } from '../common/email/email.service';
+import { DataSource } from 'typeorm';
+import { Rss, RssReject } from './rss.entity';
 
 @Injectable()
 export class RssService {
@@ -15,6 +17,8 @@ export class RssService {
     private readonly rssRepository: RssRepository,
     private readonly blogRepository: BlogRepository,
     private readonly emailService: EmailService,
+    private readonly rssRejectRepository: RssRejectRepository,
+    private readonly dataSource: DataSource,
   ) {}
 
   async registerRss(rssRegisterDto: RssRegisterDto) {
@@ -55,14 +59,16 @@ export class RssService {
       throw new NotFoundException('존재하지 않는 rss 입니다.');
     }
 
-    await Promise.all([
-      this.rssRepository.delete(id),
-      this.blogRepository.save(Blog.fromRss(rss)),
-    ]);
+    await this.dataSource.transaction(async (manager) => {
+      await Promise.all([
+        manager.save(Blog.fromRss(rss)),
+        manager.delete(Rss, id),
+      ]);
+    });
     this.emailService.sendMail(rss.email, rss.userName, true);
   }
 
-  async rejectRss(id: number) {
+  async rejectRss(id: number, description: string) {
     const rss = await this.rssRepository.findOne({
       where: { id },
     });
@@ -71,11 +77,24 @@ export class RssService {
       throw new NotFoundException('존재하지 않는 rss 입니다.');
     }
 
-    const result = await this.rssRepository.remove(rss);
+    const result = await this.dataSource.transaction(async (manager) => {
+      const [result] = await Promise.all([
+        manager.remove(rss),
+        manager.save(RssReject, {
+          ...Blog.fromRss(rss),
+          description,
+        }),
+      ]);
+      return result;
+    });
     this.emailService.sendMail(result.email, result.userName, false);
   }
 
   async acceptRssHistory() {
     return await this.blogRepository.find();
+  }
+
+  async rejectRssHistory() {
+    return await this.rssRejectRepository.find();
   }
 }
