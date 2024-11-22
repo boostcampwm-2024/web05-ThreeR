@@ -1,8 +1,8 @@
 import { TrendingUp } from "lucide-react";
 
-import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { SectionHeader } from "@/components/common/SectionHeader";
+import AnimatedPostGrid from "@/components/sections/AnimatedPostGrid";
 
 import { useTrendingPosts } from "@/hooks/queries/useTrendingPosts";
 
@@ -20,7 +20,7 @@ export default function TrendingSection() {
         iconColor="text-red-500"
       />
       <div className="flex-1 mt-4 p-4 border border-dashed border-gray-500 rounded-lg">
-        <PostCardGrid posts={posts} />
+        <AnimatedPostGrid posts={posts} />
       </div>
     </section>
   );
