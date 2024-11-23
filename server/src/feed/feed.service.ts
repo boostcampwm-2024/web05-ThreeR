@@ -16,7 +16,6 @@ import {
   SearchFeedRes,
   SearchFeedResult,
 } from './dto/search-feed.dto';
-import { SelectQueryBuilder } from 'typeorm';
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import { redisKeys } from '../common/redis/redis.constant';
@@ -60,7 +59,7 @@ export class FeedService {
         if (!feed) {
           return null;
         }
-        feed['author'] = feed.blog['userName'];
+        feed['author'] = feed.blog['name'];
         delete feed.blog;
         return feed;
       }),
