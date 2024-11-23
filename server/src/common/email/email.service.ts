@@ -6,14 +6,14 @@ import { WinstonLoggerService } from '../logger/logger.service';
 @Injectable()
 export class EmailService {
   private transporter;
-  private emailUser;
+  private emailUser: string;
 
   constructor(
-    configService: ConfigService,
+    private readonly configService: ConfigService,
     private readonly logger: WinstonLoggerService,
   ) {
-    this.emailUser = configService.get<string>('EMAIL_USER');
-    const emailPassword = configService.get<string>('EMAIL_PASSWORD');
+    this.emailUser = this.configService.get<string>('EMAIL_USER');
+    const emailPassword = this.configService.get<string>('EMAIL_PASSWORD');
     this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
@@ -25,9 +25,18 @@ export class EmailService {
     });
   }
 
-  async sendMail(to: string, clientName: string, approveFlag: boolean) {
+  async sendMail(
+    to: string,
+    clientName: string,
+    approveFlag: boolean,
+    description?: string,
+  ) {
     try {
-      const { subject, content } = this.createEmail(clientName, approveFlag);
+      const { subject, content } = this.createEmail(
+        clientName,
+        approveFlag,
+        description,
+      );
       await this.transporter.sendMail({
         from: `Denamu<${this.emailUser}>`,
         to: `${clientName}<${to}>`,
@@ -42,12 +51,19 @@ export class EmailService {
     }
   }
 
-  private createEmail(clientName: string, approveFlag: boolean) {
+  private createEmail(
+    clientName: string,
+    approveFlag: boolean,
+    description?: string,
+  ) {
     const result = approveFlag ? `승인` : `거부`;
-
-    return {
-      subject: `RSS 등록이 ${result}되었습니다.`,
-      content: `${clientName}님의 RSS 등록이 ${result}되었습니다.`,
+    const mail = {
+      subject: `RSS 등록이 ${result} 되었습니다.`,
+      content: `${clientName}님의 RSS 등록이 ${result} 되었습니다.`,
     };
+    if (description) {
+      mail.content += `\n거절 사유: '${description}'`;
+    }
+    return mail;
   }
 }

@@ -87,7 +87,12 @@ export class RssService {
       ]);
       return result;
     });
-    this.emailService.sendMail(result.email, result.userName, false);
+    this.emailService.sendMail(
+      result.email,
+      result.userName,
+      false,
+      description,
+    );
   }
 
   async acceptRssHistory() {
