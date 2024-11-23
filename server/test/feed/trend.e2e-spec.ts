@@ -9,6 +9,7 @@ import { DataSource } from 'typeorm';
 import { Feed } from '../../src/feed/feed.entity';
 import { Blog } from '../../src/blog/blog.entity';
 import { INestApplication } from '@nestjs/common';
+import { redisKeys } from '../../src/common/redis/redis.constant';
 
 describe('Trend API', () => {
   let app: INestApplication;
@@ -35,67 +36,61 @@ describe('Trend API', () => {
     const blogs = await blogRepository.save([
       {
         id: 1,
-        name: 'test',
-        userName: '안성윤',
-        email: 'test',
-        rssUrl: 'test',
+        name: 'testName1',
+        userName: 'testUserName1',
+        email: 'testEmail1',
+        rssUrl: 'testRSS1',
       },
       {
         id: 2,
-        name: 'test2',
-        userName: '조민석',
-        email: 'test2',
-        rssUrl: 'test2',
+        name: 'testName2',
+        userName: 'testUserName2',
+        email: 'testEmail2',
+        rssUrl: 'testRSS2',
       },
       {
         id: 3,
-        name: 'test3',
-        userName: '박무성',
-        email: 'test3',
-        rssUrl: 'test3',
+        name: 'testName3',
+        userName: 'testUserName3',
+        email: 'testEmail3',
+        rssUrl: 'testRSS3',
       },
     ]);
     await feedRepository.save([
       {
         id: 1,
-        createdAt: '2022-09-05T09:00:00.000Z',
-        title:
-          '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
+        createdAt: '2024-11-24T01:00:00.000Z',
+        title: 'testFeed1',
         viewCount: 0,
-        path: 'https://asn6878.tistory.com/9',
-        thumbnail:
-          'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+        path: 'https://testFeed1.com',
+        thumbnail: 'https://testFeed1.com',
         blog: blogs[0],
       },
       {
         id: 2,
-        createdAt: '2024-08-14T14:07:49.000Z',
-        title:
-          '[네이버 커넥트재단 부스트캠프 웹・모바일 9기] 날 것 그대로 작성하는 챌린지 수료 후기 - Web',
-        path: 'https://velog.io/@seok3765/%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%BB%A4%EB%84%A5%ED%8A%B8%EC%9E%AC%EB%8B%A8-%EB%B6%80%EC%8A%A4%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%9B%B9%E3%83%BB%EB%AA%A8%EB%B0%94%EC%9D%BC-9%EA%B8%B0-%EB%82%A0-%EA%B2%83-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EC%9E%91%EC%84%B1%ED%95%98%EB%8A%94-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EC%88%98%EB%A3%8C-%ED%9B%84%EA%B8%B0-Web',
-        thumbnail:
-          'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
+        createdAt: '2024-11-24T02:00:00.000Z',
+        title: 'testFeed2',
         viewCount: 0,
+        path: 'https://testFeed2.com',
+        thumbnail: 'https://testFeed2.com',
         blog: blogs[1],
       },
       {
         id: 3,
-        createdAt: '2022-09-05T09:00:00.000Z',
+        createdAt: '2024-11-24T03:00:00.000Z',
+        title: 'testFeed3',
         viewCount: 0,
-        title: '제목',
-        path: 'https://asn6878.tistory.com/10',
-        thumbnail:
-          'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+        path: 'https://testFeed3.com',
+        thumbnail: 'https://testFeed3.com',
         blog: blogs[2],
       },
       {
         id: 4,
-        title: '제목',
-        path: 'https://asn6878.tistory.com/11',
-        createdAt: '2022-09-05T10:00:00.000Z',
-        thumbnail:
-          'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+        createdAt: '2024-11-24T04:00:00.000Z',
+        title: 'testFeed4',
         viewCount: 0,
+        path: 'https://testFeed4.com',
+        thumbnail: 'https://testFeed4.com',
         blog: blogs[2],
       },
     ]);
@@ -123,7 +118,10 @@ describe('Trend API', () => {
     });
 
     it('피드 1개만 조회됐을 때', async () => {
-      await redisService.redisClient.zadd('feed:trend', 10, '1');
+      await redisService.redisClient.rpush(
+        redisKeys.FEED_ORIGIN_TREND_KEY,
+        '1',
+      );
       const response = await request(app.getHttpServer()).get(
         '/api/feed/trend',
       );
@@ -133,24 +131,23 @@ describe('Trend API', () => {
         data: [
           {
             id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T01:00:00.000Z',
+            title: 'testFeed1',
             viewCount: 0,
+            path: 'https://testFeed1.com',
+            thumbnail: 'https://testFeed1.com',
+            author: 'testName1',
           },
         ],
       });
     });
 
     it('피드 2개만 조회됐을 때', async () => {
-      await Promise.all([
-        redisService.redisClient.zadd('feed:trend', 10, '1'),
-        redisService.redisClient.zadd('feed:trend', 20, '2'),
-      ]);
+      await redisService.redisClient
+        .pipeline()
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '2')
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '1')
+        .exec();
       const response = await request(app.getHttpServer()).get(
         '/api/feed/trend',
       );
@@ -160,35 +157,32 @@ describe('Trend API', () => {
         data: [
           {
             id: 2,
-            author: '조민석',
-            title:
-              '[네이버 커넥트재단 부스트캠프 웹・모바일 9기] 날 것 그대로 작성하는 챌린지 수료 후기 - Web',
-            path: 'https://velog.io/@seok3765/%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%BB%A4%EB%84%A5%ED%8A%B8%EC%9E%AC%EB%8B%A8-%EB%B6%80%EC%8A%A4%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%9B%B9%E3%83%BB%EB%AA%A8%EB%B0%94%EC%9D%BC-9%EA%B8%B0-%EB%82%A0-%EA%B2%83-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EC%9E%91%EC%84%B1%ED%95%98%EB%8A%94-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EC%88%98%EB%A3%8C-%ED%9B%84%EA%B8%B0-Web',
-            createdAt: '2024-08-14T14:07:49.000Z',
-            thumbnail:
-              'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
+            createdAt: '2024-11-24T02:00:00.000Z',
+            title: 'testFeed2',
             viewCount: 0,
+            path: 'https://testFeed2.com',
+            thumbnail: 'https://testFeed2.com',
+            author: 'testName2',
           },
           {
             id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T01:00:00.000Z',
+            title: 'testFeed1',
             viewCount: 0,
+            path: 'https://testFeed1.com',
+            thumbnail: 'https://testFeed1.com',
+            author: 'testName1',
           },
         ],
       });
     });
     it('피드 3개만 조회됐을 때', async () => {
-      await Promise.all([
-        redisService.redisClient.zadd('feed:trend', 10, '1'),
-        redisService.redisClient.zadd('feed:trend', 20, '2'),
-        redisService.redisClient.zadd('feed:trend', 30, '3'),
-      ]);
+      await redisService.redisClient
+        .pipeline()
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '3')
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '2')
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '1')
+        .exec();
       const response = await request(app.getHttpServer()).get(
         '/api/feed/trend',
       );
@@ -198,46 +192,42 @@ describe('Trend API', () => {
         data: [
           {
             id: 3,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/10',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T03:00:00.000Z',
+            title: 'testFeed3',
             viewCount: 0,
+            path: 'https://testFeed3.com',
+            thumbnail: 'https://testFeed3.com',
+            author: 'testName3',
           },
           {
             id: 2,
-            author: '조민석',
-            title:
-              '[네이버 커넥트재단 부스트캠프 웹・모바일 9기] 날 것 그대로 작성하는 챌린지 수료 후기 - Web',
-            path: 'https://velog.io/@seok3765/%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%BB%A4%EB%84%A5%ED%8A%B8%EC%9E%AC%EB%8B%A8-%EB%B6%80%EC%8A%A4%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%9B%B9%E3%83%BB%EB%AA%A8%EB%B0%94%EC%9D%BC-9%EA%B8%B0-%EB%82%A0-%EA%B2%83-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EC%9E%91%EC%84%B1%ED%95%98%EB%8A%94-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EC%88%98%EB%A3%8C-%ED%9B%84%EA%B8%B0-Web',
-            createdAt: '2024-08-14T14:07:49.000Z',
-            thumbnail:
-              'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
+            createdAt: '2024-11-24T02:00:00.000Z',
+            title: 'testFeed2',
             viewCount: 0,
+            path: 'https://testFeed2.com',
+            thumbnail: 'https://testFeed2.com',
+            author: 'testName2',
           },
           {
             id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T01:00:00.000Z',
+            title: 'testFeed1',
             viewCount: 0,
+            path: 'https://testFeed1.com',
+            thumbnail: 'https://testFeed1.com',
+            author: 'testName1',
           },
         ],
       });
     });
     it('피드 4개만 조회됐을 때', async () => {
-      await Promise.all([
-        redisService.redisClient.zadd('feed:trend', 10, '1'),
-        redisService.redisClient.zadd('feed:trend', 20, '2'),
-        redisService.redisClient.zadd('feed:trend', 30, '3'),
-        redisService.redisClient.zadd('feed:trend', 40, '4'),
-      ]);
+      await redisService.redisClient
+        .pipeline()
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '4')
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '3')
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '2')
+        .rpush(redisKeys.FEED_ORIGIN_TREND_KEY, '1')
+        .exec();
       const response = await request(app.getHttpServer()).get(
         '/api/feed/trend',
       );
@@ -247,94 +237,39 @@ describe('Trend API', () => {
         data: [
           {
             id: 4,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/11',
-            createdAt: '2022-09-05T10:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T04:00:00.000Z',
+            title: 'testFeed4',
             viewCount: 0,
+            path: 'https://testFeed4.com',
+            thumbnail: 'https://testFeed4.com',
+            author: 'testName3',
           },
           {
             id: 3,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/10',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T03:00:00.000Z',
+            title: 'testFeed3',
             viewCount: 0,
+            path: 'https://testFeed3.com',
+            thumbnail: 'https://testFeed3.com',
+            author: 'testName3',
           },
           {
             id: 2,
-            author: '조민석',
-            title:
-              '[네이버 커넥트재단 부스트캠프 웹・모바일 9기] 날 것 그대로 작성하는 챌린지 수료 후기 - Web',
-            path: 'https://velog.io/@seok3765/%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%BB%A4%EB%84%A5%ED%8A%B8%EC%9E%AC%EB%8B%A8-%EB%B6%80%EC%8A%A4%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%9B%B9%E3%83%BB%EB%AA%A8%EB%B0%94%EC%9D%BC-9%EA%B8%B0-%EB%82%A0-%EA%B2%83-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EC%9E%91%EC%84%B1%ED%95%98%EB%8A%94-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EC%88%98%EB%A3%8C-%ED%9B%84%EA%B8%B0-Web',
-            createdAt: '2024-08-14T14:07:49.000Z',
-            thumbnail:
-              'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
+            createdAt: '2024-11-24T02:00:00.000Z',
+            title: 'testFeed2',
             viewCount: 0,
+            path: 'https://testFeed2.com',
+            thumbnail: 'https://testFeed2.com',
+            author: 'testName2',
           },
           {
             id: 1,
-            author: '안성윤',
-            title:
-              '자바스크립트의 구조와 실행 방식 (Ignition, TurboFan, EventLoop)',
-            path: 'https://asn6878.tistory.com/9',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
+            createdAt: '2024-11-24T01:00:00.000Z',
+            title: 'testFeed1',
             viewCount: 0,
-          },
-        ],
-      });
-    });
-    it('피드 5개 이상 조회됐을 때', async () => {
-      await Promise.all([
-        redisService.redisClient.zadd('feed:trend', 10, '1'),
-        redisService.redisClient.zadd('feed:trend', 20, '2'),
-        redisService.redisClient.zadd('feed:trend', 30, '3'),
-        redisService.redisClient.zadd('feed:trend', 40, '4'),
-        redisService.redisClient.zadd('feed:trend', 50, '5'),
-      ]);
-      const response = await request(app.getHttpServer()).get(
-        '/api/feed/trend',
-      );
-      expect(response.status).toBe(200);
-      expect(response.body).toStrictEqual({
-        message: '트렌드 피드 조회 완료',
-        data: [
-          {
-            id: 4,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/11',
-            createdAt: '2022-09-05T10:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
-            viewCount: 0,
-          },
-          {
-            id: 3,
-            author: '박무성',
-            title: '제목',
-            path: 'https://asn6878.tistory.com/10',
-            createdAt: '2022-09-05T09:00:00.000Z',
-            thumbnail:
-              'https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F2wH52%2FbtsJIskiFgS%2FQlF4XqMVZsM8y51w67dxj1%2Fimg.png',
-            viewCount: 0,
-          },
-          {
-            id: 2,
-            author: '조민석',
-            title:
-              '[네이버 커넥트재단 부스트캠프 웹・모바일 9기] 날 것 그대로 작성하는 챌린지 수료 후기 - Web',
-            path: 'https://velog.io/@seok3765/%EB%84%A4%EC%9D%B4%EB%B2%84-%EC%BB%A4%EB%84%A5%ED%8A%B8%EC%9E%AC%EB%8B%A8-%EB%B6%80%EC%8A%A4%ED%8A%B8%EC%BA%A0%ED%94%84-%EC%9B%B9%E3%83%BB%EB%AA%A8%EB%B0%94%EC%9D%BC-9%EA%B8%B0-%EB%82%A0-%EA%B2%83-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EC%9E%91%EC%84%B1%ED%95%98%EB%8A%94-%EC%B1%8C%EB%A6%B0%EC%A7%80-%EC%88%98%EB%A3%8C-%ED%9B%84%EA%B8%B0-Web',
-            createdAt: '2024-08-14T14:07:49.000Z',
-            thumbnail:
-              'https://velog.velcdn.com/images/seok3765/post/2f863481-b594-46f8-9a28-7799afb58aa4/image.jpg',
-            viewCount: 0,
+            path: 'https://testFeed1.com',
+            thumbnail: 'https://testFeed1.com',
+            author: 'testName1',
           },
         ],
       });
