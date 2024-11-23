@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Post,
   Query,
   Req,
   Res,
@@ -87,7 +88,7 @@ export class FeedController {
   }
 
   @ApiUpdateFeedViewCount()
-  @Get('/:feedId')
+  @Post('/:feedId')
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateFeedViewCount(
