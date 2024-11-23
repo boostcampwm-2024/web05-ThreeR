@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 
-interface Identifiable {
-  id: string | number;
-}
+import { Post } from "@/types/post.ts";
 
-export const usePositionTracking = <T extends Identifiable>(items: T[]) => {
+export const usePositionTracking = (posts: Post[]) => {
   const [positions, setPositions] = useState(new Map());
-  const [prevPosts, setPrevPosts] = useState(items);
+  const [prevPosts, setPrevPosts] = useState(posts);
 
   useEffect(() => {
     const newPositions = new Map();
-    prevPosts.forEach((item, index) => {
-      newPositions.set(item.id, index);
+    prevPosts.forEach((post, index) => {
+      newPositions.set(post.id, index);
     });
     setPositions(newPositions);
-    setPrevPosts(items);
-  }, [items]);
+    setPrevPosts(posts);
+  }, [posts]);
 
   return {
     hasPosition: (id: string | number) => positions.has(id),
