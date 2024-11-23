@@ -49,10 +49,10 @@ export class FeedService {
   }
 
   async getTrendList() {
-    const trendFeedIdList = await this.redisService.redisClient.zrevrange(
-      redisKeys.FEED_TREND_KEY,
+    const trendFeedIdList = await this.redisService.redisClient.lrange(
+      redisKeys.FEED_ORIGIN_TREND_KEY,
       0,
-      3,
+      -1,
     );
     const trendFeeds = await Promise.all(
       trendFeedIdList.map(async (feedId) => {
