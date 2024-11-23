@@ -27,7 +27,6 @@ export abstract class RssInformation extends BaseEntity {
     name: 'rss_url',
     length: 255,
     nullable: false,
-    unique: true,
   })
   rssUrl: string;
 }
