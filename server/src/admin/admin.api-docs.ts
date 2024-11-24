@@ -71,3 +71,27 @@ export function ApiPostLoginAdmin() {
     }),
   );
 }
+
+export function ApiCheckAdminSessionId() {
+  return applyDecorators(
+    ApiOperation({
+      summary: `관리자 페이지 출력을 위한 sessionId 확인 API`,
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        example: {
+          message: '정상적인 sessionId입니다.',
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      description: 'Unauthorized',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
+        },
+      },
+    }),
+  );
+}

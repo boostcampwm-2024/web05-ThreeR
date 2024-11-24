@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   Res,
   UseGuards,
   UsePipes,
@@ -15,7 +14,11 @@ import { Response } from 'express';
 import { AdminService } from './admin.service';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './admin.api-docs';
+import {
+  ApiCheckAdminSessionId,
+  ApiPostLoginAdmin,
+  ApiPostRegisterAdmin,
+} from './admin.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { CookieAuthGuard } from '../common/guard/auth.guard';
@@ -49,6 +52,7 @@ export class AdminController {
     );
   }
 
+  @ApiCheckAdminSessionId()
   @Get('/sessionId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(CookieAuthGuard)
