@@ -9,7 +9,7 @@ interface PostCardImageProps {
 
 export const PostCardImage = ({ thumbnail, alt }: PostCardImageProps) => {
   return (
-    <div className="aspect-[16/9] relative bg-muted flex items-center justify-center overflow-hidden rounded-t-xl">
+    <div className="h-[120px] relative bg-muted flex items-center justify-center overflow-hidden rounded-t-xl">
       {thumbnail ? (
         <LazyImage
           src={thumbnail}
