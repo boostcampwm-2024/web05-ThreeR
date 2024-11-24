@@ -156,7 +156,7 @@ export class FeedService {
       this.createCookie(response, feedId);
     }
 
-    if (hasCookie || hasIpFlag === 1) {
+    if (hasCookie || hasIpFlag) {
       return null;
     }
 
