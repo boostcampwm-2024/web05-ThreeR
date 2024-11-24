@@ -72,7 +72,7 @@ export class FeedService {
     await this.redisService.redisClient.del(redisKeys.FEED_TREND_KEY);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async analyzeTrend() {
     const [originTrend, nowTrend] = await Promise.all([
       this.redisService.redisClient.lrange(
@@ -87,9 +87,9 @@ export class FeedService {
       redisPipeline.del(redisKeys.FEED_ORIGIN_TREND_KEY);
       redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
-      const trendFeeds = await this.getTrendList();
-      this.eventService.emit('ranking-update', trendFeeds);
     }
+    const trendFeeds = await this.getTrendList();
+    this.eventService.emit('ranking-update', trendFeeds);
   }
 
   async search(searchFeedReq: SearchFeedReq) {
