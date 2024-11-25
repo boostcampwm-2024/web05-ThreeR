@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Res,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiPostLoginAdmin, ApiPostRegisterAdmin } from './admin.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { LoginAdminDto } from './dto/login-admin.dto';
+import { CookieAuthGuard } from '../common/guard/auth.guard';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -36,6 +38,7 @@ export class AdminController {
   }
 
   @ApiPostRegisterAdmin()
+  @UseGuards(CookieAuthGuard)
   @Post('/register')
   @UsePipes(ValidationPipe)
   async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {

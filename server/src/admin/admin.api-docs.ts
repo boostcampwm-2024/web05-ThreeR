@@ -37,6 +37,14 @@ export function ApiPostRegisterAdmin() {
         },
       },
     }),
+    ApiUnauthorizedResponse({
+      description: 'Unauthorized',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
+        },
+      },
+    }),
   );
 }
 

@@ -45,7 +45,7 @@ export default function Header() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <img className="h-10 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
+            <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
 
           {/* Desktop Navigation */}
