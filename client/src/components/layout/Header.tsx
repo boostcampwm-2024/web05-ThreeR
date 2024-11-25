@@ -26,9 +26,9 @@ import logo from "@/assets/logo-denamu-main.svg";
 import { SidebarProvider } from "../ui/sidebar";
 
 export default function Header() {
-  const [modals, setModals] = useState({ search: false, rss: false, login: false });
+  const [modals, setModals] = useState({ search: false, rss: false, login: false, chat: false });
 
-  const toggleModal = (modalType: "search" | "rss" | "login") => {
+  const toggleModal = (modalType: "search" | "rss" | "login" | "chat") => {
     setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
   };
 
@@ -67,7 +67,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
         <NavigationMenuList className="gap-2">
           <NavigationMenuItem>
             <div className="flex h-full items-center">
-              <SidebarProvider>
+              <SidebarProvider defaultOpen={false}>
                 <Chat />
                 <OpenChat />
               </SidebarProvider>
