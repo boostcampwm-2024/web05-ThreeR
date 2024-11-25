@@ -16,7 +16,6 @@ import {
   SearchFeedRes,
   SearchFeedResult,
 } from './dto/search-feed.dto';
-import { SelectQueryBuilder } from 'typeorm';
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import { redisKeys } from '../common/redis/redis.constant';
@@ -49,10 +48,10 @@ export class FeedService {
   }
 
   async getTrendList() {
-    const trendFeedIdList = await this.redisService.redisClient.zrevrange(
-      redisKeys.FEED_TREND_KEY,
+    const trendFeedIdList = await this.redisService.redisClient.lrange(
+      redisKeys.FEED_ORIGIN_TREND_KEY,
       0,
-      3,
+      -1,
     );
     const trendFeeds = await Promise.all(
       trendFeedIdList.map(async (feedId) => {
@@ -60,7 +59,7 @@ export class FeedService {
         if (!feed) {
           return null;
         }
-        feed['author'] = feed.blog['userName'];
+        feed['author'] = feed.blog['name'];
         delete feed.blog;
         return feed;
       }),
@@ -73,7 +72,7 @@ export class FeedService {
     await this.redisService.redisClient.del(redisKeys.FEED_TREND_KEY);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async analyzeTrend() {
     const [originTrend, nowTrend] = await Promise.all([
       this.redisService.redisClient.lrange(
@@ -88,9 +87,9 @@ export class FeedService {
       redisPipeline.del(redisKeys.FEED_ORIGIN_TREND_KEY);
       redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
-      const trendFeeds = await this.getTrendList();
-      this.eventService.emit('ranking-update', trendFeeds);
     }
+    const trendFeeds = await this.getTrendList();
+    this.eventService.emit('ranking-update', trendFeeds);
   }
 
   async search(searchFeedReq: SearchFeedReq) {
@@ -157,7 +156,7 @@ export class FeedService {
       this.createCookie(response, feedId);
     }
 
-    if (hasCookie || hasIpFlag === 1) {
+    if (hasCookie || hasIpFlag) {
       return null;
     }
 
