@@ -3,7 +3,9 @@ import { FeedObj, FeedDetail } from "./types.js";
 import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 
-dotenv.config({ path: "./rss-notifier/.env" });
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? "rss-notifier/.env" : ".env",
+});
 
 const CONNECTION_LIMIT = 50;
 
@@ -32,8 +34,8 @@ export const executeQuery = async (query: string, params: any[] = []) => {
 };
 
 export const selectAllRss = async (): Promise<FeedObj[]> => {
-  const query = `SELECT id, rss_url
-                 FROM blog`;
+  const query = `SELECT id, rss_url as rssUrl
+                 FROM rss_accept`;
   return executeQuery(query);
 };
 
@@ -47,14 +49,13 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
 
     for (const feed of resultData) {
       await executeQuery(query, [
-        feed.blog_id,
-        feed.pub_date,
+        feed.blogId,
+        feed.pubDate,
         feed.title,
         feed.link,
         feed.imageUrl,
       ]);
       successCount++;
-
     }
   } catch (error) {
     logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
