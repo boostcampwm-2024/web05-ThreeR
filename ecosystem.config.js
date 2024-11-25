@@ -22,6 +22,9 @@ module.exports = {
       cron_restart: `*/30 * * * *`, // 30분 마다 rss-notifier 재시작
       autorestart: false,
       watch: false,
+      env: {
+        NODE_ENV: "production",
+      },
     },
   ],
 };
