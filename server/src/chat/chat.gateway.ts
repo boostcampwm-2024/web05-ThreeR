@@ -14,6 +14,7 @@ import { escape } from 'html-escaper';
 const CLIENT_KEY_PREFIX = 'socket_client:';
 const CHAT_HISTORY_KEY = 'chat:history';
 const CHAT_HISTORY_LIMIT = 20;
+const MAX_CLIENTS = 500;
 
 @Injectable()
 @WebSocketGateway({
@@ -28,6 +29,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly redisService: RedisService) {}
 
   async handleConnection(client: Socket) {
+    const userCount = this.server.sockets.sockets.size;
+    if (userCount > MAX_CLIENTS) {
+      client.emit('maximum_exceeded', {
+        message: '채팅 서버의 한계에 도달했습니다. 잠시후 재시도 해주세요.',
+      });
+      client.disconnect(true);
+      return;
+    }
+
     const ip = this.getIp(client);
     const clientName = await this.getOrSetClientNameByIp(ip);
     const recentMessages = await this.redisService.redisClient.lrange(
@@ -40,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.emit('chatHistory', chatHistory);
 
     this.server.emit('updateUserCount', {
-      userCount: this.server.sockets.sockets.size,
+      userCount: userCount,
       name: clientName,
     });
   }
