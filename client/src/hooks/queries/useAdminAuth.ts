@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 import { auth } from "@/api/services/admin/auth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { AuthApiRequest, AuthApiResponse } from "@/types/auth";
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { useMutation, UseMutationResult, useQuery } from "@tanstack/react-query";
 
 export const useAdminAuth = (
   onSuccess: (data: AuthApiResponse) => void,
@@ -12,11 +12,19 @@ export const useAdminAuth = (
   const setRole = useAuthStore((state) => state.setRole);
   return useMutation<AuthApiResponse, AxiosError<unknown, any>, AuthApiRequest>({
     mutationFn: async (data) => {
-      const response = await auth(data);
+      const response = await auth.login(data);
       setRole("admin");
       return response;
     },
     onSuccess,
     onError,
   });
+};
+export const useAdminCheck = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["adminCheck"],
+    queryFn: auth.check,
+    retry: 1,
+  });
+  return { data, isLoading, error };
 };

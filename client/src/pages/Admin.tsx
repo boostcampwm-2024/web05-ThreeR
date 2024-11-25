@@ -1,17 +1,24 @@
 import { useState } from "react";
+import { useEffect } from "react";
 
 import { AdminHeader } from "@/components/admin/layout/AdminHeader";
 import AdminLogin from "@/components/admin/login/AdminLoginModal";
 import { RssRequestSearchBar } from "@/components/admin/rss/RssSearchBar";
 
+import { useAdminCheck } from "@/hooks/queries/useAdminAuth";
+
 import { AdminTabs } from "../components/admin/layout/AdminTabs";
 
 export default function Admin() {
-  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const { data, isLoading, error } = useAdminCheck();
 
   const handleLogin = () => {
     setIsLogin((prev) => !prev);
   };
+  useEffect(() => {
+    console.log(data);
+  }, []);
 
   const renderElement = {
     loginPage: (
