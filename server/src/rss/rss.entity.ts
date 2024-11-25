@@ -1,4 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  Index,
+  OneToMany,
+} from 'typeorm';
+import { Feed } from '../feed/feed.entity';
 
 export abstract class RssInformation extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -45,4 +53,27 @@ export class RssReject extends RssInformation {
     nullable: false,
   })
   description: string;
+}
+
+@Entity({
+  name: 'rss_accept',
+})
+export class RssAccept extends RssInformation {
+  @OneToMany((type) => Feed, (feed) => feed.blog)
+  feeds: Feed[];
+
+  @Index({ fulltext: true, parser: 'ngram' })
+  @Column({ name: 'name', nullable: false })
+  name: string;
+
+  static fromRss(rss: Rss) {
+    const blog = new RssAccept();
+    blog.name = rss.name;
+    blog.userName = rss.userName;
+    blog.email = rss.email;
+    blog.rssUrl = rss.rssUrl;
+    blog.feeds = [];
+
+    return blog;
+  }
 }
