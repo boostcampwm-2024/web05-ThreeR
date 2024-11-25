@@ -40,23 +40,16 @@ export default function Header() {
   useKeyboardShortcut("k", () => toggleModal("search"), true);
 
   return (
-    <div className="border-b">
+    <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
-          {/* Logo */}
           <div className="flex-shrink-0">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
-
-          {/* Desktop Navigation */}
           <DesktopNavigation toggleModal={toggleModal} />
-
-          {/* Mobile Navigation */}
           <MobileNavigation toggleModal={toggleModal} />
         </div>
       </div>
-
-      {/* Modals */}
       <AnimatePresence>
         {modals.rss && <RssRegistrationModal onClose={() => toggleModal("rss")} rssOpen={modals.rss} />}
         {modals.search && <SearchModal onClose={() => toggleModal("search")} />}
@@ -75,26 +68,24 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
               <Chat />
             </div>
           </NavigationMenuItem>
-
-          {/* Search Button */}
           <NavigationMenuItem>
             <div className="flex h-full items-center">
               <SearchButton handleSearchModal={() => toggleModal("search")} />
             </div>
           </NavigationMenuItem>
-
-          {/* Login Menu */}
           <NavigationMenuItem>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={() => toggleModal("login")} href="#">
+            <NavigationMenuLink
+              className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}
+              onClick={() => toggleModal("login")}
+              href="#"
+            >
               로그인
             </NavigationMenuLink>
           </NavigationMenuItem>
-
-          {/* Blog Registration Menu */}
           <NavigationMenuItem>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={() => toggleModal("rss")} href="#">
+            <Button variant="default" onClick={() => toggleModal("rss")} className="bg-primary hover:bg-primary/90">
               블로그 등록
-            </NavigationMenuLink>
+            </Button>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
@@ -107,13 +98,13 @@ function MobileNavigation({ toggleModal }: { toggleModal: (modalType: "search" |
     <div className="md:hidden">
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="hover:border-primary hover:text-primary">
             <Menu className="h-4 w-4" />
           </Button>
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>메뉴</SheetTitle>
+            <SheetTitle className="text-primary">메뉴</SheetTitle>
           </SheetHeader>
           <SideBar
             handleRssModal={() => toggleModal("rss")}
