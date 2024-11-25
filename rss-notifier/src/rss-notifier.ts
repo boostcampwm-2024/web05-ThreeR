@@ -6,6 +6,11 @@ import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 import { unescape } from "html-escaper";
 
+const htmlEntities = {
+  "&middot;": "·",
+  "&nbsp;": " ",
+};
+
 const xmlParser = new XMLParser();
 const TIME_INTERVAL = process.env.TIME_INTERVAL
   ? parseInt(process.env.TIME_INTERVAL)
@@ -93,7 +98,12 @@ const findNewFeeds = async (
 };
 
 const customUnescape = (text: string): string => {
-  text = text.replace(/&middot;/g, "·");
+  Object.keys(htmlEntities).forEach((entity) => {
+    const value = htmlEntities[entity];
+    const regex = new RegExp(entity, "g");
+    text = text.replace(regex, value);
+  });
+
   return unescape(text);
 };
 
