@@ -5,11 +5,14 @@ import * as mysql from "mysql2/promise";
 
 dotenv.config({ path: "./rss-notifier/.env" });
 
+const CONNECTION_LIMIT = 50;
+
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+  connectionLimit: CONNECTION_LIMIT,
 });
 
 export const executeQuery = async (query: string, params: any[] = []) => {
@@ -29,27 +32,33 @@ export const executeQuery = async (query: string, params: any[] = []) => {
 };
 
 export const selectAllRss = async (): Promise<FeedObj[]> => {
-  const query = `SELECT id, rss_url FROM blog`;
+  const query = `SELECT id, rss_url
+                 FROM blog`;
   return executeQuery(query);
 };
 
 export const insertFeeds = async (resultData: FeedDetail[]) => {
-  const query = `
-    INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
-    VALUES ?
-  `;
+  let successCount = 0;
+  try {
+    const query = `
+        INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
+        VALUES (?, ?, ?, ?, ?)
+    `;
 
-  const values = resultData.map((feed) => [
-    feed.blog_id,
-    feed.pub_date,
-    feed.title,
-    feed.link,
-    feed.imageUrl,
-  ]);
+    for (const feed of resultData) {
+      await executeQuery(query, [
+        feed.blog_id,
+        feed.pub_date,
+        feed.title,
+        feed.link,
+        feed.imageUrl,
+      ]);
+      successCount++;
 
-  await executeQuery(query, [values]);
+    }
+  } catch (error) {
+    logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
+  }
 
-  logger.info(
-    `${resultData.length}개의 피드 데이터가 성공적으로 삽입되었습니다.`
-  );
+  logger.info(`${successCount}개의 피드 데이터가 성공적으로 삽입되었습니다.`);
 };
