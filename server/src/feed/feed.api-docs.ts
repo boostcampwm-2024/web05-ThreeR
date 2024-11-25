@@ -156,7 +156,7 @@ export function ApiSearchFeed() {
 export function ApiGetTrendSse() {
   return applyDecorators(
     ApiOperation({
-      summary: '트랜드 게시글 조회 SSE',
+      summary: '트렌드 게시글 조회 SSE',
     }),
     ApiOkResponse({
       description: 'Ok',

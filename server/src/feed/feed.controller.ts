@@ -57,7 +57,7 @@ export class FeedController {
       this.feedService.getTrendList().then((trendData) => {
         observer.next({
           data: {
-            message: '현재 트랜드 피드 수신 완료',
+            message: '현재 트렌드 피드 수신 완료',
             data: trendData,
           },
         });
