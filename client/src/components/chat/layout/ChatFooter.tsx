@@ -30,7 +30,7 @@ export default function ChatFooter() {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-      <Button className="bg-black hover:bg-gray-800 text-white" onClick={handleSendMessage}>
+      <Button className="bg-primary hover:bg-primary/90 text-white" onClick={handleSendMessage}>
         <Send />
       </Button>
     </SheetFooter>
