@@ -65,7 +65,7 @@ export class RssService {
         manager.delete(Rss, id),
       ]);
     });
-    this.emailService.sendMail(rss.email, rss.userName, true);
+    this.emailService.sendMail(rss, true);
   }
 
   async rejectRss(id: number, description: string) {
@@ -78,21 +78,16 @@ export class RssService {
     }
 
     const result = await this.dataSource.transaction(async (manager) => {
-      const [result] = await Promise.all([
+      const [transactionResult] = await Promise.all([
         manager.remove(rss),
         manager.save(RssReject, {
-          ...Blog.fromRss(rss),
-          description,
+          ...rss,
+          description: description,
         }),
       ]);
-      return result;
+      return transactionResult;
     });
-    this.emailService.sendMail(
-      result.email,
-      result.userName,
-      false,
-      description,
-    );
+    this.emailService.sendMail(result, false, description);
   }
 
   async acceptRssHistory() {

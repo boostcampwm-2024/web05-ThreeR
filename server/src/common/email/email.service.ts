@@ -2,10 +2,16 @@ import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import { WinstonLoggerService } from '../logger/logger.service';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { createMailContent } from './mail_content';
+import { Rss } from '../../rss/rss.entity';
 
 @Injectable()
 export class EmailService {
-  private transporter;
+  private transporter: nodemailer.Transporter<
+    SMTPTransport.SentMessageInfo,
+    SMTPTransport.Options
+  >;
   private emailUser: string;
 
   constructor(
@@ -25,45 +31,33 @@ export class EmailService {
     });
   }
 
-  async sendMail(
-    to: string,
-    clientName: string,
-    approveFlag: boolean,
-    description?: string,
-  ) {
+  async sendMail(rss: Rss, approveFlag: boolean, description?: string) {
     try {
       const { subject, content } = this.createEmail(
-        clientName,
+        rss,
         approveFlag,
         description,
       );
       await this.transporter.sendMail({
         from: `Denamu<${this.emailUser}>`,
-        to: `${clientName}<${to}>`,
-        subject: subject,
-        text: content, // 현재는 plain text를 사용하여 메일을 보내고 있지만,  html: xxx를 활용하여 html을 전송할 수도 있음.
+        to: `${rss.userName}<${rss.email}>`,
+        subject,
+        html: content,
       });
-      this.logger.log(`${to} 주소로 메일이 전송되었습니다`);
+      this.logger.log(`${rss.email} 주소로 메일이 전송되었습니다`);
     } catch (error) {
       this.logger.error(
-        `${to} 주소로 메일 전송 중 오류가 발생했습니다: ${error}`,
+        `${rss.email} 주소로 메일 전송 중 오류가 발생했습니다: ${error}`,
       );
     }
   }
 
-  private createEmail(
-    clientName: string,
-    approveFlag: boolean,
-    description?: string,
-  ) {
+  private createEmail(rss: Rss, approveFlag: boolean, description?: string) {
     const result = approveFlag ? `승인` : `거부`;
     const mail = {
-      subject: `RSS 등록이 ${result} 되었습니다.`,
-      content: `${clientName}님의 RSS 등록이 ${result} 되었습니다.`,
+      subject: `[🎋 Denamu] RSS 등록이 ${result} 되었습니다.`,
+      content: createMailContent(rss, approveFlag, this.emailUser, description),
     };
-    if (description) {
-      mail.content += `\n거절 사유: '${description}'`;
-    }
     return mail;
   }
 }
