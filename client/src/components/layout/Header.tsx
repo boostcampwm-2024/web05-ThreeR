@@ -18,14 +18,22 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
+import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 
+import { TOAST_MESSAGES } from "@/constants/messages";
+
 export default function Header() {
   const [modals, setModals] = useState({ search: false, rss: false, login: false });
+  const { toast } = useCustomToast();
 
   const toggleModal = (modalType: "search" | "rss" | "login") => {
+    if (modalType === "login") {
+      toast(TOAST_MESSAGES.SERVICE_NOT_PREPARED);
+      return;
+    }
     setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
   };
 
