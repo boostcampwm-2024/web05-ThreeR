@@ -29,7 +29,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly redisService: RedisService) {}
 
   async handleConnection(client: Socket) {
-    const userCount = this.server.sockets.sockets.size;
+    const userCount = this.server.engine.clientsCount;
     if (userCount > MAX_CLIENTS) {
       client.emit('maximum_exceeded', {
         message: '채팅 서버의 한계에 도달했습니다. 잠시후 재시도 해주세요.',
@@ -57,7 +57,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect() {
     this.server.emit('updateUserCount', {
-      userCount: this.server.sockets.sockets.size,
+      userCount: this.server.engine.clientsCount,
     });
   }
 
