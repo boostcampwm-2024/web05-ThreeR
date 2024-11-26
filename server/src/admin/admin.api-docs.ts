@@ -16,6 +16,11 @@ export function ApiPostRegisterAdmin() {
     ApiCreatedResponse({
       description: 'Created',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
         example: {
           message: '성공적으로 관리자 계정이 생성되었습니다.',
         },
@@ -25,7 +30,7 @@ export function ApiPostRegisterAdmin() {
       description: 'Bad Request',
       schema: {
         example: {
-          message: '오류 메세지 출력',
+          message: '오류 메세지',
         },
       },
     }),
@@ -56,6 +61,11 @@ export function ApiPostLoginAdmin() {
     ApiOkResponse({
       description: 'Ok',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
         example: {
           message: '로그인이 성공적으로 처리되었습니다.',
         },
@@ -65,7 +75,7 @@ export function ApiPostLoginAdmin() {
       description: 'Bad Request',
       schema: {
         example: {
-          message: '오류 메세지 출력',
+          message: '오류 메세지',
         },
       },
     }),
@@ -88,6 +98,11 @@ export function ApiCheckAdminSessionId() {
     ApiOkResponse({
       description: 'Ok',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
         example: {
           message: '정상적인 sessionId입니다.',
         },
