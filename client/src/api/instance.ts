@@ -6,7 +6,7 @@ export const api = axios.create({
 });
 
 export const axiosInstance = axios.create({
-  baseURL: "https://api.denamu.shop",
+  baseURL: "https://api.denamu.site",
   timeout: 10000,
   withCredentials: true,
 });
