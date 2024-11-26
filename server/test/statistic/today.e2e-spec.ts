@@ -8,19 +8,17 @@ import { Feed } from '../../src/feed/feed.entity';
 import { RssAccept } from '../../src/rss/rss.entity';
 
 describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
-  let moduleFixture: TestingModule;
   let app: INestApplication;
-  let redisService: RedisService;
 
   beforeAll(async () => {
     app = global.testApp;
-    moduleFixture = global.testModuleFixture;
+    const moduleFixture: TestingModule = global.testModuleFixture;
     const dataSource = moduleFixture.get<DataSource>(DataSource);
     const feedRepository = dataSource.getRepository(Feed);
-    const rss_acceptRepository = dataSource.getRepository(RssAccept);
-    redisService = app.get(RedisService);
+    const rssAcceptRepository = dataSource.getRepository(RssAccept);
+    const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
-      rss_acceptRepository.save({
+      rssAcceptRepository.save({
         id: 1,
         name: 'test',
         userName: 'test',
