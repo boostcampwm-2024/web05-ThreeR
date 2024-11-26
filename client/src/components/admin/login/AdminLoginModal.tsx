@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
+import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 import { useAdminAuth } from "@/hooks/queries/useAdminAuth";
 
 export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
@@ -37,7 +38,7 @@ export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
   const handleAdminAuth = () => {
     mutate(loginData);
   };
-
+  useKeyboardShortcut("Enter", handleAdminAuth, false);
   return (
     <div className="h-[100vh] flex justify-center items-center bg-black/80">
       <Card className="w-[450px]">
