@@ -10,7 +10,7 @@ interface PostWithState {
 }
 
 export const usePostCardActions = (post: Post) => {
-  const { refetch } = usePostViewIncrement(post.id);
+  const { mutate } = usePostViewIncrement(post.id);
 
   const openPost = ({ post }: Pick<PostWithState, "post">): PostWithState => {
     const link = document.createElement("a");
@@ -23,8 +23,10 @@ export const usePostCardActions = (post: Post) => {
 
   const incrementView = ({ post, isWindowOpened }: PostWithState): PostWithState => {
     if (isWindowOpened) {
-      refetch().catch((error) => {
-        console.error("조회수 증가 실패: ", error);
+      mutate(undefined, {
+        onError: (error) => {
+          console.error("조회수 증가 실패", error);
+        },
       });
     }
     return { post, isWindowOpened };
