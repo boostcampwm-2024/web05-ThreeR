@@ -266,7 +266,7 @@ export function ApiUpdateFeedViewCount() {
   );
 }
 
-export function ApiGetLatestFeedList() {
+export function ApiGetRecentFeedList() {
   return applyDecorators(
     ApiOperation({
       summary: '최신 게시글 업데이트 API',

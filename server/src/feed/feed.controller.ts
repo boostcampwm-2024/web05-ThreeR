@@ -22,7 +22,7 @@ import {
   ApiSearchFeed,
   ApiUpdateFeedViewCount,
   ApiGetTrendSse,
-  ApiGetLatestFeedList,
+  ApiGetRecentFeedList,
 } from './feed.api-docs';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
@@ -109,7 +109,7 @@ export class FeedController {
     );
   }
 
-  @ApiGetLatestFeedList()
+  @ApiGetRecentFeedList()
   @Get('/recent')
   @HttpCode(HttpStatus.OK)
   async getRecentFeedList() {
