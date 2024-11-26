@@ -35,7 +35,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       0,
       CHAT_HISTORY_LIMIT - 1,
     );
-    const chatHistory = recentMessages.map((msg) => JSON.parse(msg));
+    const chatHistory = recentMessages.map((msg) => JSON.parse(msg)).reverse();
 
     client.emit('chatHistory', chatHistory);
 

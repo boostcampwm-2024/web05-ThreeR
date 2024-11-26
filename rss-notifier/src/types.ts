@@ -6,12 +6,12 @@ export interface RawFeed {
 
 export interface FeedObj {
   id: number;
-  rss_url: string;
+  rssUrl: string;
 }
 
 export interface FeedDetail {
-  blog_id: number;
-  pub_date: string;
+  blogId: number;
+  pubDate: string;
   title: string;
   link: string;
   imageUrl: string;

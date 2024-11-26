@@ -4,7 +4,7 @@ import FormInput from "@/components/RssRegistration/FormInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuth } from "@/hooks/queries/useAdminAuth";
 
 export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
   const [loginData, setLoginData] = useState<{ loginId: string; password: string }>({ loginId: "", password: "" });

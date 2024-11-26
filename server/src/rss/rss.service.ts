@@ -3,19 +3,21 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RssRejectRepository, RssRepository } from './rss.repository';
+import {
+  RssRejectRepository,
+  RssRepository,
+  RssAcceptRepository,
+} from './rss.repository';
 import { RssRegisterDto } from './dto/rss-register.dto';
-import { BlogRepository } from '../blog/blog.repository';
-import { Blog } from '../blog/blog.entity';
 import { EmailService } from '../common/email/email.service';
 import { DataSource } from 'typeorm';
-import { Rss, RssReject } from './rss.entity';
+import { Rss, RssReject, RssAccept } from './rss.entity';
 
 @Injectable()
 export class RssService {
   constructor(
     private readonly rssRepository: RssRepository,
-    private readonly blogRepository: BlogRepository,
+    private readonly rssAcceptRepository: RssAcceptRepository,
     private readonly emailService: EmailService,
     private readonly rssRejectRepository: RssRejectRepository,
     private readonly dataSource: DataSource,
@@ -28,7 +30,7 @@ export class RssService {
           rssUrl: rssRegisterDto.rssUrl,
         },
       }),
-      this.blogRepository.findOne({
+      this.rssAcceptRepository.findOne({
         where: {
           rssUrl: rssRegisterDto.rssUrl,
         },
@@ -61,7 +63,7 @@ export class RssService {
 
     await this.dataSource.transaction(async (manager) => {
       await Promise.all([
-        manager.save(Blog.fromRss(rss)),
+        manager.save(RssAccept.fromRss(rss)),
         manager.delete(Rss, id),
       ]);
     });
@@ -82,7 +84,7 @@ export class RssService {
         manager.remove(rss),
         manager.save(RssReject, {
           ...rss,
-          description: description,
+          description,
         }),
       ]);
       return transactionResult;
@@ -91,10 +93,18 @@ export class RssService {
   }
 
   async acceptRssHistory() {
-    return await this.blogRepository.find();
+    return await this.rssAcceptRepository.find({
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 
   async rejectRssHistory() {
-    return await this.rssRejectRepository.find();
+    return await this.rssRejectRepository.find({
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 }

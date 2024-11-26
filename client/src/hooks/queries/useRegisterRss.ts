@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-import { registerRss } from "@/api/queries/rssApi";
+import { registerRss } from "@/api/services/rss";
 import { RegisterRss, RegisterResponse } from "@/types/rss";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 
