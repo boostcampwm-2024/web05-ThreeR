@@ -5,7 +5,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export function ApiTodayStatistic() {
+export function ApiStatistic(type: 'today' | 'all') {
   return applyDecorators(
     ApiQuery({
       name: 'limit',
@@ -41,7 +41,7 @@ export function ApiTodayStatistic() {
         },
       },
       example: {
-        message: '금일 조회수 통계 조회 완료',
+        message: `${type === 'all' ? '전체' : '금일'} 조회수 통계 조회 완료`,
         data: [
           {
             id: 1,
