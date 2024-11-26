@@ -144,7 +144,7 @@ export function ApiSearchFeed() {
                     id: {
                       type: 'number',
                     },
-                    userName: {
+                    blogName: {
                       type: 'string',
                     },
                     title: {
@@ -177,7 +177,7 @@ export function ApiSearchFeed() {
             result: [
               {
                 id: 1,
-                userName: '사용자 이름',
+                blogName: '블로그 이름',
                 title: '데나무',
                 path: 'https://test.com/1',
                 createdAt: '2024-10-27T02:08:55.000Z',
