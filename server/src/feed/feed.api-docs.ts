@@ -59,32 +59,30 @@ export function ApiGetFeedList() {
             },
           },
         },
-        example: {
-          message: '피드 조회 완료',
-          data: {
-            result: [
-              {
-                id: 3,
-                author: '블로그 이름',
-                title: '피드 제목',
-                path: 'https://test.com',
-                createAt: '2024-06-16T20:00:57.000Z',
-                thumbnail: 'https://test.com/image.png',
-                viewCount: 1,
-              },
-            ],
-            lastId: 3,
-            hasMore: true,
-          },
+      },
+      example: {
+        message: '피드 조회 완료',
+        data: {
+          result: [
+            {
+              id: 3,
+              author: '블로그 이름',
+              title: '피드 제목',
+              path: 'https://test.com',
+              createAt: '2024-06-16T20:00:57.000Z',
+              thumbnail: 'https://test.com/image.png',
+              viewCount: 1,
+            },
+          ],
+          lastId: 3,
+          hasMore: true,
         },
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
   );
@@ -170,31 +168,29 @@ export function ApiSearchFeed() {
             },
           },
         },
-        example: {
-          message: '검색 결과 조회 완료',
-          data: {
-            totalCount: 1,
-            result: [
-              {
-                id: 1,
-                blogName: '블로그 이름',
-                title: '데나무',
-                path: 'https://test.com/1',
-                createdAt: '2024-10-27T02:08:55.000Z',
-              },
-            ],
-            totalPages: 3,
-            limit: 1,
-          },
+      },
+      example: {
+        message: '검색 결과 조회 완료',
+        data: {
+          totalCount: 1,
+          result: [
+            {
+              id: 1,
+              blogName: '블로그 이름',
+              title: '데나무',
+              path: 'https://test.com/1',
+              createdAt: '2024-10-27T02:08:55.000Z',
+            },
+          ],
+          totalPages: 3,
+          limit: 1,
         },
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
   );
@@ -310,17 +306,15 @@ export function ApiUpdateFeedViewCount() {
             type: 'string',
           },
         },
-        example: {
-          message: '요청이 성공적으로 처리되었습니다.',
-        },
+      },
+      example: {
+        message: '요청이 성공적으로 처리되었습니다.',
       },
     }),
     ApiNotFoundResponse({
       description: '해당 ID의 피드가 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '{feedId}번 피드를 찾을 수 없습니다.',
-        },
+      example: {
+        message: '{feedId}번 피드를 찾을 수 없습니다.',
       },
     }),
   );

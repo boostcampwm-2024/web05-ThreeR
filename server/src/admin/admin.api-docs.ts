@@ -21,33 +21,27 @@ export function ApiPostRegisterAdmin() {
             type: 'string',
           },
         },
-        example: {
-          message: '성공적으로 관리자 계정이 생성되었습니다.',
-        },
+      },
+      example: {
+        message: '성공적으로 관리자 계정이 생성되었습니다.',
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
     ApiConflictResponse({
       description: 'Conflict',
-      schema: {
-        example: {
-          message: '이미 존재하는 계정입니다.',
-        },
+      example: {
+        message: '이미 존재하는 계정입니다.',
       },
     }),
     ApiUnauthorizedResponse({
       description: 'Unauthorized',
-      schema: {
-        example: {
-          message: '인증되지 않은 요청입니다.',
-        },
+      example: {
+        message: '인증되지 않은 요청입니다.',
       },
     }),
   );
@@ -66,25 +60,21 @@ export function ApiPostLoginAdmin() {
             type: 'string',
           },
         },
-        example: {
-          message: '로그인이 성공적으로 처리되었습니다.',
-        },
+      },
+      example: {
+        message: '로그인이 성공적으로 처리되었습니다.',
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
     ApiUnauthorizedResponse({
       description: 'Unauthorized',
-      schema: {
-        example: {
-          message: '아이디 혹은 비밀번호가 잘못되었습니다.',
-        },
+      example: {
+        message: '아이디 혹은 비밀번호가 잘못되었습니다.',
       },
     }),
   );
@@ -103,17 +93,15 @@ export function ApiCheckAdminSessionId() {
             type: 'string',
           },
         },
-        example: {
-          message: '정상적인 sessionId입니다.',
-        },
+      },
+      example: {
+        message: '정상적인 sessionId입니다.',
       },
     }),
     ApiUnauthorizedResponse({
       description: 'Unauthorized',
-      schema: {
-        example: {
-          message: '인증되지 않은 요청입니다.',
-        },
+      example: {
+        message: '인증되지 않은 요청입니다.',
       },
     }),
   );

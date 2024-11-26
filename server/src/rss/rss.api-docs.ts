@@ -23,25 +23,21 @@ export function ApiPostRegisterRss() {
             type: 'string',
           },
         },
-        example: {
-          message: '신청이 완료되었습니다.',
-        },
+      },
+      example: {
+        message: '신청이 완료되었습니다.',
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
     ApiConflictResponse({
       description: 'Conflict',
-      schema: {
-        example: {
-          message: '이미 등록된 RSS URL입니다.',
-        },
+      example: {
+        message: '이미 등록된 RSS URL입니다.',
       },
     }),
   );
@@ -73,13 +69,13 @@ export function ApiGetRss() {
             },
           },
         },
-        example: {
-          id: 1,
-          name: '블로그 이름',
-          userName: '신청자 명',
-          email: 'test@test.com',
-          rssURL: 'https://test.com/rss',
-        },
+      },
+      example: {
+        id: 1,
+        name: '블로그 이름',
+        userName: '신청자 명',
+        email: 'test@test.com',
+        rssURL: 'https://test.com/rss',
       },
     }),
   );
@@ -104,33 +100,27 @@ export function ApiAcceptRss() {
             type: 'string',
           },
         },
-        example: {
-          message: '승인이 완료되었습니다.',
-        },
+      },
+      example: {
+        message: '승인이 완료되었습니다.',
       },
     }),
     ApiUnauthorizedResponse({
       description: '유효한 사용자 세션이 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '인증되지 않은 요청입니다.',
-        },
+      example: {
+        message: '인증되지 않은 요청입니다.',
       },
     }),
     ApiNotFoundResponse({
       description: '해당 ID의 RSS가 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '존재하지 않는 rss 입니다.',
-        },
+      example: {
+        message: '존재하지 않는 rss 입니다.',
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
   );
@@ -155,33 +145,27 @@ export function ApiRejectRss() {
             type: 'string',
           },
         },
-        example: {
-          message: '거절이 완료되었습니다.',
-        },
+      },
+      example: {
+        message: '거절이 완료되었습니다.',
       },
     }),
     ApiUnauthorizedResponse({
       description: '유효한 사용자 세션이 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '인증되지 않은 요청입니다.',
-        },
+      example: {
+        message: '인증되지 않은 요청입니다.',
       },
     }),
     ApiNotFoundResponse({
       description: '해당 ID의 RSS가 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '존재하지 않는 rss 입니다.',
-        },
+      example: {
+        message: '존재하지 않는 rss 입니다.',
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
   );
@@ -225,26 +209,24 @@ export function ApiAcceptHistory() {
             },
           },
         },
-        example: {
-          message: '승인 기록 조회가 완료되었습니다.',
-          data: [
-            {
-              id: 1,
-              name: '블로그 이름',
-              userName: '사용자 이름',
-              email: 'test@test.com',
-              rssUrl: 'https://test/rss',
-            },
-          ],
-        },
+      },
+      example: {
+        message: '승인 기록 조회가 완료되었습니다.',
+        data: [
+          {
+            id: 1,
+            name: '블로그 이름',
+            userName: '사용자 이름',
+            email: 'test@test.com',
+            rssUrl: 'https://test/rss',
+          },
+        ],
       },
     }),
     ApiUnauthorizedResponse({
       description: '유효한 사용자 세션이 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '인증되지 않은 요청입니다.',
-        },
+      example: {
+        message: '인증되지 않은 요청입니다.',
       },
     }),
   );
@@ -288,26 +270,24 @@ export function ApiRejectHistory() {
             },
           },
         },
-        example: {
-          message: 'RSS 거절 기록을 조회하였습니다.',
-          data: [
-            {
-              id: 1,
-              name: '블로그 이름',
-              userName: '사용자 이름',
-              email: 'test@test.com',
-              rssUrl: 'https://test/rss',
-            },
-          ],
-        },
+      },
+      example: {
+        message: 'RSS 거절 기록을 조회하였습니다.',
+        data: [
+          {
+            id: 1,
+            name: '블로그 이름',
+            userName: '사용자 이름',
+            email: 'test@test.com',
+            rssUrl: 'https://test/rss',
+          },
+        ],
       },
     }),
     ApiUnauthorizedResponse({
       description: '유효한 사용자 세션이 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '인증되지 않은 요청입니다.',
-        },
+      example: {
+        message: '인증되지 않은 요청입니다.',
       },
     }),
   );
