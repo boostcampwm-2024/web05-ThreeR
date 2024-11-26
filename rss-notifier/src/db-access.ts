@@ -98,6 +98,7 @@ export const deleteRecentFeedStartId = async () => {
     if (keys.length > 0) {
       redis.del(...keys);
     }
+    redis.set("feed:trend:exist", "false");
   } catch (error) {
     logger.error(
       `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
@@ -128,6 +129,7 @@ export const setRecentFeedList = async (startId: number) => {
     for (const feed of resultList) {
       await redis.hset(`feed:recent:${feed.id}`, feed);
     }
+    redis.set("feed:trend:exist", "true");
   } catch (error) {
     logger.error(
       `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
