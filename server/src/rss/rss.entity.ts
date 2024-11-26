@@ -66,13 +66,17 @@ export class RssAccept extends RssInformation {
   @Column({ name: 'name', nullable: false })
   name: string;
 
-  static fromRss(rss: Rss) {
+  @Column({ name: 'blog_platform', default: 'etc', nullable: false })
+  blogPlatform: string;
+
+  static fromRss(rss: Rss, blogPlatform: string) {
     const blog = new RssAccept();
     blog.name = rss.name;
     blog.userName = rss.userName;
     blog.email = rss.email;
     blog.rssUrl = rss.rssUrl;
     blog.feeds = [];
+    blog.blogPlatform = blogPlatform;
 
     return blog;
   }
