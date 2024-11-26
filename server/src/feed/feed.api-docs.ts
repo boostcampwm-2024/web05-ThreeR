@@ -38,6 +38,7 @@ export function ApiGetFeedList() {
               {
                 id: 24,
                 author: 'seok3765.log',
+                blogPlatform: 'velog',
                 title: 'ECS vs EKS 비교 분석',
                 path: 'https://dev-park.dev/ecs-eks',
                 createAt: '2024-03-11T06:30:00.000Z',
@@ -47,6 +48,7 @@ export function ApiGetFeedList() {
               {
                 id: 23,
                 author: 'seok3765.log',
+                blogPlatform: 'velog',
                 title: 'S3 비용 최적화 가이드',
                 path: 'https://dev-park.dev/s3-cost',
                 createAt: '2024-03-12T02:40:00.000Z',
@@ -56,6 +58,7 @@ export function ApiGetFeedList() {
               {
                 id: 22,
                 author: 'seok3765.log',
+                blogPlatform: 'velog',
                 title: 'DynamoDB 데이터 모델링',
                 path: 'https://dev-park.dev/dynamodb-modeling',
                 createAt: '2024-03-13T07:20:00.000Z',
@@ -172,6 +175,7 @@ export function ApiGetTrendSse() {
               properties: {
                 id: { type: 'number' },
                 author: { type: 'string' },
+                blogPlatform: { type: 'string' },
                 title: { type: 'string' },
                 path: { type: 'string' },
                 createdAt: {
@@ -194,6 +198,7 @@ export function ApiGetTrendSse() {
               {
                 id: 1,
                 author: '블로그 이름',
+                blogPlatform: 'etc',
                 title: '게시글 제목',
                 path: 'https://test1.com/1',
                 createdAt: '2024-11-24T01:00:00.000Z',
@@ -203,6 +208,7 @@ export function ApiGetTrendSse() {
               {
                 id: 2,
                 author: '블로그 이름',
+                blogPlatform: 'etc',
                 title: '게시글 제목',
                 path: 'https://test2.com/1',
                 createdAt: '2024-11-24T02:00:00.000Z',
@@ -220,6 +226,7 @@ export function ApiGetTrendSse() {
               {
                 id: 3,
                 author: '블로그 이름',
+                blogPlatform: 'etc',
                 title: '게시글 제목',
                 path: 'https://test3.com/1',
                 createdAt: '2024-11-24T03:00:00.000Z',
@@ -229,6 +236,7 @@ export function ApiGetTrendSse() {
               {
                 id: 4,
                 author: '블로그 이름',
+                blogPlatform: 'etc',
                 title: '게시글 제목',
                 path: 'https://test4.com/1',
                 createdAt: '2024-11-24T04:00:00.000Z',
