@@ -15,7 +15,13 @@ import logo from "@/assets/logo-denamu-main.svg";
 
 import { AdminNavigationMenu } from "./AdminNavigationMenu";
 
-export const AdminHeader = ({ setLogin }: { setLogin: () => void }) => {
+export const AdminHeader = ({
+  setLogin,
+  handleTap,
+}: {
+  setLogin: () => void;
+  handleTap: (tap: "RSS" | "MEMBER") => void;
+}) => {
   return (
     <>
       <header className="border-b">
@@ -26,7 +32,7 @@ export const AdminHeader = ({ setLogin }: { setLogin: () => void }) => {
                 <img className="h-10 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
               </div>
 
-              <AdminNavigationMenu />
+              <AdminNavigationMenu handleTap={handleTap} />
             </div>
 
             {/* Right Side Menu */}
