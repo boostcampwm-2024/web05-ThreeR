@@ -7,7 +7,7 @@ import { DataSource } from 'typeorm';
 import { Feed } from '../../src/feed/feed.entity';
 import { RssAccept } from '../../src/rss/rss.entity';
 
-describe('Today view count statistic E2E Test : GET /api/statistic', () => {
+describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
   let moduleFixture: TestingModule;
   let app: INestApplication;
   let redisService: RedisService;
