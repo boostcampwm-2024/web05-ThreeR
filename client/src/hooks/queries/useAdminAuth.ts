@@ -21,10 +21,10 @@ export const useAdminAuth = (
   });
 };
 export const useAdminCheck = () => {
-  const { data, isLoading, error } = useQuery({
+  const { status, isLoading, error } = useQuery({
     queryKey: ["adminCheck"],
     queryFn: auth.check,
     retry: 1,
   });
-  return { data, isLoading, error };
+  return { status, isLoading, error };
 };
