@@ -13,6 +13,7 @@ export function OpenChat() {
   return (
     <button onClick={toggleSidebar} className="">
       <NavigationMenuLink className={`${navigationMenuTriggerStyle()} flex gap-2 `} href="#">
+
         <MessageCircleMore size={16} />
         <span>채팅</span>
       </NavigationMenuLink>

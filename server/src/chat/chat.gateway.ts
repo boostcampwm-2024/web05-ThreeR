@@ -9,7 +9,6 @@ import { Server, Socket } from 'socket.io';
 import { RedisService } from '../common/redis/redis.service';
 import { Injectable } from '@nestjs/common';
 import { getRandomNickname } from '@woowa-babble/random-nickname';
-import { escape } from 'html-escaper';
 
 const CLIENT_KEY_PREFIX = 'socket_client:';
 const CHAT_HISTORY_KEY = 'chat:history';
@@ -56,11 +55,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const ip = this.getIp(client);
     const redisKey = CLIENT_KEY_PREFIX + ip;
     const clientName = await this.redisService.redisClient.get(redisKey);
-    const chatMessage = escape(payload.message);
 
     const broadcastPayload = {
       username: clientName,
-      message: chatMessage,
+      message: payload.message,
       timestamp: new Date(),
     };
     this.server.emit('message', broadcastPayload);

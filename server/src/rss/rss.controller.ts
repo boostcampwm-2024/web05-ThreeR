@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   Param,
@@ -20,8 +19,11 @@ import {
   ApiGetRss,
   ApiAcceptRss,
   ApiRejectRss,
+  ApiAcceptHistory,
+  ApiRejectHistory,
 } from './rss.api-docs';
 import { ApiResponse } from '../common/response/common.response';
+import { RejectRssDto } from './dto/rss-reject.dto';
 
 @ApiTags('RSS')
 @Controller('rss')
@@ -56,11 +58,37 @@ export class RssController {
   }
 
   @ApiRejectRss()
+  @UsePipes(ValidationPipe)
   @UseGuards(CookieAuthGuard)
-  @Delete('reject/:id')
-  @HttpCode(204)
-  async rejectRss(@Param('id', ParseIntPipe) id: number) {
-    await this.rssService.rejectRss(id);
+  @Post('reject/:id')
+  @HttpCode(200)
+  async rejectRss(
+    @Body() body: RejectRssDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    await this.rssService.rejectRss(id, body.description);
     return ApiResponse.responseWithNoContent('거절이 완료되었습니다.');
+  }
+
+  @ApiAcceptHistory()
+  @UseGuards(CookieAuthGuard)
+  @Get('history/accept')
+  async getHistoryAcceptRss() {
+    const rssAcceptHistory = await this.rssService.acceptRssHistory();
+    return ApiResponse.responseWithData(
+      '승인 기록 조회가 완료되었습니다.',
+      rssAcceptHistory,
+    );
+  }
+
+  @ApiRejectHistory()
+  @UseGuards(CookieAuthGuard)
+  @Get('history/reject')
+  async getHistoryRejectRss() {
+    const rssRejectHistory = await this.rssService.rejectRssHistory();
+    return ApiResponse.responseWithData(
+      'RSS 거절 기록을 조회하였습니다.',
+      rssRejectHistory,
+    );
   }
 }

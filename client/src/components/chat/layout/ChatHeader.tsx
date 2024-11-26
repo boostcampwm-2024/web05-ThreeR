@@ -14,7 +14,7 @@ export default function ChatHeader({ userCount }: { userCount: number }) {
           <span>
             <Users color="gray" />
           </span>
-          <Badge variant="secondary">{userCount}명 참여중</Badge>
+          <Badge color="bg-secondary/70">{userCount}명 참여중</Badge>
         </div>
         <CloseChat />
       </div>
