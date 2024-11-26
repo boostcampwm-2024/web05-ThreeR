@@ -83,7 +83,7 @@ export function ApiGetFeedList() {
       description: 'Bad Request',
       schema: {
         example: {
-          message: '오류 메세지 출력',
+          message: '오류 메세지',
         },
       },
     }),
@@ -193,7 +193,7 @@ export function ApiSearchFeed() {
       description: 'Bad Request',
       schema: {
         example: {
-          message: '오류 메세지 출력',
+          message: '오류 메세지',
         },
       },
     }),

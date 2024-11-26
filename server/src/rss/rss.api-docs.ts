@@ -18,6 +18,11 @@ export function ApiPostRegisterRss() {
     ApiCreatedResponse({
       description: 'Created',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
         example: {
           message: '신청이 완료되었습니다.',
         },
@@ -27,7 +32,7 @@ export function ApiPostRegisterRss() {
       description: 'Bad Request',
       schema: {
         example: {
-          message: '값 검증 오류 메세지',
+          message: '오류 메세지',
         },
       },
     }),
@@ -50,12 +55,30 @@ export function ApiGetRss() {
     ApiOkResponse({
       description: 'OK',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'number' },
+                name: { type: 'string' },
+                userName: { type: 'string' },
+                email: { type: 'string', format: 'email' },
+                rssUrl: { type: 'string', format: 'url' },
+              },
+            },
+          },
+        },
         example: {
           id: 1,
-          name: '안성윤',
-          userName: '성윤',
-          email: 'a@a.com',
-          rssURL: 'url',
+          name: '블로그 이름',
+          userName: '신청자 명',
+          email: 'test@test.com',
+          rssURL: 'https://test.com/rss',
         },
       },
     }),
@@ -76,46 +99,13 @@ export function ApiAcceptRss() {
     ApiCreatedResponse({
       description: '승인 성공 시',
       schema: {
-        example: {
-          message: '승인처리 되었습니다.',
+        properties: {
+          message: {
+            type: 'string',
+          },
         },
-      },
-    }),
-    ApiUnauthorizedResponse({
-      description: '유효한 사용자 세션이 존재하지 않는 경우',
-      schema: {
         example: {
-          message: '인증되지 않은 요청입니다.',
-        },
-      },
-    }),
-    ApiNotFoundResponse({
-      description: '해당 ID의 RSS가 존재하지 않는 경우',
-      schema: {
-        example: {
-          message: '존재하지 않는 rss 입니다.',
-        },
-      },
-    }),
-  );
-}
-
-export function ApiRejectRss() {
-  return applyDecorators(
-    ApiOperation({
-      summary: 'RSS 거부 API',
-    }),
-    ApiParam({
-      name: 'id',
-      type: Number,
-      description: '거절할 RSS의 ID',
-      example: 1,
-    }),
-    ApiOkResponse({
-      description: '승인 거절 시',
-      schema: {
-        example: {
-          message: '거절처리 되었습니다.',
+          message: '승인이 완료되었습니다.',
         },
       },
     }),
@@ -136,10 +126,61 @@ export function ApiRejectRss() {
       },
     }),
     ApiBadRequestResponse({
-      description: '거부 사유가 없을 경우',
+      description: 'Bad Request',
       schema: {
         example: {
-          message: '거부 사유를 필수로 입력해야 합니다.',
+          message: '오류 메세지',
+        },
+      },
+    }),
+  );
+}
+
+export function ApiRejectRss() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'RSS 거부 API',
+    }),
+    ApiParam({
+      name: 'id',
+      type: Number,
+      description: '거절할 RSS의 ID',
+      example: 1,
+    }),
+    ApiOkResponse({
+      description: '승인 거절 시',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
+        example: {
+          message: '거절이 완료되었습니다.',
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      description: '유효한 사용자 세션이 존재하지 않는 경우',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
+        },
+      },
+    }),
+    ApiNotFoundResponse({
+      description: '해당 ID의 RSS가 존재하지 않는 경우',
+      schema: {
+        example: {
+          message: '존재하지 않는 rss 입니다.',
+        },
+      },
+    }),
+    ApiBadRequestResponse({
+      description: 'Bad Request',
+      schema: {
+        example: {
+          message: '오류 메세지',
         },
       },
     }),
@@ -154,24 +195,55 @@ export function ApiAcceptHistory() {
     ApiOkResponse({
       description: '기록 조회 성공시',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'number',
+                },
+                name: {
+                  type: 'string',
+                },
+                userName: {
+                  type: 'string',
+                },
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                rssUrl: {
+                  type: 'string',
+                  format: 'url',
+                },
+              },
+            },
+          },
+        },
         example: {
-          message: 'RSS 승인 기록을 조회하였습니다.',
+          message: '승인 기록 조회가 완료되었습니다.',
           data: [
             {
               id: 1,
-              name: 'seok3765.log',
-              userName: 'J235_조민석',
-              email: 'seok3765@naver.com',
-              rssUrl: 'https://v2.velog.io/rss/@seok3765',
-            },
-            {
-              id: 2,
-              name: 'seok3766.log',
-              userName: '조민석',
-              email: 'seok3766@naver.com',
-              rssUrl: 'https://v2.velog.io/rss/@seok3766',
+              name: '블로그 이름',
+              userName: '사용자 이름',
+              email: 'test@test.com',
+              rssUrl: 'https://test/rss',
             },
           ],
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      description: '유효한 사용자 세션이 존재하지 않는 경우',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
         },
       },
     }),
@@ -186,26 +258,55 @@ export function ApiRejectHistory() {
     ApiOkResponse({
       description: '기록 조회 성공시',
       schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'number',
+                },
+                name: {
+                  type: 'string',
+                },
+                userName: {
+                  type: 'string',
+                },
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                rssUrl: {
+                  type: 'string',
+                  format: 'url',
+                },
+              },
+            },
+          },
+        },
         example: {
           message: 'RSS 거절 기록을 조회하였습니다.',
           data: [
             {
               id: 1,
-              name: 'seok3765.log',
-              userName: 'J235_조민석',
-              email: 'seok3765@naver.com',
-              rssUrl: 'https://v2.velog.io/rss/@seok3765',
-              description: '개발 블로그가 아닙니다.',
-            },
-            {
-              id: 2,
-              name: 'seok3766.log',
-              userName: '조민석',
-              email: 'seok3766@naver.com',
-              rssUrl: 'https://v2.velog.io/rss/@seok3766',
-              description: '그냥',
+              name: '블로그 이름',
+              userName: '사용자 이름',
+              email: 'test@test.com',
+              rssUrl: 'https://test/rss',
             },
           ],
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      description: '유효한 사용자 세션이 존재하지 않는 경우',
+      schema: {
+        example: {
+          message: '인증되지 않은 요청입니다.',
         },
       },
     }),
