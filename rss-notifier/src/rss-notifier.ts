@@ -31,15 +31,15 @@ const getImageUrl = async (link: string): Promise<string> => {
   return imageUrl;
 };
 
-const fetchRss = async (rss_url: string): Promise<RawFeed[]> => {
-  const response = await fetch(rss_url, {
+const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
+  const response = await fetch(rssUrl, {
     headers: {
       Accept: "application/rss+xml, application/xml, text/xml",
     },
   });
 
   if (!response.ok) {
-    throw new Error(`${rss_url}에서 xml 추출 실패`);
+    throw new Error(`${rssUrl}에서 xml 추출 실패`);
   }
   const xmlData = await response.text();
   const objFromXml = xmlParser.parse(xmlData);
@@ -56,10 +56,10 @@ const fetchRss = async (rss_url: string): Promise<RawFeed[]> => {
 
 const findNewFeeds = async (
   rssObj: FeedObj,
-  now: number,
+  now: number
 ): Promise<FeedDetail[]> => {
   try {
-    const feeds = await fetchRss(rssObj.rss_url);
+    const feeds = await fetchRss(rssObj.rssUrl);
 
     const filteredFeeds = feeds.filter((item) => {
       const pubDate = new Date(item.pubDate).setMinutes(0, 0, 0);
@@ -74,19 +74,19 @@ const findNewFeeds = async (
         const formattedDate = date.toISOString().slice(0, 19).replace("T", " ");
 
         return {
-          blog_id: rssObj.id,
-          pub_date: formattedDate,
+          blogId: rssObj.id,
+          pubDate: formattedDate,
           title: feed.title,
           link: decodeURIComponent(feed.link),
           imageUrl: imageUrl,
         };
-      }),
+      })
     );
 
     return detailedFeeds;
   } catch (err) {
     logger.warn(
-      `[${rssObj.rss_url}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`,
+      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`
     );
     return [];
   }
@@ -111,15 +111,15 @@ export const performTask = async () => {
     rssObjects.map(async (rssObj) => {
       idx += 1;
       logger.info(
-        `[${idx}번째 rss [${rssObj.rss_url}] 에서 데이터 조회하는 중...`,
+        `[${idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
       );
       return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
-    }),
+    })
   );
 
   const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
-    const dateCurrent = new Date(currentFeed.pub_date);
-    const dateNext = new Date(nextFeed.pub_date);
+    const dateCurrent = new Date(currentFeed.pubDate);
+    const dateNext = new Date(nextFeed.pubDate);
     return dateCurrent.getTime() - dateNext.getTime();
   });
 

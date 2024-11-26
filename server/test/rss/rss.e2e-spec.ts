@@ -4,8 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
-import { Rss } from '../../src/rss/rss.entity';
-import { Blog } from '../../src/blog/blog.entity';
+import { Rss, RssAccept } from '../../src/rss/rss.entity';
 import { HttpExceptionsFilter } from './../../src/common/filters/http-exception.filter';
 import { InternalExceptionsFilter } from '../../src/common/filters/internal-exceptions.filter';
 import { WinstonLoggerService } from '../../src/common/logger/logger.service';
@@ -66,7 +65,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
     });
 
     it('이미 등록된 RSS를 또 신청한다.', async () => {
-      const blogRepository = dataSource.getRepository(Blog);
+      const blogRepository = dataSource.getRepository(RssAccept);
       const blog = blogRepository.create({
         name: input.blog,
         userName: input.name,

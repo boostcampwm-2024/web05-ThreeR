@@ -98,7 +98,7 @@ export class FeedService {
 
     const qb = this.feedRepository
       .createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.blog', 'blog')
+      .leftJoinAndSelect('feed.blog', 'rss_accept')
       .addSelect(this.getMatchAgainstExpression(type, 'find'), 'relevance')
       .where(this.getWhereCondition(type))
       .setParameters({ find })
@@ -119,9 +119,9 @@ export class FeedService {
       case 'title':
         return `MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
       case 'blogName':
-        return `MATCH(blog.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
+        return `MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
       case 'all':
-        return `(MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE) + MATCH(blog.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE))`;
+        return `(MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE) + MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE))`;
       default:
         throw new BadRequestException('검색 타입이 잘못되었습니다.');
     }
@@ -132,9 +132,9 @@ export class FeedService {
       case 'title':
         return 'MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE)';
       case 'blogName':
-        return 'MATCH(blog.name) AGAINST (:find IN NATURAL LANGUAGE MODE)';
+        return 'MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE)';
       case 'all':
-        return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(blog.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
+        return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
       default:
         throw new BadRequestException('검색 타입이 잘못되었습니다.');
     }
