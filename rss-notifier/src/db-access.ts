@@ -19,7 +19,7 @@ export const pool = mysql.createPool({
   connectionLimit: CONNECTION_LIMIT,
 });
 
-export const careateRedisClient = async () => {
+export const createRedisClient = async () => {
   return new Redis({
     host: process.env.ReDIS_HOST,
     port: parseInt(process.env.REDIS_PORT),
@@ -92,13 +92,13 @@ export const getRecentFeedStartId = async () => {
 };
 
 export const deleteRecentFeedStartId = async () => {
-  const redis = await careateRedisClient();
+  const redis = await createRedisClient();
   try {
     const keys = await redis.keys("feed:recent:*");
     if (keys.length > 0) {
       redis.del(...keys);
     }
-    redis.set("feed:trend:exist", "false");
+    redis.set("feed:recent", "false");
   } catch (error) {
     logger.error(
       `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
@@ -111,25 +111,25 @@ export const deleteRecentFeedStartId = async () => {
 };
 
 export const setRecentFeedList = async (startId: number) => {
-  const redis = await careateRedisClient();
+  const redis = await createRedisClient();
   try {
     const query = `SELECT f.id,
-                              f.created_at    AS createdAt,
-                              f.title,
-                              f.view_count    AS viewCount,
-                              f.path,
-                              f.thumbnail,
-                              f.blog_id       AS blogId,
-                              r.blog_platform AS blogPlatform,
-                              r.name          AS author
-                       FROM feed f
-                                JOIN rss_accept r ON f.blog_id = r.id
-                       WHERE f.id >= ${startId}`;
+                          f.created_at    AS createdAt,
+                          f.title,
+                          f.view_count    AS viewCount,
+                          f.path,
+                          f.thumbnail,
+                          f.blog_id       AS blogId,
+                          r.blog_platform AS blogPlatform,
+                          r.name          AS author
+                   FROM feed f
+                   JOIN rss_accept r ON f.blog_id = r.id
+                   WHERE f.id >= ${startId}`;
     const resultList = await executeQuery(query);
     for (const feed of resultList) {
       await redis.hset(`feed:recent:${feed.id}`, feed);
     }
-    redis.set("feed:trend:exist", "true");
+    redis.set("feed:recent", "true");
   } catch (error) {
     logger.error(
       `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
