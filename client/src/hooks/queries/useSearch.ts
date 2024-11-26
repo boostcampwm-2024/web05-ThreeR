@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { debounce } from "@/utils/debounce";
 
 // import axios from "axios"; //mockAPI사용시
-import { getSearch } from "@/api/queries/search";
+import { getSearch } from "@/api/services/search";
 import { SearchRequest } from "@/types/search";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 

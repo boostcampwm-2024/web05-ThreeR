@@ -14,7 +14,7 @@ export class FeedResponseDto {
   private static mapFeedToFeedResponseDto(feed: Feed) {
     return new FeedResponseDto(
       feed.id,
-      feed.blog.userName,
+      feed.blog.name,
       feed.title,
       feed.path,
       feed.createdAt,

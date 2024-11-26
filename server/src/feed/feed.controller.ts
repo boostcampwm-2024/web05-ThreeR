@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Post,
   Query,
   Req,
   Res,
@@ -19,7 +20,6 @@ import { SearchFeedReq } from './dto/search-feed.dto';
 import {
   ApiGetFeedList,
   ApiSearchFeed,
-  ApiGetTrendList,
   ApiUpdateFeedViewCount,
   ApiGetTrendSse,
 } from './feed.api-docs';
@@ -50,21 +50,22 @@ export class FeedController {
     );
   }
 
-  @ApiGetTrendList()
-  @Get('trend')
-  async getTrendList() {
-    const responseData = await this.feedService.getTrendList();
-    return ApiResponse.responseWithData('트렌드 피드 조회 완료', responseData);
-  }
-
   @ApiGetTrendSse()
   @Sse('trend/sse')
   async sseTrendList() {
     return new Observable((observer) => {
+      this.feedService.getTrendList().then((trendData) => {
+        observer.next({
+          data: {
+            message: '현재 트렌드 피드 수신 완료',
+            data: trendData,
+          },
+        });
+      });
       this.eventService.on('ranking-update', (trendData) => {
         observer.next({
           data: {
-            message: '트렌드 피드 수신 완료',
+            message: '새로운 트렌드 피드 수신 완료',
             data: trendData,
           },
         });
@@ -87,7 +88,7 @@ export class FeedController {
   }
 
   @ApiUpdateFeedViewCount()
-  @Get('/:feedId')
+  @Post('/:feedId')
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateFeedViewCount(

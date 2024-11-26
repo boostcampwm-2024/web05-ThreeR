@@ -4,7 +4,11 @@ import { NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/
 
 export default function SearchButton({ handleSearchModal }: { handleSearchModal: () => void }) {
   return (
-    <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={handleSearchModal} href="#">
+    <NavigationMenuLink
+      className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}
+      onClick={handleSearchModal}
+      href="#"
+    >
       <div className="flex items-center gap-2">
         <Search size={16} />
         <span>검색</span>

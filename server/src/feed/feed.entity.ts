@@ -7,7 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Blog } from '../blog/blog.entity';
+import { RssAccept } from '../rss/rss.entity';
 
 @Entity({ name: 'feed' })
 export class Feed extends BaseEntity {
@@ -41,11 +41,11 @@ export class Feed extends BaseEntity {
   })
   thumbnail: string;
 
-  @ManyToOne((type) => Blog, (blog) => blog.feeds, {
+  @ManyToOne((type) => RssAccept, (rssAccept) => rssAccept.feeds, {
     nullable: false,
   })
   @JoinColumn({
     name: 'blog_id',
   })
-  blog: Blog;
+  blog: RssAccept;
 }
