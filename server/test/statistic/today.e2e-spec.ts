@@ -86,8 +86,6 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
     ]);
   });
 
-  beforeEach(async () => {});
-
   describe('관리자 권한이 없을 경우', () => {
     it('관리자 쿠키가 없다.', async () => {
       const response = await request(app.getHttpServer()).get(
