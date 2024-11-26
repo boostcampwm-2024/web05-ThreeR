@@ -3,6 +3,7 @@
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^4.5.0",
     "html-escaper": "^3.0.3",
+    "ioredis": "^5.4.1",
     "js-yaml": "^4.1.0",
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
