@@ -24,10 +24,9 @@ import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 
-
-import { SidebarProvider } from "../ui/sidebar";
 import { TOAST_MESSAGES } from "@/constants/messages";
 
+import { SidebarProvider } from "../ui/sidebar";
 
 export default function Header() {
   const [modals, setModals] = useState({ search: false, rss: false, login: false, chat: false });
@@ -46,12 +45,11 @@ export default function Header() {
   return (
     <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between overflow-hidden">
-          {/* Logo */}
-
+        <div className="flex h-20 items-center overflow-hidden justify-around">
           <div className="flex-shrink-0">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
+          <SearchButton handleSearchModal={() => toggleModal("search")} />
           <DesktopNavigation toggleModal={toggleModal} />
           <MobileNavigation toggleModal={toggleModal} />
         </div>
@@ -68,7 +66,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
   return (
     <div className="hidden md:flex md:items-center">
       <NavigationMenu>
-        <NavigationMenuList className="gap-2">
+        <NavigationMenuList>
           <NavigationMenuItem>
             <div className="flex h-full items-center">
               <SidebarProvider defaultOpen={false}>
@@ -77,11 +75,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
               </SidebarProvider>
             </div>
           </NavigationMenuItem>
-          <NavigationMenuItem>
-            <div className="flex h-full items-center">
-              <SearchButton handleSearchModal={() => toggleModal("search")} />
-            </div>
-          </NavigationMenuItem>
+
           <NavigationMenuItem>
             <NavigationMenuLink
               className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}

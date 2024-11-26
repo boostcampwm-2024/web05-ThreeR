@@ -20,7 +20,7 @@ export function Chat() {
   }, []);
 
   return (
-    <Sidebar side="right">
+    <Sidebar side="right" variant="floating">
       <SidebarContent className="flex flex-col h-full w-full">
         <ChatHeader userCount={userCount} />
         <ChatSection chatHistory={chatHistory} />
