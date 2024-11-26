@@ -3,13 +3,16 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 
 import { RejectModal } from "@/components/admin/rss/RejectModal";
-import { RssRequestCard } from "@/components/admin/rss/RssRequestCard";
+import AcceptedTab from "@/components/admin/taps/AcceptedTap";
+import PendingTab from "@/components/admin/taps/PendingTap";
+import RejectedTab from "@/components/admin/taps/RejectedTap";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useFetchRss, useFetchAccept, useFetchReject } from "@/hooks/queries/useFetchRss";
 import { useAdminAccept, useAdminReject } from "@/hooks/queries/useRssActions";
 
+import { AdminRssData } from "@/types/rss";
 import { AdminRequest } from "@/types/rss";
 
 type SelectedBlogType = {
@@ -19,6 +22,8 @@ type SelectedBlogType = {
 
 export const AdminTabs = () => {
   const [selectedBlog, setSelectedBlog] = useState<SelectedBlogType>({ blogId: 0, blogName: "" });
+  const [reason, setReason] = useState("");
+
   const {
     data: pendingData,
     isLoading: isPendingLoading,
@@ -41,6 +46,7 @@ export const AdminTabs = () => {
   } = useFetchReject();
 
   const onSuccess = () => {
+    setReason("");
     refetchRss();
     refetchAccept();
     refetchReject();
@@ -54,6 +60,7 @@ export const AdminTabs = () => {
     } else {
       console.error("Unknown Error:", error);
     }
+    setReason("");
     refetchRss();
     refetchAccept();
     refetchReject();
@@ -73,10 +80,9 @@ export const AdminTabs = () => {
   if (isPendingLoading || isAcceptedLoading || isRejectedLoading) return <div>Loading...</div>;
   if (pendingError || acceptedError || rejectedError) return <div>Error loading data</div>;
 
-  const pendingRss = pendingData.data;
-  const acceptedRss = acceptedData.data;
-  const rejectedRss = rejectedData.data;
-  console.log(pendingData);
+  const pendingRss: AdminRssData[] = pendingData.data;
+  const acceptedRss: AdminRssData[] = acceptedData.data;
+  const rejectedRss: AdminRssData[] = rejectedData.data;
   return (
     <div>
       <Tabs defaultValue="pending" className="mb-8">
@@ -95,58 +101,20 @@ export const AdminTabs = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="space-y-4 mt-4">
-          {pendingRss.map((request) => (
-            <RssRequestCard
-              key={request.id}
-              request={request}
-              onApprove={() => handleActions(request, "accept")}
-              onReject={() =>
-                handleSelectedBlog({
-                  blogName: request.name,
-                  blogId: request.id,
-                })
-              }
-            />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="accepted" className="space-y-4 mt-4">
-          {acceptedRss.map((request) => (
-            <RssRequestCard
-              key={request.id}
-              request={request}
-              onApprove={() => handleActions(request, "accept")}
-              onReject={() =>
-                handleSelectedBlog({
-                  blogName: request.name,
-                  blogId: request.id,
-                })
-              }
-            />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="rejected" className="space-y-4 mt-4">
-          {rejectedRss.map((request) => (
-            <RssRequestCard
-              key={request.id}
-              request={request}
-              onApprove={() => handleActions(request, "accept")}
-              onReject={() =>
-                handleSelectedBlog({
-                  blogName: request.name,
-                  blogId: request.id,
-                })
-              }
-            />
-          ))}
-        </TabsContent>
+        <PendingTab
+          data={pendingRss}
+          onApprove={(request) => handleActions(request, "accept")}
+          onReject={(request) => handleSelectedBlog({ blogName: request.name, blogId: request.id })}
+        />
+        <AcceptedTab data={acceptedRss} />
+        <RejectedTab data={rejectedRss} />
       </Tabs>
       <RejectModal
         blogName={selectedBlog?.blogName}
-        onSubmit={() => handleActions({ id: selectedBlog.blogId }, "reject")}
+        onSubmit={() => handleActions({ id: selectedBlog.blogId, rejectMessage: reason }, "reject")}
         onCancel={() => setSelectedBlog({ blogId: 0, blogName: "" })}
+        rejectMessage={reason}
+        handleReason={setReason}
       />
     </div>
   );
