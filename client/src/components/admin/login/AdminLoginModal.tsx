@@ -1,6 +1,17 @@
 import { useState } from "react";
 
 import FormInput from "@/components/RssRegistration/FormInput";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -8,6 +19,7 @@ import { useAdminAuth } from "@/hooks/queries/useAdminAuth";
 
 export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
   const [loginData, setLoginData] = useState<{ loginId: string; password: string }>({ loginId: "", password: "" });
+  const [loginError, setLoginError] = useState<boolean>(false);
   const handleChange = (field: "loginId" | "password", value: string) => {
     setLoginData((prevData) => ({
       ...prevData,
@@ -19,6 +31,7 @@ export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
   };
 
   const onError = (error: any) => {
+    setLoginError(true);
     console.log(error);
   };
   const { mutate } = useAdminAuth(onSuccess, onError);
@@ -60,6 +73,24 @@ export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
           </Button>
         </CardFooter>
       </Card>
+
+      <AlertDialog open={loginError}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>로그인 실패</AlertDialogTitle>
+            <AlertDialogDescription>아이디 또는 비밀번호를 확인하세요.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                setLoginError(false);
+              }}
+            >
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
