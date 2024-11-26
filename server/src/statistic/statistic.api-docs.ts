@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiOkResponse,
   ApiQuery,
   ApiUnauthorizedResponse,
@@ -49,6 +50,19 @@ export function ApiStatistic(type: 'today' | 'all') {
             viewCount: 0,
           },
         ],
+      },
+    }),
+    ApiBadRequestResponse({
+      description: 'Bad Request',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
+      },
+      example: {
+        message: '오류 메세지',
       },
     }),
     ApiUnauthorizedResponse({
