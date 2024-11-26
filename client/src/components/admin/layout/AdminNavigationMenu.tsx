@@ -7,18 +7,14 @@ export const AdminNavigationMenu = () => {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <li>
-              <Button variant="ghost" className="w-full justify-start">
-                RSS 목록
-              </Button>
-            </li>
+            <Button variant="ghost" className="w-full justify-start">
+              RSS 목록
+            </Button>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <li>
-              <Button variant="ghost" className="w-full justify-start">
-                회원 관리
-              </Button>
-            </li>
+            <Button variant="ghost" className="w-full justify-start">
+              회원 관리
+            </Button>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
