@@ -9,7 +9,7 @@ import SearchResultItem from "./SearchResultItem";
 import { useSearchStore } from "@/store/useSearchStore";
 
 const RESULT_PER_PAGE = 4;
-const COMMANDCLASS = "flex min-h-[28rem] justify-center items-center";
+const COMMANDCLASS = "flex h-[28rem] justify-center items-center";
 export default function SearchResults() {
   const { searchParam, currentFilter, page } = useSearchStore();
   const { data, isLoading, error } = useSearch({
@@ -23,7 +23,7 @@ export default function SearchResults() {
   const results = data?.data.result || [];
   const renderContent = {
     //검색 전
-    noQuery: <CommandEmpty className={COMMANDCLASS}>검색어를 입력해주세요 (최소 2글자)</CommandEmpty>,
+    noQuery: <CommandEmpty className={COMMANDCLASS}>검색어를 입력해주세요</CommandEmpty>,
     // 검색 로딩
     loading: (
       <CommandEmpty className={COMMANDCLASS}>
@@ -37,7 +37,7 @@ export default function SearchResults() {
     // 정상적인 상황
     default: (
       <CommandGroup heading={`검색결과 (총 ${totalItems}건)`}>
-        <CommandList className="h-[25rem] ">
+        <CommandList className="h-[28rem]">
           {results.map((result, index) => (
             <SearchResultItem key={index} {...result} />
           ))}
