@@ -9,6 +9,7 @@ import { FeedModule } from './feed/feed.module';
 import { WinstonLoggerModule } from './common/logger/logger.module';
 import { EmailModule } from './common/email/email.module';
 import { ChatModule } from './chat/chat.module';
+import { StatisticModule } from './statistic/statistic.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,7 @@ import { ChatModule } from './chat/chat.module';
     FeedModule,
     EmailModule,
     ChatModule,
+    StatisticModule,
   ],
   controllers: [],
   providers: [],
