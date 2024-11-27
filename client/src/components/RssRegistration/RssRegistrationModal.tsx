@@ -1,4 +1,5 @@
 import FormInput from "@/components/RssRegistration/FormInput";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,12 +9,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 import { useRegisterRss } from "@/hooks/queries/useRegisterRss";
 
 import { validateRssUrl, validateName, validateEmail, validateBlogger } from "./RssValidation";
 import { useRegisterModalStore } from "@/store/useRegisterModalStrore";
 import { RegisterRss } from "@/types/rss";
+
+const Rss = [
+  {
+    name: "Tistory",
+    url: "https://{blogname}.tistory.com/rss",
+  },
+  {
+    name: "Velog",
+    url: "https://velog.io/{@username}/rss",
+  },
+  {
+    name: "Medium",
+    url: "https://medium.com/feed/{@username}",
+  },
+  {
+    name: "Blogger",
+    url: "https://{blogname}.blogspot.com/feeds/posts/default",
+  },
+  {
+    name: "Dev.to",
+    url: "https://dev.to/feed/{username}",
+  },
+];
 
 export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: () => void; rssOpen: boolean }) {
   const {
@@ -66,6 +91,14 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
             <span>검토 및 등록에는 영업일 기준 3-5일이 소요될 수 있습니다.</span>
           </DialogDescription>
         </DialogHeader>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>RSS 예시</AccordionTrigger>
+            <AccordionContent>
+              <InfoCard />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
         <div className="space-y-4">
           <FormInput
             id="rss"
@@ -74,6 +107,7 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
             placeholder="https://example.com/rss"
             value={rssUrl}
           />
+
           <FormInput
             id="blog"
             label="블로그명"
@@ -108,5 +142,21 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function InfoCard() {
+  return (
+    <>
+      {Rss.map((r) => {
+        return (
+          <div>
+            <b>{r.name}</b>
+            <p>{r.url}</p>
+            <Separator className="my-2" />
+          </div>
+        );
+      })}
+    </>
   );
 }
