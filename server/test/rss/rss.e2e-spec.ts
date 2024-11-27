@@ -30,30 +30,6 @@ describe('Rss E2E Test', () => {
     await app.close();
   });
 
-  describe('GET /api/rss', () => {
-    describe('정상적인 요청을 한다.', () => {
-      it('RSS가 등록되지 않은 경우 빈 리스트를 반환한다.', async () => {
-        // when - then
-        const response = await request(app.getHttpServer()).get('/api/rss');
-        expect(response.status).toBe(200);
-        expect(response.body.data).toEqual([]);
-      });
-
-      it('등록된 RSS가 존재할 경우 해당 데이터를 반환한다.', async () => {
-        // given
-        const rss = RssFixture.createRssFixture();
-        const expectedResult = await rssRepository.save(rss);
-
-        // when
-        const response = await request(app.getHttpServer()).get('/api/rss');
-
-        //then
-        expect(response.status).toBe(200);
-        expect(response.body.data).toEqual([expectedResult]);
-      });
-    });
-  });
-
   describe('POST /api/rss', () => {
     describe('정상적인 요청을 한다.', () => {
       it('정상적인 요청에 대한 응답을 한다.', async () => {
@@ -242,6 +218,30 @@ describe('Rss E2E Test', () => {
             'http, https 프로토콜과 URL 형식을 맞춰주세요.',
           );
         });
+      });
+    });
+  });
+
+  describe('GET /api/rss', () => {
+    describe('정상적인 요청을 한다.', () => {
+      it('RSS가 등록되지 않은 경우 빈 리스트를 반환한다.', async () => {
+        // when - then
+        const response = await request(app.getHttpServer()).get('/api/rss');
+        expect(response.status).toBe(200);
+        expect(response.body.data).toEqual([]);
+      });
+
+      it('등록된 RSS가 존재할 경우 해당 데이터를 반환한다.', async () => {
+        // given
+        const rss = RssFixture.createRssFixture();
+        const expectedResult = await rssRepository.save(rss);
+
+        // when
+        const response = await request(app.getHttpServer()).get('/api/rss');
+
+        //then
+        expect(response.status).toBe(200);
+        expect(response.body.data).toEqual([expectedResult]);
       });
     });
   });
