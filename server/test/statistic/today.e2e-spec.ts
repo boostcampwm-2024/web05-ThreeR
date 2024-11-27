@@ -3,28 +3,24 @@ import { TestingModule } from '@nestjs/testing';
 import { RedisService } from '../../src/common/redis/redis.service';
 import * as request from 'supertest';
 import { redisKeys } from '../../src/common/redis/redis.constant';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Feed } from '../../src/feed/feed.entity';
 import { RssAccept } from '../../src/rss/rss.entity';
+import { RssAcceptFixture } from '../rss/fixture/rssAcceptFixture';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     app = global.testApp;
-    const moduleFixture: TestingModule = global.testModuleFixture;
-    const dataSource = moduleFixture.get<DataSource>(DataSource);
-    const feedRepository = dataSource.getRepository(Feed);
-    const rssAcceptRepository = dataSource.getRepository(RssAccept);
+    const feedRepository = app.get<Repository<Feed>>(getRepositoryToken(Feed));
+    const rssAcceptRepository = app.get<Repository<RssAccept>>(
+      getRepositoryToken(RssAccept),
+    );
     const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
-      rssAcceptRepository.save({
-        id: 1,
-        name: 'test',
-        userName: 'test',
-        email: 'test@test.com',
-        rssUrl: 'https://test.com/rss',
-      }),
+      rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
       redisService.redisClient.set('auth:test1234', 'test'),
       redisService.redisClient.zadd(
         redisKeys.FEED_TREND_KEY,
