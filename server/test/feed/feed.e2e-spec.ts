@@ -11,8 +11,6 @@ import { redisKeys } from '../../src/common/redis/redis.constant';
 describe('Feed E2E Test', () => {
   let app: INestApplication;
   let redisService: RedisService;
-  const testFeedId = 1;
-  const testIp = `1.1.1.1`;
 
   beforeAll(async () => {
     app = global.testApp;
@@ -36,15 +34,6 @@ describe('Feed E2E Test', () => {
     await feedRepository.save(feeds);
   });
 
-  afterEach(async () => {
-    await redisService.redisClient.zrem(
-      redisKeys.FEED_TREND_KEY,
-      testFeedId.toString(),
-    );
-    await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
-    await redisService.redisClient.sadd(`feed:${testFeedId}:ip`, testIp);
-  });
-
   afterAll(async () => {
     await app.close();
   });
@@ -52,10 +41,15 @@ describe('Feed E2E Test', () => {
   describe('GET /api/feed', () => {
     describe('페이지네이션이 정상적으로 동작한다.', () => {
       it('lastId가 없으면 최신 피드부터 전송한다.', async () => {
+        //given
+        const testQuery = { limit: 5 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 5 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('피드 조회 완료');
         expect(response.body.data.result).toHaveLength(5);
@@ -64,10 +58,15 @@ describe('Feed E2E Test', () => {
       });
 
       it('lastId가 있으면 해당 피드 다음 순서부터 전송한다.', async () => {
+        //given
+        const testQuery = { limit: 5, lastId: 11 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 5, lastId: 11 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('피드 조회 완료');
         expect(response.body.data.result).toHaveLength(5);
@@ -76,10 +75,15 @@ describe('Feed E2E Test', () => {
       });
 
       it('남은 피드 개수보다 limit의 크기가 커도 정상적으로 동작한다.', async () => {
+        //given
+        const testQuery = { limit: 15, lastId: 10 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 15, lastId: 10 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('피드 조회 완료');
         expect(response.body.data.result).toHaveLength(9);
@@ -88,10 +92,15 @@ describe('Feed E2E Test', () => {
       });
 
       it('남은 피드 개수가 0이면 lastId 0, 빈 배열로 응답한다.', async () => {
+        //given
+        const testQuery = { limit: 15, lastId: 1 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 15, lastId: 1 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('피드 조회 완료');
         expect(response.body.data.result).toHaveLength(0);
@@ -102,28 +111,43 @@ describe('Feed E2E Test', () => {
 
     describe('limit에 자연수가 아닌 값을 입력한다.', () => {
       it('limit에 1보다 작은 값을 입력한다.', async () => {
+        //given
+        const testQuery = { limit: -10, lastId: 10 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: -10, lastId: 10 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('limit 값은 1 이상이어야 합니다.');
       });
 
       it('limit에 실수를 입력한다.', async () => {
+        //given
+        const testQuery = { limit: 5.2231, lastId: 10 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 5.2231, lastId: 10 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('정수를 입력해주세요.');
       });
 
       it('limit에 문자열을 입력한다.', async () => {
+        //given
+        const testQuery = { limit: 'test', lastId: 10 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 'test', lastId: 10 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('정수를 입력해주세요.');
       });
@@ -131,28 +155,43 @@ describe('Feed E2E Test', () => {
 
     describe('lastId에 0 이상 정수가 아닌 값을 입력한다.', () => {
       it('lastId에 음수를 입력한다.', async () => {
+        //given
+        const testQuery = { limit: 5, lastId: -10 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 5, lastId: -10 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('lastId 값은 0 이상이어야 합니다.');
       });
 
       it('lastId에 실수를 입력한다.', async () => {
+        //given
+        const testQuery = { limit: 5, lastId: 10.12142 };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 5, lastId: 10.12142 });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('정수를 입력해주세요.');
       });
 
       it('lastId에 문자열을 입력한다.', async () => {
+        //given
+        const testQuery = { limit: 5, lastId: 'test' };
+
+        //when
         const response = await request(app.getHttpServer())
           .get('/api/feed')
-          .query({ limit: 5, lastId: 'test' });
+          .query(testQuery);
 
+        //then
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('정수를 입력해주세요.');
       });
@@ -164,86 +203,121 @@ describe('Feed E2E Test', () => {
       it('쿠키가 없는 경우', async () => {
         //given
         const testNewIp = `127.0.0.1`;
-
-        //when
-        const response = await request(app.getHttpServer())
-          .post(`/api/feed/${testFeedId}`)
-          .set('CF-Connecting-IP', testNewIp);
-
-        //then
+        const testFeedId = 1;
+        const testIp = `1.1.1.1`;
         const redis = redisService.redisClient;
-        const feedDailyViewCount = parseInt(
-          await redis.zscore(redisKeys.FEED_TREND_KEY, testFeedId.toString()),
-        );
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe('요청이 성공적으로 처리되었습니다.');
-        expect(feedDailyViewCount).toBe(1);
+        await redisService.redisClient.sadd(`feed:${testFeedId}:ip`, testIp);
+
+        try {
+          //when
+          const response = await request(app.getHttpServer())
+            .post(`/api/feed/${testFeedId}`)
+            .set('CF-Connecting-IP', testNewIp);
+
+          //then
+          const feedDailyViewCount = parseInt(
+            await redis.zscore(redisKeys.FEED_TREND_KEY, testFeedId.toString()),
+          );
+          expect(response.status).toBe(200);
+          expect(response.body.message).toBe(
+            '요청이 성공적으로 처리되었습니다.',
+          );
+          expect(feedDailyViewCount).toBe(1);
+        } finally {
+          //cleanup
+          await redisService.redisClient.zrem(
+            redisKeys.FEED_TREND_KEY,
+            testFeedId.toString(),
+          );
+          await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
+        }
       });
     });
 
     describe('Redis에 해당 IP가 있을 때', () => {
       it('쿠키가 있는 경우', async () => {
         //given
+        const testFeedId = 1;
+        const testIp = `1.1.1.1`;
         const redis = redisService.redisClient;
-        await redisService.redisClient.zrem(
-          redisKeys.FEED_TREND_KEY,
-          testFeedId.toString(),
-        );
-        await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
         await redisService.redisClient.sadd(`feed:${testFeedId}:ip`, testIp);
-        //when
-        const response = await request(app.getHttpServer())
-          .post(`/api/feed/${testFeedId}`)
-          .set('Cookie', `View_count_${testFeedId}=${testFeedId}`)
-          .set('CF-Connecting-IP', testIp);
 
-        //then
-        const feedDailyViewCount = await redis.zscore(
-          redisKeys.FEED_TREND_KEY,
-          testFeedId.toString(),
-        );
+        try {
+          //when
+          const response = await request(app.getHttpServer())
+            .post(`/api/feed/${testFeedId}`)
+            .set('Cookie', `View_count_${testFeedId}=${testFeedId}`)
+            .set('CF-Connecting-IP', testIp);
 
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe('요청이 성공적으로 처리되었습니다.');
-        expect(feedDailyViewCount).toBeNull();
+          //then
+          const feedDailyViewCount = await redis.zscore(
+            redisKeys.FEED_TREND_KEY,
+            testFeedId.toString(),
+          );
+          expect(response.status).toBe(200);
+          expect(response.body.message).toBe(
+            '요청이 성공적으로 처리되었습니다.',
+          );
+          expect(feedDailyViewCount).toBeNull();
+        } finally {
+          //cleanup
+          await redisService.redisClient.zrem(
+            redisKeys.FEED_TREND_KEY,
+            testFeedId.toString(),
+          );
+          await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
+        }
       });
 
       it('쿠키가 없는 경우', async () => {
         //given
+        const testFeedId = 1;
         const testIp = `1.1.1.1`;
-
-        //when
-        const response = await request(app.getHttpServer())
-          .post(`/api/feed/${testFeedId}`)
-          .set('CF-Connecting-IP', testIp);
-
-        //then
         const redis = redisService.redisClient;
-        const feedDailyViewCount = await redis.zscore(
-          redisKeys.FEED_TREND_KEY,
-          testFeedId.toString(),
-        );
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe('요청이 성공적으로 처리되었습니다.');
-        expect(feedDailyViewCount).toBeNull();
+        await redisService.redisClient.sadd(`feed:${testFeedId}:ip`, testIp);
+
+        try {
+          //when
+          const response = await request(app.getHttpServer())
+            .post(`/api/feed/${testFeedId}`)
+            .set('CF-Connecting-IP', testIp);
+
+          //then
+          const feedDailyViewCount = await redis.zscore(
+            redisKeys.FEED_TREND_KEY,
+            testFeedId.toString(),
+          );
+          expect(response.status).toBe(200);
+          expect(response.body.message).toBe(
+            '요청이 성공적으로 처리되었습니다.',
+          );
+          expect(feedDailyViewCount).toBeNull();
+        } finally {
+          //cleanup
+          await redisService.redisClient.zrem(
+            redisKeys.FEED_TREND_KEY,
+            testFeedId.toString(),
+          );
+          await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
+        }
       });
-    });
 
-    describe('잘못된 요청을 보냈을 때', () => {
-      it('해당 피드 ID가 존재하지 않는 경우', async () => {
-        //given
-        const notExistFeedId = 50000;
+      describe('잘못된 요청을 보냈을 때', () => {
+        it('해당 피드 ID가 존재하지 않는 경우', async () => {
+          //given
+          const notExistFeedId = 50000;
 
-        //when
-        const response = await request(app.getHttpServer()).post(
-          `/api/feed/${notExistFeedId}`,
-        );
+          //when
+          const response = await request(app.getHttpServer()).post(
+            `/api/feed/${notExistFeedId}`,
+          );
 
-        //then
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe(
-          `${notExistFeedId}번 피드를 찾을 수 없습니다.`,
-        );
+          //then
+          expect(response.status).toBe(404);
+          expect(response.body.message).toBe(
+            `${notExistFeedId}번 피드를 찾을 수 없습니다.`,
+          );
+        });
       });
     });
   });
