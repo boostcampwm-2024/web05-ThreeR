@@ -58,7 +58,7 @@ export class AdminService {
       cursor = newCursor;
 
       if (!keys.length) {
-        continue;
+        break;
       }
 
       const values = await this.redisService.redisClient.mget(keys);
