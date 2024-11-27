@@ -13,17 +13,11 @@ describe('Rss E2E Test', () => {
 
   beforeAll(async () => {
     app = global.testApp;
+    rssRepository = app.get<Repository<Rss>>(getRepositoryToken(Rss));
   });
 
   beforeEach(async () => {
-    rssRepository = app.get<Repository<Rss>>(getRepositoryToken(Rss));
     await rssRepository.query('DELETE FROM rss');
-    input = {
-      name: 'blog',
-      blog: 'name',
-      email: 'test@test.com',
-      rssUrl: 'https://example.com/rss',
-    };
   });
 
   afterAll(async () => {
