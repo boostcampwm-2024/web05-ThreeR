@@ -5,12 +5,13 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AdminService } from './admin.service';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -35,8 +36,9 @@ export class AdminController {
   async loginAdmin(
     @Body() loginAdminDto: LoginAdminDto,
     @Res({ passthrough: true }) response: Response,
+    @Req() request: Request,
   ) {
-    await this.adminService.loginAdmin(loginAdminDto, response);
+    await this.adminService.loginAdmin(loginAdminDto, response, request);
     return ApiResponse.responseWithNoContent(
       '로그인이 성공적으로 처리되었습니다.',
     );

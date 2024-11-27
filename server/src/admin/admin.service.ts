@@ -3,7 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { AdminRepository } from './admin.repository';
 import * as bcrypt from 'bcrypt';
@@ -22,7 +22,12 @@ export class AdminService {
     private readonly redisService: RedisService,
   ) {}
 
-  async loginAdmin(loginAdminDto: LoginAdminDto, response: Response) {
+  async loginAdmin(
+    loginAdminDto: LoginAdminDto,
+    response: Response,
+    request: Request,
+  ) {
+    const cookie = request.cookies['sessionId'];
     const { loginId, password } = loginAdminDto;
 
     const admin = await this.loginRepository.findOne({
@@ -35,7 +40,31 @@ export class AdminService {
 
     const sessionId = uuid.v4();
 
-    await this.redisService.redisClient.set(
+    if (cookie) {
+      this.redisService.redisClient.del(`login:${cookie}`);
+    }
+
+    let cursor = '0';
+    do {
+      const [newCursor, keys] = await this.redisService.redisClient.scan(
+        cursor,
+        'MATCH',
+        'login:*',
+        'COUNT',
+        100,
+      );
+
+      cursor = newCursor;
+
+      for (const key of keys) {
+        const sessionValue = await this.redisService.redisClient.get(key);
+        if (sessionValue === loginId) {
+          await this.redisService.redisClient.del(key);
+        }
+      }
+    } while (cursor !== '0');
+
+    this.redisService.redisClient.set(
       `login:${sessionId}`,
       admin.loginId,
       `EX`,
