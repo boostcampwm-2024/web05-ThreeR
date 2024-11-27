@@ -18,16 +18,14 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 
 import logo from "@/assets/logo-denamu-main.svg";
 
-
-import { SidebarProvider } from "../ui/sidebar";
 import { TOAST_MESSAGES } from "@/constants/messages";
-
 
 export default function Header() {
   const [modals, setModals] = useState({ search: false, rss: false, login: false, chat: false });
@@ -46,14 +44,17 @@ export default function Header() {
   return (
     <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between overflow-hidden">
-          {/* Logo */}
-
-          <div className="flex-shrink-0">
+        <div className="h-20 items-center overflow-hidden flex justify-between">
+          <div className="flex-shrink-0 ">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
-          <DesktopNavigation toggleModal={toggleModal} />
-          <MobileNavigation toggleModal={toggleModal} />
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-[30%]">
+            <SearchButton handleSearchModal={() => toggleModal("search")} />
+          </div>
+          <div className="flex-shrink-0">
+            <DesktopNavigation toggleModal={toggleModal} />
+            <MobileNavigation toggleModal={toggleModal} />
+          </div>
         </div>
       </div>
       <AnimatePresence>
@@ -68,7 +69,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
   return (
     <div className="hidden md:flex md:items-center">
       <NavigationMenu>
-        <NavigationMenuList className="gap-2">
+        <NavigationMenuList>
           <NavigationMenuItem>
             <div className="flex h-full items-center">
               <SidebarProvider defaultOpen={false}>
@@ -77,11 +78,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
               </SidebarProvider>
             </div>
           </NavigationMenuItem>
-          <NavigationMenuItem>
-            <div className="flex h-full items-center">
-              <SearchButton handleSearchModal={() => toggleModal("search")} />
-            </div>
-          </NavigationMenuItem>
+
           <NavigationMenuItem>
             <NavigationMenuLink
               className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}
