@@ -46,6 +46,7 @@ export function ApiGetFeedList() {
                   properties: {
                     id: { type: 'number' },
                     author: { type: 'string' },
+                    blogPlatform: { type: 'string' },
                     title: { type: 'string' },
                     path: { type: 'string', format: 'url' },
                     createAt: { type: 'string', format: 'date-time' },
@@ -67,6 +68,7 @@ export function ApiGetFeedList() {
             {
               id: 3,
               author: '블로그 이름',
+              blogPlatform: '블로그 서비스 플랫폼',
               title: '피드 제목',
               path: 'https://test.com',
               createAt: '2024-06-16T20:00:57.000Z',
@@ -215,6 +217,7 @@ export function ApiGetTrendSse() {
               properties: {
                 id: { type: 'number' },
                 author: { type: 'string' },
+                blogPlatform: { type: 'string' },
                 title: { type: 'string' },
                 path: { type: 'string' },
                 createdAt: {
@@ -237,6 +240,7 @@ export function ApiGetTrendSse() {
               {
                 id: 1,
                 author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
                 title: '피드 제목',
                 path: 'https://test1.com/1',
                 createdAt: '2024-11-24T01:00:00.000Z',
@@ -246,6 +250,7 @@ export function ApiGetTrendSse() {
               {
                 id: 2,
                 author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
                 title: '피드 제목',
                 path: 'https://test2.com/1',
                 createdAt: '2024-11-24T02:00:00.000Z',
@@ -263,6 +268,7 @@ export function ApiGetTrendSse() {
               {
                 id: 3,
                 author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
                 title: '피드 제목',
                 path: 'https://test3.com/1',
                 createdAt: '2024-11-24T03:00:00.000Z',
@@ -272,6 +278,7 @@ export function ApiGetTrendSse() {
               {
                 id: 4,
                 author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
                 title: '피드 제목',
                 path: 'https://test4.com/1',
                 createdAt: '2024-11-24T04:00:00.000Z',

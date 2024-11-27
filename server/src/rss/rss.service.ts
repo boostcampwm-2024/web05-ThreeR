@@ -61,9 +61,11 @@ export class RssService {
       throw new NotFoundException('존재하지 않는 rss 입니다.');
     }
 
+    const blogPlatform = this.identifyPlatformFromRssUrl(rss.rssUrl);
+
     await this.dataSource.transaction(async (manager) => {
       await Promise.all([
-        manager.save(RssAccept.fromRss(rss)),
+        manager.save(RssAccept.fromRss(rss, blogPlatform)),
         manager.delete(Rss, id),
       ]);
     });
@@ -106,5 +108,24 @@ export class RssService {
         id: 'DESC',
       },
     });
+  }
+
+  private identifyPlatformFromRssUrl(rssUrl: string) {
+    type Platform = 'medium' | 'tistory' | 'velog' | 'github' | 'etc';
+
+    const platformRegexp: { [key in Platform]: RegExp } = {
+      medium: /^https:\/\/medium\.com\/feed\/@[\w\-]+$/,
+      tistory: /^https:\/\/[a-zA-Z0-9\-]+\.tistory\.com\/rss$/,
+      velog: /^https:\/\/v2\.velog\.io\/rss\/@[\w\-]+$/,
+      github: /^https:\/\/[\w\-]+\.github\.io\/feed\.xml$/,
+      etc: /.*/,
+    };
+
+    for (const platform in platformRegexp) {
+      if (platformRegexp[platform].test(rssUrl)) {
+        return platform;
+      }
+    }
+    return 'etc';
   }
 }
