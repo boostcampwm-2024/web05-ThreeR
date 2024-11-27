@@ -72,10 +72,10 @@ export class RssAccept extends RssInformation {
   static fromRss(rss: Rss, blogPlatform: string) {
     const blog = new RssAccept();
     blog.name = rss.name;
-    blog.blogPlatform = blogPlatform;
     blog.userName = rss.userName;
     blog.email = rss.email;
     blog.rssUrl = rss.rssUrl;
+    blog.blogPlatform = blogPlatform;
     blog.feeds = [];
 
     return blog;
