@@ -1,11 +1,12 @@
 import {
   ApiBadRequestResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, NotFoundException } from '@nestjs/common';
 import { SearchType } from './dto/search-feed.dto';
 
 export function ApiGetFeedList() {
@@ -31,53 +32,59 @@ export function ApiGetFeedList() {
     ApiOkResponse({
       description: 'Ok',
       schema: {
-        example: {
-          message: '피드 조회 완료',
-          data: {
-            result: [
-              {
-                id: 24,
-                author: 'seok3765.log',
-                blogPlatform: 'velog',
-                title: 'ECS vs EKS 비교 분석',
-                path: 'https://dev-park.dev/ecs-eks',
-                createAt: '2024-03-11T06:30:00.000Z',
-                thumbnail: 'https://dev-park.dev/thumbnails/containers.jpg',
-                viewCount: 320,
-              },
-              {
-                id: 23,
-                author: 'seok3765.log',
-                blogPlatform: 'velog',
-                title: 'S3 비용 최적화 가이드',
-                path: 'https://dev-park.dev/s3-cost',
-                createAt: '2024-03-12T02:40:00.000Z',
-                thumbnail: 'https://dev-park.dev/thumbnails/s3.jpg',
-                viewCount: 190,
-              },
-              {
-                id: 22,
-                author: 'seok3765.log',
-                blogPlatform: 'velog',
-                title: 'DynamoDB 데이터 모델링',
-                path: 'https://dev-park.dev/dynamodb-modeling',
-                createAt: '2024-03-13T07:20:00.000Z',
-                thumbnail: 'https://dev-park.dev/thumbnails/dynamodb.jpg',
-                viewCount: 230,
-              },
-            ],
-            lastId: 22,
-            hasMore: true,
+        properties: {
+          message: {
+            type: 'string',
           },
+          data: {
+            type: 'object',
+            properties: {
+              result: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number' },
+                    author: { type: 'string' },
+                    blogPlatform: { type: 'string' },
+                    title: { type: 'string' },
+                    path: { type: 'string', format: 'url' },
+                    createAt: { type: 'string', format: 'date-time' },
+                    thumbnail: { type: 'string', format: 'url' },
+                    viewCount: { type: 'number' },
+                  },
+                },
+              },
+              lastId: { type: 'number' },
+              hasMore: { type: 'boolean' },
+            },
+          },
+        },
+      },
+      example: {
+        message: '피드 조회 완료',
+        data: {
+          result: [
+            {
+              id: 3,
+              author: '블로그 이름',
+              blogPlatform: '블로그 서비스 플랫폼',
+              title: '피드 제목',
+              path: 'https://test.com',
+              createAt: '2024-06-16T20:00:57.000Z',
+              thumbnail: 'https://test.com/image.png',
+              viewCount: 1,
+            },
+          ],
+          lastId: 3,
+          hasMore: true,
         },
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지 출력',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
   );
@@ -119,38 +126,73 @@ export function ApiSearchFeed() {
     ApiOkResponse({
       description: 'Ok',
       schema: {
-        example: {
-          message: '검색 결과 조회 완료',
-          data: {
-            totalCount: 2,
-            result: [
-              {
-                id: 2,
-                userName: '기억보다 기록을',
-                title: '암묵지에서 형식지로',
-                path: 'https://jojoldu.tistory.com/809',
-                createdAt: '2024-10-27T02:08:55.000Z',
-              },
-              {
-                id: 3,
-                userName: '기억보다 기록을',
-                title: '주인이 아닌데 어떻게 주인의식을 가지죠',
-                path: 'https://jojoldu.tistory.com/808',
-                createdAt: '2024-10-12T18:15:06.000Z',
-              },
-            ],
-            totalPages: 3,
-            limit: 2,
+        properties: {
+          message: {
+            type: 'string',
           },
+          data: {
+            type: 'object',
+            properties: {
+              totalCount: {
+                type: 'number',
+              },
+              result: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number',
+                    },
+                    blogName: {
+                      type: 'string',
+                    },
+                    title: {
+                      type: 'string',
+                    },
+                    path: {
+                      type: 'string',
+                      format: 'url',
+                    },
+                    createdAt: {
+                      type: 'string',
+                      format: 'date-time',
+                    },
+                  },
+                },
+              },
+              totalPages: {
+                type: 'number',
+              },
+              limit: {
+                type: 'number',
+              },
+            },
+          },
+        },
+      },
+      example: {
+        message: '검색 결과 조회 완료',
+        data: {
+          totalCount: 1,
+          result: [
+            {
+              id: 1,
+              blogName: '블로그 이름',
+              title: '데나무',
+              path: 'https://test.com/1',
+              createdAt: '2024-10-27T02:08:55.000Z',
+            },
+          ],
+          totalPages: 3,
+          limit: 1,
         },
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        example: {
-          message: '오류 메세지 출력',
-        },
+      example: {
+        message: '오류 메세지',
       },
     }),
   );
@@ -198,8 +240,8 @@ export function ApiGetTrendSse() {
               {
                 id: 1,
                 author: '블로그 이름',
-                blogPlatform: 'etc',
-                title: '게시글 제목',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
                 path: 'https://test1.com/1',
                 createdAt: '2024-11-24T01:00:00.000Z',
                 thumbnail: 'https://test1.com/test.png',
@@ -208,8 +250,8 @@ export function ApiGetTrendSse() {
               {
                 id: 2,
                 author: '블로그 이름',
-                blogPlatform: 'etc',
-                title: '게시글 제목',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
                 path: 'https://test2.com/1',
                 createdAt: '2024-11-24T02:00:00.000Z',
                 thumbnail: 'https://test2.com/test.png',
@@ -226,8 +268,8 @@ export function ApiGetTrendSse() {
               {
                 id: 3,
                 author: '블로그 이름',
-                blogPlatform: 'etc',
-                title: '게시글 제목',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
                 path: 'https://test3.com/1',
                 createdAt: '2024-11-24T03:00:00.000Z',
                 thumbnail: 'https://test3.com/test.png',
@@ -236,8 +278,8 @@ export function ApiGetTrendSse() {
               {
                 id: 4,
                 author: '블로그 이름',
-                blogPlatform: 'etc',
-                title: '게시글 제목',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
                 path: 'https://test4.com/1',
                 createdAt: '2024-11-24T04:00:00.000Z',
                 thumbnail: 'https://test4.com/test.png',
@@ -254,7 +296,7 @@ export function ApiGetTrendSse() {
 export function ApiUpdateFeedViewCount() {
   return applyDecorators(
     ApiOperation({
-      summary: `게시글 조회수 업데이트 API`,
+      summary: `피드 조회수 업데이트 API`,
     }),
     ApiParam({
       name: 'feedId',
@@ -266,9 +308,20 @@ export function ApiUpdateFeedViewCount() {
     ApiOkResponse({
       description: 'Ok',
       schema: {
-        example: {
-          message: '요청이 성공적으로 처리되었습니다.',
+        properties: {
+          message: {
+            type: 'string',
+          },
         },
+      },
+      example: {
+        message: '요청이 성공적으로 처리되었습니다.',
+      },
+    }),
+    ApiNotFoundResponse({
+      description: '해당 ID의 피드가 존재하지 않는 경우',
+      example: {
+        message: '{feedId}번 피드를 찾을 수 없습니다.',
       },
     }),
   );
