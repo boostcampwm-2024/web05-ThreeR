@@ -9,4 +9,8 @@ export class RejectRssDto {
   @IsNotEmpty({ message: '거부 사유를 필수로 입력해야 합니다.' })
   @IsString({ message: '거부 사유를 문자열로 작성해주세요.' })
   description: string;
+
+  constructor(description: string) {
+    this.description = description;
+  }
 }
