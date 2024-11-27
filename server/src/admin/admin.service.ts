@@ -36,7 +36,7 @@ export class AdminService {
     const sessionId = uuid.v4();
 
     await this.redisService.redisClient.set(
-      sessionId,
+      `login:${sessionId}`,
       admin.loginId,
       `EX`,
       this.SESSION_TTL,
