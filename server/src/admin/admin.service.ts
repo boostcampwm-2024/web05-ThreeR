@@ -41,31 +41,43 @@ export class AdminService {
     const sessionId = uuid.v4();
 
     if (cookie) {
-      this.redisService.redisClient.del(`login:${cookie}`);
+      this.redisService.redisClient.del(`auth:${cookie}`);
     }
 
     let cursor = '0';
+    let scanFlag = false;
     do {
       const [newCursor, keys] = await this.redisService.redisClient.scan(
         cursor,
         'MATCH',
-        'login:*',
+        'auth:*',
         'COUNT',
         100,
       );
 
       cursor = newCursor;
 
-      for (const key of keys) {
-        const sessionValue = await this.redisService.redisClient.get(key);
+      if (!keys.length) {
+        continue;
+      }
+
+      const values = await this.redisService.redisClient.mget(keys);
+
+      for (let i = 0; i < keys.length; i++) {
+        const sessionValue = values[i];
         if (sessionValue === loginId) {
-          await this.redisService.redisClient.del(key);
+          await this.redisService.redisClient.del(keys[i]);
+          scanFlag = true;
+          break;
         }
+      }
+      if (scanFlag) {
+        break;
       }
     } while (cursor !== '0');
 
     this.redisService.redisClient.set(
-      `login:${sessionId}`,
+      `auth:${sessionId}`,
       admin.loginId,
       `EX`,
       this.SESSION_TTL,

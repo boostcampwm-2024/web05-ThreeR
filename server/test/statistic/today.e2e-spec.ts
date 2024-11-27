@@ -25,7 +25,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         email: 'test@test.com',
         rssUrl: 'https://test.com/rss',
       }),
-      redisService.redisClient.set('login:test1234', 'test'),
+      redisService.redisClient.set('auth:test1234', 'test'),
       redisService.redisClient.zadd(
         redisKeys.FEED_TREND_KEY,
         '1',
