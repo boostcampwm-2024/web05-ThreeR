@@ -18,6 +18,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
@@ -25,8 +26,6 @@ import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 import logo from "@/assets/logo-denamu-main.svg";
 
 import { TOAST_MESSAGES } from "@/constants/messages";
-
-import { SidebarProvider } from "../ui/sidebar";
 
 export default function Header() {
   const [modals, setModals] = useState({ search: false, rss: false, login: false, chat: false });
@@ -45,13 +44,17 @@ export default function Header() {
   return (
     <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center overflow-hidden justify-around">
-          <div className="flex-shrink-0">
+        <div className="h-20 items-center overflow-hidden flex justify-between">
+          <div className="flex-shrink-0 ">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
-          <SearchButton handleSearchModal={() => toggleModal("search")} />
-          <DesktopNavigation toggleModal={toggleModal} />
-          <MobileNavigation toggleModal={toggleModal} />
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-[30%]">
+            <SearchButton handleSearchModal={() => toggleModal("search")} />
+          </div>
+          <div className="flex-shrink-0">
+            <DesktopNavigation toggleModal={toggleModal} />
+            <MobileNavigation toggleModal={toggleModal} />
+          </div>
         </div>
       </div>
       <AnimatePresence>

@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 export default function SearchButton({ handleSearchModal }: { handleSearchModal: () => void }) {
   return (
     <div
-      className="w-[30%] px-4 py-3 
+      className="w-full px-4 py-3 
                    bg-white 
                    border border-primary 
                    rounded-xl 
