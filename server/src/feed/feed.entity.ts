@@ -48,4 +48,11 @@ export class Feed extends BaseEntity {
     name: 'blog_id',
   })
   blog: RssAccept;
+
+  constructor(partial?: Partial<Feed>) {
+    super();
+    if (partial) {
+      Object.assign(this, partial);
+    }
+  }
 }
