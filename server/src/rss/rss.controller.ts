@@ -61,7 +61,7 @@ export class RssController {
   @UsePipes(ValidationPipe)
   @UseGuards(CookieAuthGuard)
   @Post('reject/:id')
-  @HttpCode(200)
+  @HttpCode(201)
   async rejectRss(
     @Body() body: RejectRssDto,
     @Param('id', ParseIntPipe) id: number,
