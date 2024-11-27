@@ -2,7 +2,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { RssController } from './rss.controller';
 import { RssService } from './rss.service';
-import { RssInformation } from './rss.entity';
+import { Rss, RssAccept, RssInformation, RssReject } from './rss.entity';
 import {
   RssRejectRepository,
   RssRepository,
@@ -10,7 +10,7 @@ import {
 } from './rss.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RssInformation])],
+  imports: [TypeOrmModule.forFeature([Rss, RssAccept, RssReject])],
   controllers: [RssController],
   providers: [
     RssService,
