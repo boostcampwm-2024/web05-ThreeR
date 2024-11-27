@@ -5,12 +5,18 @@ import * as request from 'supertest';
 import { FeedFixture } from './fixture/feedFixture';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RssAccept } from '../../src/rss/rss.entity';
+import { RedisService } from '../../src/common/redis/redis.service';
+import { redisKeys } from '../../src/common/redis/redis.constant';
 
 describe('Feed E2E Test', () => {
   let app: INestApplication;
+  let redisService: RedisService;
+  const testFeedId = 1;
+  const testIp = `1.1.1.1`;
 
   beforeAll(async () => {
     app = global.testApp;
+    redisService = app.get(RedisService);
     const feedRepository = app.get<Repository<Feed>>(getRepositoryToken(Feed));
     const rssAcceptRepository = app.get<Repository<RssAccept>>(
       getRepositoryToken(RssAccept),
@@ -28,6 +34,15 @@ describe('Feed E2E Test', () => {
       return FeedFixture.createFeedFixture(blog, { title, path, thumbnail });
     });
     await feedRepository.save(feeds);
+  });
+
+  afterEach(async () => {
+    await redisService.redisClient.zrem(
+      redisKeys.FEED_TREND_KEY,
+      testFeedId.toString(),
+    );
+    await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
+    await redisService.redisClient.sadd(`feed:${testFeedId}:ip`, testIp);
   });
 
   afterAll(async () => {
@@ -140,6 +155,95 @@ describe('Feed E2E Test', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('정수를 입력해주세요.');
+      });
+    });
+  });
+
+  describe('POST /api/feed/:feedId', () => {
+    describe('Redis에 해당 IP가 없을 때', () => {
+      it('쿠키가 없는 경우', async () => {
+        //given
+        const testNewIp = `127.0.0.1`;
+
+        //when
+        const response = await request(app.getHttpServer())
+          .post(`/api/feed/${testFeedId}`)
+          .set('CF-Connecting-IP', testNewIp);
+
+        //then
+        const redis = redisService.redisClient;
+        const feedDailyViewCount = parseInt(
+          await redis.zscore(redisKeys.FEED_TREND_KEY, testFeedId.toString()),
+        );
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('요청이 성공적으로 처리되었습니다.');
+        expect(feedDailyViewCount).toBe(1);
+      });
+    });
+
+    describe('Redis에 해당 IP가 있을 때', () => {
+      it('쿠키가 있는 경우', async () => {
+        //given
+        const redis = redisService.redisClient;
+        await redisService.redisClient.zrem(
+          redisKeys.FEED_TREND_KEY,
+          testFeedId.toString(),
+        );
+        await redisService.redisClient.srem(`feed:${testFeedId}:ip`, testIp);
+        await redisService.redisClient.sadd(`feed:${testFeedId}:ip`, testIp);
+        //when
+        const response = await request(app.getHttpServer())
+          .post(`/api/feed/${testFeedId}`)
+          .set('Cookie', `View_count_${testFeedId}=${testFeedId}`)
+          .set('CF-Connecting-IP', testIp);
+
+        //then
+        const feedDailyViewCount = await redis.zscore(
+          redisKeys.FEED_TREND_KEY,
+          testFeedId.toString(),
+        );
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('요청이 성공적으로 처리되었습니다.');
+        expect(feedDailyViewCount).toBeNull();
+      });
+
+      it('쿠키가 없는 경우', async () => {
+        //given
+        const testIp = `1.1.1.1`;
+
+        //when
+        const response = await request(app.getHttpServer())
+          .post(`/api/feed/${testFeedId}`)
+          .set('CF-Connecting-IP', testIp);
+
+        //then
+        const redis = redisService.redisClient;
+        const feedDailyViewCount = await redis.zscore(
+          redisKeys.FEED_TREND_KEY,
+          testFeedId.toString(),
+        );
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('요청이 성공적으로 처리되었습니다.');
+        expect(feedDailyViewCount).toBeNull();
+      });
+    });
+
+    describe('잘못된 요청을 보냈을 때', () => {
+      it('해당 피드 ID가 존재하지 않는 경우', async () => {
+        //given
+        const notExistFeedId = 50000;
+
+        //when
+        const response = await request(app.getHttpServer()).post(
+          `/api/feed/${notExistFeedId}`,
+        );
+
+        //then
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe(
+          `${notExistFeedId}번 피드를 찾을 수 없습니다.`,
+        );
       });
     });
   });
