@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFetchRss, useFetchAccept, useFetchReject } from "@/hooks/queries/useFetchRss";
 import { useAdminAccept, useAdminReject } from "@/hooks/queries/useRssActions";
 
+import { useAdminSearchStore } from "@/store/useSearchStore";
 import { AdminRssData } from "@/types/rss";
 import { AdminRequest } from "@/types/rss";
 
@@ -23,7 +24,7 @@ type SelectedBlogType = {
 export const AdminTabs = () => {
   const [selectedBlog, setSelectedBlog] = useState<SelectedBlogType>({ blogId: 0, blogName: "" });
   const [reason, setReason] = useState("");
-
+  const { searchParam } = useAdminSearchStore();
   const {
     data: pendingData,
     isLoading: isPendingLoading,
@@ -80,9 +81,28 @@ export const AdminTabs = () => {
   if (isPendingLoading || isAcceptedLoading || isRejectedLoading) return <div>Loading...</div>;
   if (pendingError || acceptedError || rejectedError) return <div>Error loading data</div>;
 
-  const pendingRss: AdminRssData[] = pendingData.data;
-  const acceptedRss: AdminRssData[] = acceptedData.data;
-  const rejectedRss: AdminRssData[] = rejectedData.data;
+  const pendingRss: AdminRssData[] =
+    searchParam === ""
+      ? pendingData.data
+      : pendingData.data.filter(
+          (data: AdminRssData) =>
+            data.name.includes(searchParam) || data.userName.includes(searchParam) || data.rssUrl.includes(searchParam)
+        );
+  const acceptedRss: AdminRssData[] =
+    searchParam === ""
+      ? acceptedData.data
+      : acceptedData.data.filter(
+          (data: AdminRssData) =>
+            data.name.includes(searchParam) || data.userName.includes(searchParam) || data.rssUrl.includes(searchParam)
+        );
+  const rejectedRss: AdminRssData[] =
+    searchParam === ""
+      ? rejectedData.data
+      : rejectedData.data.filter(
+          (data: AdminRssData) =>
+            data.name.includes(searchParam) || data.userName.includes(searchParam) || data.rssUrl.includes(searchParam)
+        );
+
   return (
     <div>
       <Tabs defaultValue="pending" className="mb-8">
