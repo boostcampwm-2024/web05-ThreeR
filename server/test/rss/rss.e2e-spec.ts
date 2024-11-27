@@ -3,32 +3,26 @@ import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { Rss, RssAccept } from '../../src/rss/rss.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { RssFixture } from './fixture/rssFixture';
 import { RssAcceptFixture } from './fixture/rssAcceptFixture';
+import {
+  RssAcceptRepository,
+  RssRepository,
+} from '../../src/rss/rss.repository';
 
 describe('Rss E2E Test', () => {
   let app: INestApplication;
-  let input: RssRegisterDto;
   let rssRepository: Repository<Rss>;
   let rssAcceptRepository: Repository<RssAccept>;
 
   beforeAll(async () => {
     app = global.testApp;
-    rssRepository = app.get<Repository<Rss>>(getRepositoryToken(Rss));
-    rssAcceptRepository = app.get<Repository<RssAccept>>(
-      getRepositoryToken(RssAccept),
-    );
+    rssRepository = app.get(RssRepository);
+    rssAcceptRepository = app.get(RssAcceptRepository);
   });
 
   beforeEach(async () => {
     await rssRepository.query('DELETE FROM rss');
-    input = {
-      name: 'blog',
-      blog: 'name',
-      email: 'test@test.com',
-      rssUrl: 'https://example.com/rss',
-    };
   });
 
   afterAll(async () => {

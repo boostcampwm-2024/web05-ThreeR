@@ -2,9 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { Rss, RssAccept } from '../../src/rss/rss.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { RssFixture } from './fixture/rssFixture';
 import { RedisService } from '../../src/common/redis/redis.service';
+import {
+  RssAcceptRepository,
+  RssRepository,
+} from '../../src/rss/rss.repository';
 
 describe('Rss Accept E2E Test', () => {
   let app: INestApplication;
@@ -14,10 +17,8 @@ describe('Rss Accept E2E Test', () => {
 
   beforeAll(async () => {
     app = global.testApp;
-    rssRepository = app.get<Repository<Rss>>(getRepositoryToken(Rss));
-    rssAcceptRepository = app.get<Repository<RssAccept>>(
-      getRepositoryToken(RssAccept),
-    );
+    rssRepository = app.get(RssRepository);
+    rssAcceptRepository = app.get(RssAcceptRepository);
     redisService = app.get(RedisService);
   });
 

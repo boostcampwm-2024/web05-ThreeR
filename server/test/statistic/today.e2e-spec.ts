@@ -1,23 +1,18 @@
 import { INestApplication } from '@nestjs/common';
-import { TestingModule } from '@nestjs/testing';
 import { RedisService } from '../../src/common/redis/redis.service';
 import * as request from 'supertest';
 import { redisKeys } from '../../src/common/redis/redis.constant';
-import { DataSource, Repository } from 'typeorm';
-import { Feed } from '../../src/feed/feed.entity';
-import { RssAccept } from '../../src/rss/rss.entity';
 import { RssAcceptFixture } from '../rss/fixture/rssAcceptFixture';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { FeedRepository } from '../../src/feed/feed.repository';
+import { RssAcceptRepository } from '../../src/rss/rss.repository';
 
 describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     app = global.testApp;
-    const feedRepository = app.get<Repository<Feed>>(getRepositoryToken(Feed));
-    const rssAcceptRepository = app.get<Repository<RssAccept>>(
-      getRepositoryToken(RssAccept),
-    );
+    const feedRepository = app.get(FeedRepository);
+    const rssAcceptRepository = app.get(RssAcceptRepository);
     const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
       rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
