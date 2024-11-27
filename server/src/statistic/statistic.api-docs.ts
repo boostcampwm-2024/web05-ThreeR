@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -58,10 +59,44 @@ export function ApiStatistic(type: 'today' | 'all') {
         message: '오류 메세지',
       },
     }),
-    ApiUnauthorizedResponse({
-      description: 'Unauthorized',
+  );
+}
+
+export function ApiPlatformStatistic() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '블로그 플랫폼 통계 조회 API',
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              properties: {
+                platform: {
+                  type: 'string',
+                },
+                count: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+      },
       example: {
-        message: '인증되지 않은 요청입니다.',
+        message: '블로그 플랫폼 통계 조회 완료',
+        data: [
+          {
+            platform: 'test',
+            count: 30,
+          },
+        ],
       },
     }),
   );
