@@ -42,7 +42,14 @@ export abstract class RssInformation extends BaseEntity {
 @Entity({
   name: 'rss',
 })
-export class Rss extends RssInformation {}
+export class Rss extends RssInformation {
+  constructor(partial?: Partial<Rss>) {
+    super();
+    if (partial) {
+      Object.assign(this, partial);
+    }
+  }
+}
 
 @Entity({
   name: 'rss_reject',
@@ -53,6 +60,13 @@ export class RssReject extends RssInformation {
     nullable: false,
   })
   description: string;
+
+  constructor(partial?: Partial<RssReject>) {
+    super();
+    if (partial) {
+      Object.assign(this, partial);
+    }
+  }
 }
 
 @Entity({
@@ -68,6 +82,13 @@ export class RssAccept extends RssInformation {
 
   @Column({ name: 'blog_platform', default: 'etc', nullable: false })
   blogPlatform: string;
+
+  constructor(partial?: Partial<RssAccept>) {
+    super();
+    if (partial) {
+      Object.assign(this, partial);
+    }
+  }
 
   static fromRss(rss: Rss, blogPlatform: string) {
     const blog = new RssAccept();
