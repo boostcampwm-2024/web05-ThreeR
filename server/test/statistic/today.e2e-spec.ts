@@ -7,20 +7,18 @@ import { DataSource } from 'typeorm';
 import { Feed } from '../../src/feed/feed.entity';
 import { RssAccept } from '../../src/rss/rss.entity';
 
-describe('Today view count statistic E2E Test : GET /api/statistic', () => {
-  let moduleFixture: TestingModule;
+describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
   let app: INestApplication;
-  let redisService: RedisService;
 
   beforeAll(async () => {
     app = global.testApp;
-    moduleFixture = global.testModuleFixture;
+    const moduleFixture: TestingModule = global.testModuleFixture;
     const dataSource = moduleFixture.get<DataSource>(DataSource);
     const feedRepository = dataSource.getRepository(Feed);
-    const rss_acceptRepository = dataSource.getRepository(RssAccept);
-    redisService = app.get(RedisService);
+    const rssAcceptRepository = dataSource.getRepository(RssAccept);
+    const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
-      rss_acceptRepository.save({
+      rssAcceptRepository.save({
         id: 1,
         name: 'test',
         userName: 'test',
@@ -86,8 +84,6 @@ describe('Today view count statistic E2E Test : GET /api/statistic', () => {
     ]);
   });
 
-  beforeEach(async () => {});
-
   describe('관리자 권한이 없을 경우', () => {
     it('관리자 쿠키가 없다.', async () => {
       const response = await request(app.getHttpServer()).get(
@@ -120,12 +116,21 @@ describe('Today view count statistic E2E Test : GET /api/statistic', () => {
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('정수로 입력해주세요.');
       });
+      it('음수를 입력한다.', async () => {
+        const response = await request(app.getHttpServer())
+          .get('/api/statistic/today?limit=-100')
+          .set('Cookie', 'sessionId=test1234');
+        expect(response.status).toBe(400);
+        expect(response.body).toStrictEqual({
+          message: 'limit 값은 1 이상이어야 합니다.',
+        });
+      });
     });
 
     describe('limit 값을 올바르게 입력했을 경우', () => {
       it('값을 입력 하지 않는다.', async () => {
         const response = await request(app.getHttpServer())
-          .get('/api/statistic/today?limit')
+          .get('/api/statistic/today')
           .set('Cookie', 'sessionId=test1234');
         expect(response.status).toBe(200);
         expect(response.body).toStrictEqual({
@@ -157,16 +162,6 @@ describe('Today view count statistic E2E Test : GET /api/statistic', () => {
               viewCount: 1,
             },
           ],
-        });
-      });
-      it('음수를 입력한다.', async () => {
-        const response = await request(app.getHttpServer())
-          .get('/api/statistic/today?limit=-100')
-          .set('Cookie', 'sessionId=test1234');
-        expect(response.status).toBe(200);
-        expect(response.body).toStrictEqual({
-          message: '금일 조회수 통계 조회 완료',
-          data: [],
         });
       });
       it('양수를 입력한다.', async () => {

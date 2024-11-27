@@ -54,26 +54,12 @@ export function ApiStatistic(type: 'today' | 'all') {
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
-      schema: {
-        properties: {
-          message: {
-            type: 'string',
-          },
-        },
-      },
       example: {
         message: '오류 메세지',
       },
     }),
     ApiUnauthorizedResponse({
       description: 'Unauthorized',
-      schema: {
-        properties: {
-          message: {
-            type: 'string',
-          },
-        },
-      },
       example: {
         message: '인증되지 않은 요청입니다.',
       },
