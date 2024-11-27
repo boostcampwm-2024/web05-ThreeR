@@ -53,6 +53,7 @@ export class StatisticService {
       .select(['blog_platform as platform'])
       .addSelect('COUNT(blog_platform)', 'count')
       .groupBy('blog_platform')
+      .orderBy('count', 'DESC')
       .getRawMany();
     return platform;
   }
