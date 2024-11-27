@@ -19,7 +19,7 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
   beforeEach(async () => {
     dataSource = moduleFixture.get<DataSource>(DataSource);
     const rssRepository = dataSource.getRepository(Rss);
-    await rssRepository.query('DELETE FROM rss'); // rss 테이블 초기화
+    await rssRepository.createQueryBuilder().delete().from('rss').execute();
     input = {
       blog: 'seok3765.log',
       name: 'J235_조민석',
