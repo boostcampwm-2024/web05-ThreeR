@@ -14,40 +14,30 @@ export default function Admin() {
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const { status, isLoading } = useAdminCheck();
   const [tap, setTap] = useState<"RSS" | "MEMBER">("RSS");
+
   useEffect(() => {
-    if (status === "success") {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
+    setIsLogin(status === "success");
+  }, [status]);
+
+  const renderContent = () => {
+    if (tap === "RSS") {
+      return (
+        <>
+          <RssRequestSearchBar />
+          <AdminTabs />
+        </>
+      );
     }
-  }, [status, isLoading]);
-  const handleTap = (tap: "RSS" | "MEMBER") => {
-    setTap(tap);
+    return <AdminMember />;
   };
-  if (isLoading) {
-    return (
-      <div>
-        <Login />
-      </div>
-    );
-  }
+
+  if (isLoading && !isLogin) return <Login />;
 
   return isLogin ? (
-    <div className="min-h-screen bg-background">
-      <AdminHeader setLogin={() => setIsLogin(false)} handleTap={handleTap} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {tap === "RSS" ? (
-          <>
-            <RssRequestSearchBar />
-            <AdminTabs />
-          </>
-        ) : (
-          <>
-            <AdminMember />
-          </>
-        )}
-      </div>
-    </div>
+    <main className="min-h-screen bg-background">
+      <AdminHeader setLogin={() => setIsLogin(false)} handleTap={setTap} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full">{renderContent()}</div>
+    </main>
   ) : (
     <AdminLogin setLogin={() => setIsLogin(true)} />
   );

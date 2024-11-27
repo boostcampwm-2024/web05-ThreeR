@@ -46,31 +46,38 @@ export default function AdminLogin({ setLogin }: { setLogin: () => void }) {
           <CardTitle>관리자 로그인</CardTitle>
           <CardDescription>관리자 로그인 페이지입니다.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 py-4">
-            <FormInput
-              id="id"
-              label="ID"
-              onChange={(value) => handleChange("loginId", value)}
-              placeholder="아이디를 입력해주세요."
-              value={loginData.loginId}
-              type="text"
-            />
-            <FormInput
-              id="password"
-              label="Password"
-              onChange={(value) => handleChange("password", value)}
-              placeholder="비밀번호를 입력해주세요."
-              value={loginData.password}
-              type="password"
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button type="submit" className="bg-black hover:bg-gray-800 text-white" onClick={handleAdminAuth}>
-            로그인
-          </Button>
-        </CardFooter>
+        <form
+          onSubmit={(event) => {
+            event?.preventDefault();
+            handleAdminAuth();
+          }}
+        >
+          <CardContent>
+            <div className="grid gap-4 py-4">
+              <FormInput
+                id="id"
+                label="ID"
+                onChange={(value) => handleChange("loginId", value)}
+                placeholder="아이디를 입력해주세요."
+                value={loginData.loginId}
+                type="text"
+              />
+              <FormInput
+                id="password"
+                label="Password"
+                onChange={(value) => handleChange("password", value)}
+                placeholder="비밀번호를 입력해주세요."
+                value={loginData.password}
+                type="password"
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end">
+            <Button type="submit" className="bg-black hover:bg-gray-800 text-white">
+              로그인
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
 
       <AlertDialog open={loginError}>
