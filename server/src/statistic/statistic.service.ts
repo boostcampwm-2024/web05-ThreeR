@@ -1,3 +1,4 @@
+import { RssAcceptRepository } from './../rss/rss.repository';
 import { Injectable } from '@nestjs/common';
 import { RedisService } from '../common/redis/redis.service';
 import { FeedRepository } from '../feed/feed.repository';
@@ -8,6 +9,7 @@ export class StatisticService {
   constructor(
     private readonly redisService: RedisService,
     private readonly feedRepository: FeedRepository,
+    private readonly rssAcceptRepository: RssAcceptRepository,
   ) {}
   async getTodayViewCount(limit: number) {
     const ranking = await this.redisService.redisClient.zrevrange(
@@ -43,5 +45,15 @@ export class StatisticService {
       take: limit,
     });
     return ranking;
+  }
+
+  async getPlatformGroupCount() {
+    const platform = await this.rssAcceptRepository
+      .createQueryBuilder()
+      .select(['blog_platform as platform'])
+      .addSelect('COUNT(blog_platform)', 'count')
+      .groupBy('blog_platform')
+      .getRawMany();
+    return platform;
   }
 }
