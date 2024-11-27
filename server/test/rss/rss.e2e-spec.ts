@@ -5,19 +5,30 @@ import { Repository } from 'typeorm';
 import { Rss, RssAccept } from '../../src/rss/rss.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RssFixture } from './fixture/rssFixture';
+import { RssAcceptFixture } from './fixture/rssAcceptFixture';
 
 describe('Rss E2E Test', () => {
   let app: INestApplication;
   let input: RssRegisterDto;
   let rssRepository: Repository<Rss>;
+  let rssAcceptRepository: Repository<RssAccept>;
 
   beforeAll(async () => {
     app = global.testApp;
     rssRepository = app.get<Repository<Rss>>(getRepositoryToken(Rss));
+    rssAcceptRepository = app.get<Repository<RssAccept>>(
+      getRepositoryToken(RssAccept),
+    );
   });
 
   beforeEach(async () => {
     await rssRepository.query('DELETE FROM rss');
+    input = {
+      name: 'blog',
+      blog: 'name',
+      email: 'test@test.com',
+      rssUrl: 'https://example.com/rss',
+    };
   });
 
   afterAll(async () => {
@@ -37,29 +48,28 @@ describe('Rss E2E Test', () => {
       });
 
       it('이미 신청했던 RSS를 또 신청한다.', async () => {
-        await request(app.getHttpServer()).post('/api/rss').send(input);
+        const requestDto = RssRegisterDto.from(RssFixture.createRssFixture());
+        await request(app.getHttpServer()).post('/api/rss').send(requestDto);
         const response = await request(app.getHttpServer())
           .post('/api/rss')
-          .send(input);
+          .send(requestDto);
         expect(response.status).toBe(409);
         expect(response.body.message).toBe('이미 신청된 RSS URL입니다.');
       });
 
       it('이미 등록된 RSS를 또 신청한다.', async () => {
-        const blogRepository = app.get<Repository<Rss>>(
-          getRepositoryToken(RssAccept),
+        // given
+        const acceptedRss = await rssAcceptRepository.save(
+          RssAcceptFixture.createRssAcceptFixture(),
         );
-        const blog = blogRepository.create({
-          name: input.blog,
-          userName: input.name,
-          email: input.email,
-          rssUrl: input.rssUrl,
-        });
-        await blogRepository.save(blog);
+        const rssRegisterDto = RssRegisterDto.from(acceptedRss);
 
+        // when
         const response = await request(app.getHttpServer())
           .post('/api/rss')
-          .send(input);
+          .send(rssRegisterDto);
+
+        // then
         expect(response.status).toBe(409);
         expect(response.body.message).toBe('이미 등록된 RSS URL입니다.');
       });
@@ -68,27 +78,49 @@ describe('Rss E2E Test', () => {
     describe('비정상적인 요청을 한다.', () => {
       describe('블로그 이름을 올바르게 입력하지 않는다.', () => {
         it('블로그 이름이 없다.', async () => {
-          delete input.blog;
+          // given
+          const rss = RssFixture.createRssFixture();
+          delete rss.name;
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('블로그 이름이 없습니다.');
         });
 
         it('블로그 이름이 빈 문자열이다.', async () => {
-          input.blog = '';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.name = '';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('블로그 이름이 없습니다.');
         });
+
         it('블로그 이름이 문자열이 아니다.', async () => {
-          input.blog = 12345 as any;
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.name = 12345 as any;
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('문자열로 입력해주세요.');
         });
@@ -96,46 +128,81 @@ describe('Rss E2E Test', () => {
 
       describe('실명을 올바르게 입력하지 않는다.', () => {
         it('실명이 없다.', async () => {
-          delete input.name;
+          // given
+          const rss = RssFixture.createRssFixture();
+          delete rss.userName;
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('실명이 없습니다.');
         });
 
         it('실명이 빈 문자열이다.', async () => {
-          input.name = '';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.userName = '';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('실명이 없습니다.');
         });
 
         it('실명이 문자열이 아니다.', async () => {
-          input.name = 12345 as any; // invalid name type
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.userName = 12345 as any;
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('문자열로 입력해주세요.');
         });
 
         it('실명의 길이가 2자리보다 작다.', async () => {
-          input.name = 'A';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.userName = 'A';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('이름 길이가 올바르지 않습니다.');
         });
 
         it('실명의 길이가 50자리보다 크다.', async () => {
-          input.name = 'A'.repeat(51); // name too long
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.userName = 'A'.repeat(51);
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('이름 길이가 올바르지 않습니다.');
         });
@@ -143,28 +210,49 @@ describe('Rss E2E Test', () => {
 
       describe('이메일을 올바르게 입력하지 않는다.', () => {
         it('이메일이 없다.', async () => {
-          delete input.email;
+          // given
+          const rss = RssFixture.createRssFixture();
+          delete rss.email;
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('이메일이 없습니다.');
         });
 
         it('이메일이 빈 문자열이다.', async () => {
-          input.email = '';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.email = '';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('이메일이 없습니다.');
         });
 
         it('이메일 형식이 올바르지 않다.', async () => {
-          input.email = 'invalid-email';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.email = 'invalid-email';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe(
             '이메일 주소 형식에 맞춰서 작성해주세요.',
@@ -174,28 +262,49 @@ describe('Rss E2E Test', () => {
 
       describe('RSS URL을 올바르게 입력하지 않는다.', () => {
         it('RSS URL이 없다.', async () => {
-          delete input.rssUrl;
+          // given
+          const rss = RssFixture.createRssFixture();
+          delete rss.rssUrl;
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('RSS URL이 없습니다.');
         });
 
         it('RSS URL이 빈 문자열이다.', async () => {
-          input.rssUrl = '';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.rssUrl = '';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe('RSS URL이 없습니다.');
         });
 
         it('RSS URL 형식이 잘못되었다.', async () => {
-          input.rssUrl = 'invalid-url';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.rssUrl = 'invalid-url';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe(
             'http, https 프로토콜과 URL 형식을 맞춰주세요.',
@@ -203,10 +312,17 @@ describe('Rss E2E Test', () => {
         });
 
         it('http, https 프로토콜을 제외한 다른 프로토콜을 입력한다.', async () => {
-          input.rssUrl = 'ftp://example.com/rss';
+          // given
+          const rss = RssFixture.createRssFixture();
+          rss.rssUrl = 'ftp://example.com/rss';
+          const requestDto = RssRegisterDto.from(rss);
+
+          // when
           const response = await request(app.getHttpServer())
             .post('/api/rss')
-            .send(input);
+            .send(requestDto);
+
+          // then
           expect(response.status).toBe(400);
           expect(response.body.message).toBe(
             'http, https 프로토콜과 URL 형식을 맞춰주세요.',
