@@ -86,6 +86,14 @@ export class AdminService {
     response.cookie('sessionId', sessionId, cookieConfig[process.env.NODE_ENV]);
   }
 
+  async logoutAdmin(request: Request, response: Response) {
+    const sid = request.cookies['sessionId'];
+    await this.redisService.redisClient.del(`auth:${sid}`);
+    response.cookie('sessionId', '', {
+      maxAge: 0,
+    });
+  }
+
   async registerAdmin(registerAdminDto: RegisterAdminDto) {
     let { loginId, password } = registerAdminDto;
 
