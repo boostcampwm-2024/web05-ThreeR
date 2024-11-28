@@ -9,7 +9,7 @@ import { useChatStore } from "@/store/useChatStore";
 
 export function Chat() {
   const { userCount, connect, disconnect, getHistory } = useChatStore();
-  const [isFull, setIsFull] = useState<boolean>(true);
+  const [isFull, setIsFull] = useState<boolean>(false);
   // Socket 연결 관리
   useEffect(() => {
     if (userCount >= 500) {
