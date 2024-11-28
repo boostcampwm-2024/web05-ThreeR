@@ -10,27 +10,12 @@ export class FeedFixture {
     thumbnail: 'https://test.com/test.png',
   };
 
-  static customFeedFixture(
-    title: string,
-    path: string,
+  static createFeedFixture(
     rssAccept: RssAccept,
+    overwrites: Partial<Feed> = {},
   ): Feed {
-    const feedData = {
-      ...this.GENERAL_FEED,
-      title,
-      path,
-      blog: rssAccept,
-    };
-
-    return new Feed(feedData);
-  }
-
-  static createFeedFixture(rssAccept: RssAccept): Feed {
-    const feedData = {
-      ...this.GENERAL_FEED,
-      blog: rssAccept,
-    };
-
-    return new Feed(feedData);
+    const feed = new Feed();
+    Object.assign(feed, { ...this.GENERAL_FEED, rssAccept });
+    return Object.assign(feed, overwrites);
   }
 }

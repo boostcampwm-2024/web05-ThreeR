@@ -42,14 +42,7 @@ export abstract class RssInformation extends BaseEntity {
 @Entity({
   name: 'rss',
 })
-export class Rss extends RssInformation {
-  constructor(partial?: Partial<Rss>) {
-    super();
-    if (partial) {
-      Object.assign(this, partial);
-    }
-  }
-}
+export class Rss extends RssInformation {}
 
 @Entity({
   name: 'rss_reject',

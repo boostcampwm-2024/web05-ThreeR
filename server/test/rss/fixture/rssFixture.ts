@@ -8,7 +8,9 @@ export class RssFixture {
     rssUrl: 'https://example.com/rss',
   };
 
-  static createRssFixture(): Rss {
-    return new Rss(this.GENERAL_RSS);
+  static createRssFixture(overwrites: Partial<Rss> = {}): Rss {
+    const rss = new Rss();
+    Object.assign(rss, this.GENERAL_RSS);
+    return Object.assign(rss, overwrites);
   }
 }

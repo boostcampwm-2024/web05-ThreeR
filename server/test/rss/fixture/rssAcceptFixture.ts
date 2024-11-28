@@ -9,7 +9,9 @@ export class RssAcceptFixture {
     blogPlatform: 'etc',
   };
 
-  static createRssAcceptFixture(): RssAccept {
-    return new RssAccept(this.GENERAL_RSS_ACCEPT);
+  static createRssAcceptFixture(overwrites: Partial<RssAccept>): RssAccept {
+    const rssAccept = new RssAccept();
+    Object.assign(rssAccept, this.GENERAL_RSS_ACCEPT);
+    return Object.assign(rssAccept, overwrites);
   }
 }
