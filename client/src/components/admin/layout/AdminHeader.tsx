@@ -11,6 +11,7 @@ import {
 import logo from "@/assets/logo-denamu-main.svg";
 
 import { AdminNavigationMenu } from "./AdminNavigationMenu";
+import { auth } from "@/api/services/admin/auth";
 
 export const AdminHeader = ({
   setLogin,
@@ -19,6 +20,10 @@ export const AdminHeader = ({
   setLogin: () => void;
   handleTap: (tap: "RSS" | "MEMBER") => void;
 }) => {
+  const handleLogout = () => {
+    auth.logout();
+    setLogin();
+  };
   return (
     <>
       <header className="border-b">
@@ -42,7 +47,7 @@ export const AdminHeader = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="text-red-600" onClick={setLogin}>
+                  <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     로그아웃
                   </DropdownMenuItem>
