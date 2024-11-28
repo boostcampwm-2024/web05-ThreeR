@@ -22,11 +22,7 @@ describe('Rss E2E Test', () => {
   });
 
   beforeEach(async () => {
-    await rssRepository.query('DELETE FROM rss');
-  });
-
-  afterAll(async () => {
-    await app.close();
+    await rssRepository.delete({});
   });
 
   describe('POST /api/rss', () => {

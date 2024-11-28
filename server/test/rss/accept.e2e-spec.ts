@@ -23,8 +23,10 @@ describe('Rss Accept E2E Test', () => {
   });
 
   beforeEach(async () => {
-    await rssRepository.query('DELETE FROM rss');
-    await redisService.redisClient.set('auth:sid', 'test_admin');
+    await Promise.all([
+      rssRepository.delete({}),
+      redisService.redisClient.set('auth:sid', 'test_admin'),
+    ]);
   });
 
   afterAll(async () => {
