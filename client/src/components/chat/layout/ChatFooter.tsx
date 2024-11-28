@@ -24,8 +24,13 @@ export default function ChatFooter() {
 
   return (
     <SheetFooter className="flex items-center p-2">
-      <Input placeholder="메시지를 입력하세요" value={message} onChange={(e) => setMessage(e.target.value)} />
-      <Button className="bg-primary hover:bg-[#2ECC71] text-white !ml-0" onClick={handleSendMessage}>
+      <Input
+        placeholder="메시지를 입력하세요"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        className="rounded-r-none"
+      />
+      <Button className="bg-primary hover:bg-[#2ECC71] text-white !ml-0 rounded-l-none" onClick={handleSendMessage}>
         <Send />
       </Button>
     </SheetFooter>
