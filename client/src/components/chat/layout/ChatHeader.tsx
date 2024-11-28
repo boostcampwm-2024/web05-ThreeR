@@ -11,9 +11,9 @@ export default function ChatHeader() {
   const { userCount } = useChatStore();
   return (
     <SidebarHeader>
-      <div className="flex justify-between p-2.5 items-center">
+      <div className="flex justify-between px-2.5 py-5 items-center">
         <div className="flex gap-2">
-          <span>실시간 채팅</span>
+          <b>실시간 채팅</b>
           <span>
             <Users color="gray" />
           </span>
