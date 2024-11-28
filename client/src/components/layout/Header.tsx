@@ -56,7 +56,7 @@ export default function Header() {
           </div>
 
           {/* 내비게이션 */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 z-50">
             <DesktopNavigation toggleModal={toggleModal} />
             <MobileNavigation toggleModal={toggleModal} />
           </div>
