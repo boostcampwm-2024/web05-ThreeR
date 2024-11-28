@@ -3,7 +3,6 @@ import "dotenv/config";
 import {
   selectAllRss,
   insertFeeds,
-  getRecentFeedStartId,
   deleteRecentFeedStartId,
   setRecentFeedList,
 } from "./db-access.js";
@@ -117,7 +116,7 @@ export const performTask = async () => {
   const rssObjects = await selectAllRss();
 
   if (rssObjects.length === 0) {
-    logger.info("등록된 RSS 피드가 없습니다.");
+    logger.info("등록된 RSS가 없습니다.");
     return;
   }
   const currentTime = new Date();
@@ -125,9 +124,8 @@ export const performTask = async () => {
   let idx = 0;
   const newFeeds = await Promise.all(
     rssObjects.map(async (rssObj) => {
-      idx += 1;
       logger.info(
-        `[${idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`,
+        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`,
       );
       return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
     }),
@@ -146,7 +144,7 @@ export const performTask = async () => {
   }
 
   logger.info(`총 ${result.length}개의 새로운 피드가 있습니다.`);
-  const recentFeedStartId = await getRecentFeedStartId();
-  await insertFeeds(result);
+  const recentFeedStartId = await insertFeeds(result);
+  console.log(recentFeedStartId);
   await setRecentFeedList(recentFeedStartId);
 };

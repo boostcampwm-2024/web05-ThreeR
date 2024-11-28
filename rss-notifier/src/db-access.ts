@@ -10,6 +10,12 @@ dotenv.config({
 });
 
 const CONNECTION_LIMIT = 50;
+const INSERT_ID = "insertId";
+
+const redisConstant = {
+  FEED_RECENT_ALL_KEY: "feed:recent:*",
+  FEED_RECENT_KEY: "feed:recent",
+};
 
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -52,20 +58,22 @@ export const selectAllRss = async (): Promise<FeedObj[]> => {
 
 export const insertFeeds = async (resultData: FeedDetail[]) => {
   let successCount = 0;
+  let lastFeedId;
   try {
     const query = `
         INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
         VALUES (?, ?, ?, ?, ?)
     `;
-
     for (const feed of resultData) {
-      await executeQuery(query, [
-        feed.blogId,
-        feed.pubDate,
-        feed.title,
-        feed.link,
-        feed.imageUrl,
-      ]);
+      lastFeedId = (
+        await executeQuery(query, [
+          feed.blogId,
+          feed.pubDate,
+          feed.title,
+          feed.link,
+          feed.imageUrl,
+        ])
+      )[INSERT_ID];
       successCount++;
     }
   } catch (error) {
@@ -74,38 +82,24 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   logger.info(
     `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`,
   );
-};
-
-export const getRecentFeedStartId = async () => {
-  let startId;
-  try {
-    const query = `SELECT id
-                       FROM feed
-                       ORDER BY id desc
-                       LIMIT 1`;
-    const result = await executeQuery(query);
-    startId = result.length > 0 ? result[0].id + 1 : 1;
-  } catch (error) {
-    logger.error(`디비 접근에 실패했습니다. 에러 내용: ${error}`);
-  }
-  return startId;
+  lastFeedId = lastFeedId - successCount + 1;
+  return lastFeedId;
 };
 
 export const deleteRecentFeedStartId = async () => {
   const redis = await createRedisClient();
   try {
-    const keys = await redis.keys("feed:recent:*");
+    const keys = await redis.keys(redisConstant.FEED_RECENT_ALL_KEY);
     if (keys.length > 0) {
-      redis.del(...keys);
+      await redis.del(...keys);
     }
-    redis.set("feed:recent", "false");
+    await redis.set(redisConstant.FEED_RECENT_KEY, "false");
   } catch (error) {
     logger.error(
       `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
     );
-    if (redis) redis.disconnect();
   } finally {
-    if (redis) redis.quit();
+    if (redis) await redis.quit();
   }
   logger.info(`Redis의 feed:recent:* 값이 정상적으로 삭제되었습니다.`);
 };
@@ -126,16 +120,18 @@ export const setRecentFeedList = async (startId: number) => {
                    JOIN rss_accept r ON f.blog_id = r.id
                    WHERE f.id >= ${startId}`;
     const resultList = await executeQuery(query);
+    const pipeLine = redis.pipeline();
     for (const feed of resultList) {
-      await redis.hset(`feed:recent:${feed.id}`, feed);
+      pipeLine.hset(`feed:recent:${feed.id}`, feed);
     }
-    redis.set("feed:recent", "true");
+    pipeLine.set(redisConstant.FEED_RECENT_KEY, "true");
+    await pipeLine.exec();
   } catch (error) {
     logger.error(
       `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
     );
   } finally {
-    if (redis) redis.quit();
+    if (redis) await redis.quit();
   }
   logger.info(`Redis의 feed:recent:* 값이 정상적으로 저장되었습니다.`);
 };
