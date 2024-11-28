@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { SidebarHeader } from "@/components/ui/sidebar";
 
-export default function ChatHeader({ userCount }: { userCount: number }) {
+import { useChatStore } from "@/store/useChatStore";
+
+export default function ChatHeader() {
+  const { userCount } = useChatStore();
   return (
     <SidebarHeader>
       <div className="flex justify-between p-2.5 items-center">
