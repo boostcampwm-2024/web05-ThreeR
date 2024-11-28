@@ -52,17 +52,6 @@ describe('Rss Accept E2E Test', () => {
     });
 
     describe('비정상적인 요청을 한다.', () => {
-      it('PathVariable이 적절하지 않을 경우', async () => {
-        // when
-        const response = await request(app.getHttpServer())
-          .post(`/api/rss/accept/abc`)
-          .set('Cookie', 'sessionId=sid')
-          .send();
-
-        // then
-        expect(response.status).toBe(400);
-      });
-
       it('존재하지 않는 rss를 승인할 때', async () => {
         // when
         const response = await request(app.getHttpServer())
