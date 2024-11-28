@@ -29,13 +29,9 @@ describe('Rss Accept E2E Test', () => {
     ]);
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/rss/accept/{rssId}', () => {
     describe('정상적인 요청을 한다.', () => {
-      it('정삳적으로 RSS를 승인한다.', async () => {
+      it('정상적으로 RSS를 승인한다.', async () => {
         // given
         const rssFixture = RssFixture.createRssFixture();
         const rss = await rssRepository.save(rssFixture);

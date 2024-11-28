@@ -30,13 +30,9 @@ describe('Rss Reject E2E Test', () => {
     ]);
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
-
   describe('POST /api/rss/reject/{rssId}', () => {
     describe('정상적인 요청을 한다.', () => {
-      it('정삳적으로 RSS를 거절한다.', async () => {
+      it('정상적으로 RSS를 거절한다.', async () => {
         // given
         const REJECT_REASON = '거절 사유';
         const rssFixture = RssFixture.createRssFixture();
