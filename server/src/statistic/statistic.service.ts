@@ -46,15 +46,9 @@ export class StatisticService {
     });
     return ranking;
   }
-  
+
   async getPlatformGroupCount() {
-    const platform = await this.rssAcceptRepository
-      .createQueryBuilder()
-      .select(['blog_platform as platform'])
-      .addSelect('COUNT(blog_platform)', 'count')
-      .groupBy('blog_platform')
-      .orderBy('count', 'DESC')
-      .getRawMany();
+    const platform = await this.rssAcceptRepository.countByBlogPlatform();
     return platform;
   }
 }
