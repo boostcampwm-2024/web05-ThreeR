@@ -7,8 +7,13 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export function ApiStatistic(type: 'today' | 'all') {
+
+export function ApiStatistic(category: 'today' | 'all') {
+  const type = category === 'all' ? '전체' : '금일';
   return applyDecorators(
+    ApiOperation({
+      summary: `${type} 게시글 조회수 통계 API`,
+    }),
     ApiQuery({
       name: 'limit',
       required: false,
@@ -43,7 +48,7 @@ export function ApiStatistic(type: 'today' | 'all') {
         },
       },
       example: {
-        message: `${type === 'all' ? '전체' : '금일'} 조회수 통계 조회 완료`,
+        message: `${type} 조회수 통계 조회 완료`,
         data: [
           {
             id: 1,

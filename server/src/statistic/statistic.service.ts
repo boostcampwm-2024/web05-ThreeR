@@ -46,7 +46,7 @@ export class StatisticService {
     });
     return ranking;
   }
-
+  
   async getPlatformGroupCount() {
     const platform = await this.rssAcceptRepository
       .createQueryBuilder()
