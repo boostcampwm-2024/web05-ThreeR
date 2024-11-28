@@ -16,7 +16,7 @@ export default function TrendingSection() {
       <SectionHeader
         icon={TrendingUp}
         text="트렌딩 포스트"
-        description="지난 주 가장 인기있던 포스트"
+        description="오늘 가장 인기있는 포스트"
         iconColor="text-red-500"
       />
       <div

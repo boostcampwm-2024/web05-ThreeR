@@ -23,14 +23,9 @@ export default function ChatFooter() {
   useKeyboardShortcut("Enter", () => handleSendMessage(), false);
 
   return (
-    <SheetFooter className="flex items-center gap-2">
-      <Input
-        placeholder="메시지를 입력하세요"
-        className="flex-1"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <Button className="bg-black hover:bg-gray-800 text-white" onClick={handleSendMessage}>
+    <SheetFooter className="flex items-center p-2">
+      <Input placeholder="메시지를 입력하세요" value={message} onChange={(e) => setMessage(e.target.value)} />
+      <Button className="bg-primary hover:bg-[#2ECC71] text-white !ml-0" onClick={handleSendMessage}>
         <Send />
       </Button>
     </SheetFooter>

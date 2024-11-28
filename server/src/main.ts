@@ -21,7 +21,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'https://denamu.netlify.app',
-      'https://denamu.shop',
+      'https://denamu.site',
     ],
     credentials: true,
   });

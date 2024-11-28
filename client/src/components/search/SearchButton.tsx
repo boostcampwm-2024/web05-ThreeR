@@ -1,14 +1,25 @@
 import { Search } from "lucide-react";
 
-import { NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-
 export default function SearchButton({ handleSearchModal }: { handleSearchModal: () => void }) {
   return (
-    <NavigationMenuLink className={navigationMenuTriggerStyle()} onClick={handleSearchModal} href="#">
-      <div className="flex items-center gap-2">
-        <Search size={16} />
-        <span>검색</span>
-      </div>
-    </NavigationMenuLink>
+    <div
+      className="w-full px-4 py-3 
+                   bg-white 
+                   border border-primary 
+                   rounded-xl 
+                   shadow-sm 
+                   cursor-pointer
+                   text-primary
+                   flex 
+                   justify-between 
+                   items-center 
+                   hover:bg-primary/5 
+                   
+                   "
+      onClick={handleSearchModal}
+    >
+      <span className="text-sm font-medium">검색</span>
+      <Search size={16} className="text-primary group-hover:text-secondary transition-colors" />
+    </div>
   );
 }

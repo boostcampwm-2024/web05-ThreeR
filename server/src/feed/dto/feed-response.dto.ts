@@ -4,6 +4,7 @@ export class FeedResponseDto {
   private constructor(
     private id: number,
     private author: string,
+    private blogPlatform: string,
     private title: string,
     private path: string,
     private createdAt: Date,
@@ -15,6 +16,7 @@ export class FeedResponseDto {
     return new FeedResponseDto(
       feed.id,
       feed.blog.name,
+      feed.blog.blogPlatform,
       feed.title,
       feed.path,
       feed.createdAt,

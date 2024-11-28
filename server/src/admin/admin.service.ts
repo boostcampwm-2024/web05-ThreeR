@@ -3,7 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { AdminRepository } from './admin.repository';
 import * as bcrypt from 'bcrypt';
@@ -22,7 +22,12 @@ export class AdminService {
     private readonly redisService: RedisService,
   ) {}
 
-  async loginAdmin(loginAdminDto: LoginAdminDto, response: Response) {
+  async loginAdmin(
+    loginAdminDto: LoginAdminDto,
+    response: Response,
+    request: Request,
+  ) {
+    const cookie = request.cookies['sessionId'];
     const { loginId, password } = loginAdminDto;
 
     const admin = await this.loginRepository.findOne({
@@ -35,14 +40,56 @@ export class AdminService {
 
     const sessionId = uuid.v4();
 
-    await this.redisService.redisClient.set(
-      sessionId,
+    if (cookie) {
+      this.redisService.redisClient.del(`auth:${cookie}`);
+    }
+
+    let cursor = '0';
+    let scanFlag = false;
+    do {
+      const [newCursor, keys] = await this.redisService.redisClient.scan(
+        cursor,
+        'MATCH',
+        'auth:*',
+        'COUNT',
+        100,
+      );
+
+      cursor = newCursor;
+
+      if (!keys.length) {
+        continue;
+      }
+
+      const values = await this.redisService.redisClient.mget(keys);
+
+      for (let i = 0; i < keys.length; i++) {
+        const sessionValue = values[i];
+        if (sessionValue === loginId) {
+          await this.redisService.redisClient.del(keys[i]);
+          scanFlag = true;
+          break;
+        }
+      }
+      if (scanFlag) {
+        break;
+      }
+    } while (cursor !== '0');
+
+    this.redisService.redisClient.set(
+      `auth:${sessionId}`,
       admin.loginId,
       `EX`,
       this.SESSION_TTL,
     );
 
     response.cookie('sessionId', sessionId, cookieConfig[process.env.NODE_ENV]);
+  }
+
+  async logoutAdmin(request: Request, response: Response) {
+    const sid = request.cookies['sessionId'];
+    this.redisService.redisClient.del(`auth:${sid}`);
+    response.clearCookie('sessionId');
   }
 
   async registerAdmin(registerAdminDto: RegisterAdminDto) {

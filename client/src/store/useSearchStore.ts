@@ -13,7 +13,10 @@ interface SearchState {
   resetParam: () => void;
   resetFilter: () => void;
 }
-
+interface AdminSearchType {
+  searchParam: string;
+  setSearchParam: (param: string) => void;
+}
 export const useSearchStore = create<SearchState>((set) => ({
   currentFilter: "title",
   searchParam: "",
@@ -24,4 +27,9 @@ export const useSearchStore = create<SearchState>((set) => ({
   resetPage: () => set({ page: 1 }),
   resetParam: () => set({ searchParam: "" }),
   resetFilter: () => set({ currentFilter: "title" }),
+}));
+
+export const useAdminSearchStore = create<AdminSearchType>((set) => ({
+  searchParam: "",
+  setSearchParam: (param) => set({ searchParam: param }),
 }));
