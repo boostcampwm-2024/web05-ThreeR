@@ -18,7 +18,7 @@ export class AdminService {
   private readonly SESSION_TTL = 60 * 60 * 12;
 
   constructor(
-    private readonly loginRepository: AdminRepository,
+    private readonly adminRepository: AdminRepository,
     private readonly redisService: RedisService,
   ) {}
 
@@ -30,7 +30,7 @@ export class AdminService {
     const cookie = request.cookies['sessionId'];
     const { loginId, password } = loginAdminDto;
 
-    const admin = await this.loginRepository.findOne({
+    const admin = await this.adminRepository.findOne({
       where: { loginId },
     });
 
@@ -89,7 +89,7 @@ export class AdminService {
   async registerAdmin(registerAdminDto: RegisterAdminDto) {
     let { loginId, password } = registerAdminDto;
 
-    const existingAdmin = await this.loginRepository.findOne({
+    const existingAdmin = await this.adminRepository.findOne({
       where: { loginId },
     });
 
@@ -100,6 +100,6 @@ export class AdminService {
     const saltRounds = 10;
     password = await bcrypt.hash(password, saltRounds);
 
-    return this.loginRepository.registerAdmin({ loginId, password });
+    return this.adminRepository.registerAdmin({ loginId, password });
   }
 }
