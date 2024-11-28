@@ -145,6 +145,5 @@ export const performTask = async () => {
 
   logger.info(`총 ${result.length}개의 새로운 피드가 있습니다.`);
   const recentFeedStartId = await insertFeeds(result);
-  console.log(recentFeedStartId);
   await setRecentFeedList(recentFeedStartId);
 };
