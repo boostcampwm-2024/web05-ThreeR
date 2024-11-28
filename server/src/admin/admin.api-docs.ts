@@ -35,7 +35,7 @@ export function ApiPostRegisterAdmin() {
     ApiConflictResponse({
       description: 'Conflict',
       example: {
-        message: '이미 존재하는 계정입니다.',
+        message: '이미 존재하는 아이디입니다.',
       },
     }),
     ApiUnauthorizedResponse({
