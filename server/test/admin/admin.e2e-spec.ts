@@ -8,29 +8,31 @@ import { v4 as uuidv4 } from 'uuid';
 describe('Feed E2E Test', () => {
   let app: INestApplication;
   let adminService: AdminService;
+
+  //given
+  const loginAdminDto: LoginAdminDto = {
+    loginId: 'testAdminId',
+    password: 'testAdminPassword!',
+  };
+  const registerAdminDto: RegisterAdminDto = {
+    loginId: 'testNewAdminId',
+    password: 'testNewAdminPassword!',
+  };
+
   beforeAll(async () => {
     app = global.testApp;
     adminService = app.get(AdminService);
 
-    await adminService.registerAdmin({
-      loginId: 'testAdminId',
-      password: 'testAdminPassword!',
-    });
+    await adminService.registerAdmin(loginAdminDto);
   });
 
   describe('POST api/admin/login', () => {
     describe('관리자 페이지에서 정상적인 요청을 전송한다.', () => {
       it('등록된 계정은 정상적으로 로그인할 수 있다.', async () => {
-        //given
-        const registerAdminDto: RegisterAdminDto = {
-          loginId: 'testAdminId',
-          password: 'testAdminPassword!',
-        };
-
         //when
         const response = await request(app.getHttpServer())
           .post('/api/admin/login')
-          .send(registerAdminDto);
+          .send(loginAdminDto);
 
         //then
         expect(response.status).toBe(200);
@@ -41,15 +43,15 @@ describe('Feed E2E Test', () => {
 
       it('등록되지 않은 계정은 401 UnAuthorized 예외가 발생한다.', async () => {
         //given
-        const loginAdminDto: LoginAdminDto = {
-          loginId: 'testAdminWrongId',
+        const loginWrongAdminIdDto: LoginAdminDto = {
+          loginId: 'testWrongAdminId',
           password: 'testAdminPassword!',
         };
 
         //when
         const response = await request(app.getHttpServer())
           .post('/api/admin/login')
-          .send(loginAdminDto);
+          .send(loginWrongAdminIdDto);
 
         //then
         expect(response.status).toBe(401);
@@ -60,15 +62,14 @@ describe('Feed E2E Test', () => {
 
       it('비밀번호가 다르다면 401 UnAuthorized 예외가 발생한다.', async () => {
         //given
-        const loginAdminDto: LoginAdminDto = {
+        const loginWrongAdminPasswordDto: LoginAdminDto = {
           loginId: 'testAdminId',
-          password: 'testAdminWrongPassword!',
+          password: 'testWrongAdminPassword!',
         };
-
         //when
         const response = await request(app.getHttpServer())
           .post('/api/admin/login')
-          .send(loginAdminDto);
+          .send(loginWrongAdminPasswordDto);
 
         //then
         expect(response.status).toBe(401);
@@ -83,16 +84,6 @@ describe('Feed E2E Test', () => {
     describe('정상적인 데이터로 관리자 회원가입 요청을 전송한다.', () => {
       it('관리자가 로그인 되어 있음을 확인할 수 있을 때만 관리자 회원가입을 할 수 있다.', async () => {
         //given
-        const loginAdminDto: LoginAdminDto = {
-          loginId: 'testAdminId',
-          password: 'testAdminPassword!',
-        };
-
-        const registerAdminDto: RegisterAdminDto = {
-          loginId: 'testNewAdminId',
-          password: 'testNewAdminPassword!',
-        };
-
         const agent = request.agent(app.getHttpServer());
 
         //when
@@ -110,16 +101,6 @@ describe('Feed E2E Test', () => {
 
       it('이미 가입한 ID로는 계정을 생성할 수 없다.', async () => {
         //given
-        const loginAdminDto: LoginAdminDto = {
-          loginId: 'testAdminId',
-          password: 'testAdminPassword!',
-        };
-
-        const registerAdminDto: RegisterAdminDto = {
-          loginId: 'testAdminId',
-          password: 'testNewAdminPassword!',
-        };
-
         const agent = request.agent(app.getHttpServer());
 
         //when
@@ -158,11 +139,6 @@ describe('Feed E2E Test', () => {
     describe('관리자가 로그인 상태임을 확인한다.', () => {
       it('쿠키의 session id로 관리자가 현재 로그인 상태인지 판단한다.', async () => {
         //given
-        const loginAdminDto: LoginAdminDto = {
-          loginId: 'testAdminId',
-          password: 'testAdminPassword!',
-        };
-
         const agent = request.agent(app.getHttpServer());
 
         //when
@@ -189,8 +165,6 @@ describe('Feed E2E Test', () => {
       });
 
       it('session id가 없다면 401 UnAuthorized 예외가 발생한다.', async () => {
-        //given
-
         //when
         const response = await request(app.getHttpServer())
           .get('/api/admin/sessionId')
