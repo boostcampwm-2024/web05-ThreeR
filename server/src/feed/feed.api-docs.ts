@@ -269,7 +269,7 @@ export function ApiUpdateFeedViewCount() {
 export function ApiGetRecentFeedList() {
   return applyDecorators(
     ApiOperation({
-      summary: '최신 게시글 업데이트 API',
+      summary: '최신 피드 업데이트 API',
     }),
     ApiOkResponse({
       description: 'Ok',
@@ -299,7 +299,7 @@ export function ApiGetRecentFeedList() {
           },
         },
       },
-      examples: {
+      example: {
         connect: {
           summary: '최신 피드 업데이트 완료',
           value: {
@@ -313,16 +313,6 @@ export function ApiGetRecentFeedList() {
                 path: 'https://test1.com/1',
                 createdAt: '2024-11-24T01:00:00.000Z',
                 thumbnail: 'https://test1.com/test.png',
-                viewCount: 0,
-              },
-              {
-                id: 2,
-                author: '블로그 이름',
-                blogPlatform: 'etc',
-                title: '게시글 제목',
-                path: 'https://test2.com/1',
-                createdAt: '2024-11-24T02:00:00.000Z',
-                thumbnail: 'https://test2.com/test.png',
                 viewCount: 0,
               },
             ],
