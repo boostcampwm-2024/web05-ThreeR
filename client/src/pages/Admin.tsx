@@ -24,7 +24,7 @@ export default function Admin() {
       return (
         <>
           <RssRequestSearchBar />
-          <AdminTabs />
+          <AdminTabs setLogout={() => setIsLogin(true)} />
         </>
       );
     }
@@ -41,7 +41,7 @@ export default function Admin() {
   return isLogin ? (
     <main className="min-h-screen bg-background">
       <AdminHeader setLogin={() => setIsLogin(false)} handleTap={setTap} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full">{renderContent()}</div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full">{renderContent()} </div>
     </main>
   ) : (
     <AdminLogin setLogin={() => setIsLogin(true)} />
