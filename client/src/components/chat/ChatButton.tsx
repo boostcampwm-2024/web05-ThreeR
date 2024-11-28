@@ -11,12 +11,11 @@ export function OpenChat() {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <button onClick={toggleSidebar} className="">
-      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} flex gap-2 `} href="#">
-
-        <MessageCircleMore size={16} />
-        <span>채팅</span>
-      </NavigationMenuLink>
+    <button
+      onClick={toggleSidebar}
+      className="fixed text-white bottom-10 right-10 bg-primary hover:bg-secondary !rounded-full p-3"
+    >
+      <MessageCircleMore size={30} />
     </button>
   );
 }
