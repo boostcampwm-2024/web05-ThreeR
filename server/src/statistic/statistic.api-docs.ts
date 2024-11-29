@@ -2,12 +2,17 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export function ApiTodayStatistic() {
+export function ApiStatistic(category: 'today' | 'all') {
+  const type = category === 'all' ? '전체' : '금일';
   return applyDecorators(
+    ApiOperation({
+      summary: `${type} 게시글 조회수 통계 API`,
+    }),
     ApiQuery({
       name: 'limit',
       required: false,
@@ -42,7 +47,7 @@ export function ApiTodayStatistic() {
         },
       },
       example: {
-        message: '금일 조회수 통계 조회 완료',
+        message: `${type} 조회수 통계 조회 완료`,
         data: [
           {
             id: 1,

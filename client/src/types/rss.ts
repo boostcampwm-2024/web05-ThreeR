@@ -13,13 +13,14 @@ export interface RssRequest {
   rejectedAt?: string; // 거부 시간
 }
 
-
+//관리자 rss 관리시 사용
 export interface AdminRssData {
   id: number;
   name: string;
   userName: string;
   email: string;
   rssUrl: string;
+  description?: string;
 }
 export interface AdminRss {
   message: string;
@@ -31,8 +32,10 @@ export type AdminResponse = {
 };
 export type AdminRequest = {
   id: number;
+  rejectMessage?: string;
 };
 
+// rss 등록시 사용
 export interface RegisterRss {
   blog: string; // 블로거명
   name: string; // 신청자 이름
@@ -43,4 +46,3 @@ export interface RegisterRss {
 export interface RegisterResponse {
   message: string; // 응답 메시지
 }
-

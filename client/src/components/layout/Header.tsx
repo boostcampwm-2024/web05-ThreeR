@@ -44,14 +44,19 @@ export default function Header() {
   return (
     <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="h-20 items-center overflow-hidden flex justify-between">
-          <div className="flex-shrink-0 ">
+        <div className="h-20 items-center overflow-hidden flex justify-between relative z-50">
+          {/* 로고 영역 */}
+          <div className="flex-shrink-0 relative z-50">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-[30%]">
+
+          {/* 중앙 검색 버튼 */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-full flex justify-center z-40">
             <SearchButton handleSearchModal={() => toggleModal("search")} />
           </div>
-          <div className="flex-shrink-0">
+
+          {/* 내비게이션 */}
+          <div className="flex-shrink-0 z-50">
             <DesktopNavigation toggleModal={toggleModal} />
             <MobileNavigation toggleModal={toggleModal} />
           </div>

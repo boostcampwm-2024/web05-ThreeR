@@ -33,4 +33,15 @@ export class StatisticService {
 
     return result;
   }
+
+  async getAllViewCount(limit: number) {
+    const ranking = await this.feedRepository.find({
+      select: ['id', 'title', 'viewCount'],
+      order: {
+        viewCount: 'DESC',
+      },
+      take: limit,
+    });
+    return ranking;
+  }
 }
