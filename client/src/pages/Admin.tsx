@@ -1,71 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import { Loader } from "lucide-react";
 
 import { AdminHeader } from "@/components/admin/layout/AdminHeader";
+import AdminMember from "@/components/admin/layout/AdminMember";
+import { AdminTabs } from "@/components/admin/layout/AdminTabs";
 import AdminLogin from "@/components/admin/login/AdminLoginModal";
-import { RejectModal } from "@/components/admin/rss/RejectModal";
 import { RssRequestSearchBar } from "@/components/admin/rss/RssSearchBar";
 
-import { AdminTabs } from "../components/admin/layout/AdminTabs";
-import { RssRequest } from "@/types/rss";
+import { useAdminCheck } from "@/hooks/queries/useAdminAuth";
 
 export default function Admin() {
-  const [selectedBlogName, setSelectedBlogName] = useState<string>();
   const [isLogin, setIsLogin] = useState<boolean>(false);
+  const { status, isLoading } = useAdminCheck();
+  const [tap, setTap] = useState<"RSS" | "MEMBER">("RSS");
 
-  // 로그인 관리 함수
-  const handleLogin = () => {
-    // 로그인API나오면 수정해야함
-    setIsLogin((prev) => !prev);
-  };
-  const rssRequests: RssRequest[] = [
-    {
-      id: 1,
-      blogName: "토스 테크",
-      rssUrl: "https://toss.tech/rss",
-      realName: "김철수",
-      email: "kim@example.com",
-      requestedAt: "2024-10-29 14:30",
-      status: "pending",
-    },
-    {
-      id: 2,
-      blogName: "우아한형제들 기술 블로그",
-      rssUrl: "https://techblog.woowahan.com/feed",
-      realName: "이영희",
-      email: "lee@example.com",
-      requestedAt: "2024-10-29 13:15",
-      status: "pending",
-    },
-  ];
+  useEffect(() => {
+    setIsLogin(status === "success");
+  }, [status]);
 
-  const handleAction = (request: RssRequest, action: "approve" | "reject") => {
-    if (action === "reject") {
-      setSelectedBlogName(request.blogName);
-    } else {
-      // TODO: 승인 로직 구현
-    }
-  };
-
-  const renderElement = {
-    loginPage: (
-      <div className="min-h-screen bg-background">
-        <AdminHeader setLogin={handleLogin} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  const renderContent = () => {
+    if (tap === "RSS") {
+      return (
+        <>
           <RssRequestSearchBar />
-          <AdminTabs requests={rssRequests} onAction={handleAction} />
-        </div>
-        <RejectModal
-          blogName={selectedBlogName}
-          onSubmit={() => setSelectedBlogName(undefined)}
-          onCancel={() => setSelectedBlogName(undefined)}
-        />
-      </div>
-    ),
-    logoutPage: <AdminLogin setLogin={handleLogin} />,
+          <AdminTabs setLogout={() => setIsLogin(true)} />
+        </>
+      );
+    }
+    return <AdminMember />;
   };
-  const renderFunction = () => {
-    if (isLogin) return "loginPage";
-    else return "logoutPage";
-  };
-  return renderElement[renderFunction()];
+
+  if (isLoading && !isLogin)
+    return (
+      <main className="w-full h-[100vh] flex justify-center items-center">
+        <Loader size={50} />{" "}
+      </main>
+    );
+
+  return isLogin ? (
+    <main className="min-h-screen bg-background">
+      <AdminHeader setLogin={() => setIsLogin(false)} handleTap={setTap} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full">{renderContent()} </div>
+    </main>
+  ) : (
+    <AdminLogin setLogin={() => setIsLogin(true)} />
+  );
 }

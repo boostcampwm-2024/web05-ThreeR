@@ -1,7 +1,25 @@
-export interface SearchData {
+export interface SearchResult {
   id: number;
   title: string;
-  author: string;
-  description?: string;
+  blogName: string;
+  path: string;
+  createdAt: string;
 }
-export type FilterType = "title" | "blogger" | "all";
+
+interface SearchData {
+  totalCount: number;
+  result: SearchResult[];
+  totalPages: number;
+}
+
+export interface SearchResponse {
+  data: SearchData;
+  message: string;
+}
+export interface SearchRequest {
+  query: string;
+  filter: FilterType;
+  page: number;
+  pageSize: number;
+}
+export type FilterType = "title" | "blogName" | "all";

@@ -1,10 +1,13 @@
 import {
   ApiBadRequestResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, NotFoundException } from '@nestjs/common';
+import { SearchType } from './dto/search-feed.dto';
 
 export function ApiGetFeedList() {
   return applyDecorators(
@@ -29,68 +32,348 @@ export function ApiGetFeedList() {
     ApiOkResponse({
       description: 'Ok',
       schema: {
-        example: {
-          message: '피드 조회 완료',
-          data: {
-            result: [
-              {
-                feed_id: 14,
-                feed_created_at: '2024-03-11T05:15:00.000Z',
-                feed_title: 'Redux Toolkit 실전 가이드',
-                feed_view_count: 180,
-                feed_path: 'https://coding-lee.dev/redux-toolkit',
-                feed_thumbnail: 'https://coding-lee.dev/thumbnails/redux.jpg',
-                feed_blog_id: 2,
-              },
-              {
-                feed_id: 13,
-                feed_created_at: '2024-03-12T01:20:00.000Z',
-                feed_title: 'Next.js 13 App Router 전환기',
-                feed_view_count: 310,
-                feed_path: 'https://coding-lee.dev/nextjs-13',
-                feed_thumbnail: 'https://coding-lee.dev/thumbnails/nextjs.jpg',
-                feed_blog_id: 2,
-              },
-              {
-                feed_id: 12,
-                feed_created_at: '2024-03-13T06:45:00.000Z',
-                feed_title: 'React 18 새로운 기능 소개',
-                feed_view_count: 290,
-                feed_path: 'https://coding-lee.dev/react-18',
-                feed_thumbnail: 'https://coding-lee.dev/thumbnails/react.jpg',
-                feed_blog_id: 2,
-              },
-              {
-                feed_id: 11,
-                feed_created_at: '2024-03-14T02:30:00.000Z',
-                feed_title: 'TypeScript 4.9 업데이트 정리',
-                feed_view_count: 220,
-                feed_path: 'https://coding-lee.dev/typescript-4-9',
-                feed_thumbnail: 'https://coding-lee.dev/thumbnails/ts.jpg',
-                feed_blog_id: 2,
-              },
-              {
-                feed_id: 10,
-                feed_created_at: '2024-03-05T00:45:00.000Z',
-                feed_title: '모니터링 시스템 구축 가이드',
-                feed_view_count: 160,
-                feed_path: 'https://tech-kim.dev/monitoring',
-                feed_thumbnail:
-                  'https://tech-kim.dev/thumbnails/monitoring.jpg',
-                feed_blog_id: 1,
-              },
-            ],
-            lastId: 10,
+        properties: {
+          message: {
+            type: 'string',
           },
+          data: {
+            type: 'object',
+            properties: {
+              result: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number' },
+                    author: { type: 'string' },
+                    blogPlatform: { type: 'string' },
+                    title: { type: 'string' },
+                    path: { type: 'string', format: 'url' },
+                    createAt: { type: 'string', format: 'date-time' },
+                    thumbnail: { type: 'string', format: 'url' },
+                    viewCount: { type: 'number' },
+                  },
+                },
+              },
+              lastId: { type: 'number' },
+              hasMore: { type: 'boolean' },
+            },
+          },
+        },
+      },
+      example: {
+        message: '피드 조회 완료',
+        data: {
+          result: [
+            {
+              id: 3,
+              author: '블로그 이름',
+              blogPlatform: '블로그 서비스 플랫폼',
+              title: '피드 제목',
+              path: 'https://test.com',
+              createAt: '2024-06-16T20:00:57.000Z',
+              thumbnail: 'https://test.com/image.png',
+              viewCount: 1,
+            },
+          ],
+          lastId: 3,
+          hasMore: true,
         },
       },
     }),
     ApiBadRequestResponse({
       description: 'Bad Request',
+      example: {
+        message: '오류 메세지',
+      },
+    }),
+  );
+}
+
+export function ApiSearchFeed() {
+  return applyDecorators(
+    ApiOperation({
+      summary: `검색 API`,
+    }),
+    ApiQuery({
+      name: 'find',
+      required: true,
+      type: String,
+      description: '검색어',
+      example: '데나무',
+    }),
+    ApiQuery({
+      name: 'type',
+      required: true,
+      enum: SearchType,
+      description: '검색 타입',
+      example: SearchType.ALL,
+    }),
+    ApiQuery({
+      name: 'page',
+      required: true,
+      type: Number,
+      description: '페이지 번호',
+      example: 1,
+    }),
+    ApiQuery({
+      name: 'limit',
+      required: true,
+      type: Number,
+      description: '한 페이지에 보여줄 개수',
+      example: 4,
+    }),
+    ApiOkResponse({
+      description: 'Ok',
       schema: {
-        example: {
-          message: '오류 메세지 출력',
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'object',
+            properties: {
+              totalCount: {
+                type: 'number',
+              },
+              result: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number',
+                    },
+                    blogName: {
+                      type: 'string',
+                    },
+                    title: {
+                      type: 'string',
+                    },
+                    path: {
+                      type: 'string',
+                      format: 'url',
+                    },
+                    createdAt: {
+                      type: 'string',
+                      format: 'date-time',
+                    },
+                  },
+                },
+              },
+              totalPages: {
+                type: 'number',
+              },
+              limit: {
+                type: 'number',
+              },
+            },
+          },
         },
+      },
+      example: {
+        message: '검색 결과 조회 완료',
+        data: {
+          totalCount: 1,
+          result: [
+            {
+              id: 1,
+              blogName: '블로그 이름',
+              title: '데나무',
+              path: 'https://test.com/1',
+              createdAt: '2024-10-27T02:08:55.000Z',
+            },
+          ],
+          totalPages: 3,
+          limit: 1,
+        },
+      },
+    }),
+    ApiBadRequestResponse({
+      description: 'Bad Request',
+      example: {
+        message: '오류 메세지',
+      },
+    }),
+  );
+}
+
+export function ApiGetTrendSse() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '트렌드 게시글 조회 SSE',
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'number' },
+                author: { type: 'string' },
+                blogPlatform: { type: 'string' },
+                title: { type: 'string' },
+                path: { type: 'string' },
+                createdAt: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+                thumbnail: { type: 'string' },
+                viewCount: { type: 'number' },
+              },
+            },
+          },
+        },
+      },
+      examples: {
+        connect: {
+          summary: '현재 트렌드 피드 수신 완료',
+          value: {
+            message: '현재 트렌드 피드 수신 완료',
+            data: [
+              {
+                id: 1,
+                author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
+                path: 'https://test1.com/1',
+                createdAt: '2024-11-24T01:00:00.000Z',
+                thumbnail: 'https://test1.com/test.png',
+                viewCount: 0,
+              },
+              {
+                id: 2,
+                author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
+                path: 'https://test2.com/1',
+                createdAt: '2024-11-24T02:00:00.000Z',
+                thumbnail: 'https://test2.com/test.png',
+                viewCount: 0,
+              },
+            ],
+          },
+        },
+        continue: {
+          summary: '새로운 트렌드 피드 수신 완료',
+          value: {
+            message: '새로운 트렌드 피드 수신 완료',
+            data: [
+              {
+                id: 3,
+                author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
+                path: 'https://test3.com/1',
+                createdAt: '2024-11-24T03:00:00.000Z',
+                thumbnail: 'https://test3.com/test.png',
+                viewCount: 0,
+              },
+              {
+                id: 4,
+                author: '블로그 이름',
+                blogPlatform: '블로그 서비스 플랫폼',
+                title: '피드 제목',
+                path: 'https://test4.com/1',
+                createdAt: '2024-11-24T04:00:00.000Z',
+                thumbnail: 'https://test4.com/test.png',
+                viewCount: 0,
+              },
+            ],
+          },
+        },
+      },
+    }),
+  );
+}
+
+export function ApiUpdateFeedViewCount() {
+  return applyDecorators(
+    ApiOperation({
+      summary: `피드 조회수 업데이트 API`,
+    }),
+    ApiParam({
+      name: 'feedId',
+      required: true,
+      type: Number,
+      description: '클릭한 피드의 id',
+      example: 1,
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
+      },
+      example: {
+        message: '요청이 성공적으로 처리되었습니다.',
+      },
+    }),
+    ApiNotFoundResponse({
+      description: '해당 ID의 피드가 존재하지 않는 경우',
+      example: {
+        message: '{feedId}번 피드를 찾을 수 없습니다.',
+      },
+    }),
+  );
+}
+
+export function ApiGetRecentFeedList() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '최신 피드 업데이트 API',
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'number' },
+                author: { type: 'string' },
+                blogPlatform: { type: 'string' },
+                title: { type: 'string' },
+                path: { type: 'string' },
+                createdAt: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+                thumbnail: { type: 'string' },
+                viewCount: { type: 'number' },
+              },
+            },
+          },
+        },
+      },
+      example: {
+        message: '최신 피드 업데이트 완료',
+        data: [
+          {
+            id: 1,
+            author: '블로그 이름',
+            blogPlatform: 'etc',
+            title: '게시글 제목',
+            path: 'https://test1.com/1',
+            createdAt: '2024-11-24T01:00:00.000Z',
+            thumbnail: 'https://test1.com/test.png',
+            viewCount: 0,
+          },
+        ],
       },
     }),
   );
