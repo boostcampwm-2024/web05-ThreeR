@@ -5,8 +5,8 @@ module.exports = {
     {
       name: "Denamu",
       script: "./server/dist/src/main.js",
-      instances: "max",
-      exec_mode: "cluster",
+      instances: "1",
+      exec_mode: "fork",
       watch: false,
       autorestart: true,
       env: {
@@ -22,6 +22,9 @@ module.exports = {
       cron_restart: `*/30 * * * *`, // 30분 마다 rss-notifier 재시작
       autorestart: false,
       watch: false,
+      env: {
+        NODE_ENV: "production",
+      },
     },
   ],
 };

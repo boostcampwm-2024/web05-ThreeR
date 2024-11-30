@@ -1,9 +1,20 @@
 import logger from "./logger.js";
 import "dotenv/config";
-import { pool, selectAllRss, insertFeeds } from "./db-access.js";
+import {
+  selectAllRss,
+  insertFeeds,
+  deleteRecentFeedStartId,
+  setRecentFeedList,
+} from "./db-access.js";
 import { FeedObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
+import { unescape } from "html-escaper";
+
+const htmlEntities = {
+  "&middot;": "·",
+  "&nbsp;": " ",
+};
 
 const xmlParser = new XMLParser();
 const TIME_INTERVAL = process.env.TIME_INTERVAL
@@ -30,32 +41,35 @@ const getImageUrl = async (link: string): Promise<string> => {
   return imageUrl;
 };
 
-const fetchRss = async (rss_url: string): Promise<RawFeed[]> => {
-  const response = await fetch(rss_url, {
+const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
+  const response = await fetch(rssUrl, {
     headers: {
       Accept: "application/rss+xml, application/xml, text/xml",
     },
   });
 
   if (!response.ok) {
-    throw new Error(`${rss_url}에서 xml 추출 실패`);
+    throw new Error(`${rssUrl}에서 xml 추출 실패`);
   }
   const xmlData = await response.text();
   const objFromXml = xmlParser.parse(xmlData);
-
-  return objFromXml.rss.channel.item.map((item) => ({
-    title: item.title,
-    link: item.link,
-    pubDate: item.pubDate,
-  }));
+  if (Array.isArray(objFromXml.rss.channel.item)) {
+    return objFromXml.rss.channel.item.map((item) => ({
+      title: customUnescape(item.title),
+      link: item.link,
+      pubDate: item.pubDate,
+    }));
+  } else {
+    return [Object.assign({}, objFromXml.rss.channel.item)];
+  }
 };
 
 const findNewFeeds = async (
   rssObj: FeedObj,
-  now: number
+  now: number,
 ): Promise<FeedDetail[]> => {
   try {
-    const feeds = await fetchRss(rssObj.rss_url);
+    const feeds = await fetchRss(rssObj.rssUrl);
 
     const filteredFeeds = feeds.filter((item) => {
       const pubDate = new Date(item.pubDate).setMinutes(0, 0, 0);
@@ -70,29 +84,39 @@ const findNewFeeds = async (
         const formattedDate = date.toISOString().slice(0, 19).replace("T", " ");
 
         return {
-          blog_id: rssObj.id,
-          pub_date: formattedDate,
+          blogId: rssObj.id,
+          pubDate: formattedDate,
           title: feed.title,
-          link: feed.link,
+          link: decodeURIComponent(feed.link),
           imageUrl: imageUrl,
         };
-      })
+      }),
     );
 
     return detailedFeeds;
   } catch (err) {
     logger.warn(
-      `[${rssObj.rss_url}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`
+      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`,
     );
     return [];
   }
+};
+
+const customUnescape = (text: string): string => {
+  Object.keys(htmlEntities).forEach((entity) => {
+    const value = htmlEntities[entity];
+    const regex = new RegExp(entity, "g");
+    text = text.replace(regex, value);
+  });
+
+  return unescape(text);
 };
 
 export const performTask = async () => {
   const rssObjects = await selectAllRss();
 
   if (rssObjects.length === 0) {
-    logger.info("등록된 RSS 피드가 없습니다.");
+    logger.info("등록된 RSS가 없습니다.");
     return;
   }
   const currentTime = new Date();
@@ -100,20 +124,26 @@ export const performTask = async () => {
   let idx = 0;
   const newFeeds = await Promise.all(
     rssObjects.map(async (rssObj) => {
-      idx += 1;
       logger.info(
-        `[${idx}번째 rss [${rssObj.rss_url}] 에서 데이터 조회하는 중...`
+        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`,
       );
       return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
-    })
+    }),
   );
-  const result = newFeeds.flat();
+
+  const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
+    const dateCurrent = new Date(currentFeed.pubDate);
+    const dateNext = new Date(nextFeed.pubDate);
+    return dateCurrent.getTime() - dateNext.getTime();
+  });
 
   if (result.length === 0) {
     logger.info("새로운 피드가 없습니다.");
+    await deleteRecentFeedStartId();
     return;
   }
 
   logger.info(`총 ${result.length}개의 새로운 피드가 있습니다.`);
-  await insertFeeds(result);
+  const recentFeedStartId = await insertFeeds(result);
+  await setRecentFeedList(recentFeedStartId);
 };

@@ -2,11 +2,12 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Blog } from '../blog/blog.entity';
+import { RssAccept } from '../rss/rss.entity';
 
 @Entity({ name: 'feed' })
 export class Feed extends BaseEntity {
@@ -20,15 +21,15 @@ export class Feed extends BaseEntity {
   })
   createdAt: Date;
 
+  @Index({ fulltext: true, parser: 'ngram' })
   @Column({ name: 'title', nullable: false })
   title: string;
 
   @Column({ name: 'view_count', nullable: false, default: 0 })
   viewCount: number;
 
-
   @Column({
-    length: 255,
+    length: 512,
     nullable: false,
     unique: true,
   })
@@ -40,12 +41,11 @@ export class Feed extends BaseEntity {
   })
   thumbnail: string;
 
-  @ManyToOne((type) => Blog, (blog) => blog.feeds, {
-    eager: true,
+  @ManyToOne((type) => RssAccept, (rssAccept) => rssAccept.feeds, {
     nullable: false,
   })
   @JoinColumn({
     name: 'blog_id',
   })
-  blog: Blog;
+  blog: RssAccept;
 }
