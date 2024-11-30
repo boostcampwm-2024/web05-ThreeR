@@ -1,19 +1,15 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { TestingModule } from '@nestjs/testing';
-import { DataSource } from 'typeorm';
-import { Feed } from '../../src/feed/feed.entity';
-import { RssAccept } from '../../src/rss/rss.entity';
 import { RedisService } from '../../src/common/redis/redis.service';
+import { RssAcceptRepository } from '../../src/rss/rss.repository';
+import { FeedRepository } from '../../src/feed/feed.repository';
 
 describe('All view count statistic E2E Test : GET /api/statistic/all', () => {
   let app: INestApplication;
   beforeAll(async () => {
     app = global.testApp;
-    const moduleFixture: TestingModule = global.testModuleFixture;
-    const dataSource = moduleFixture.get<DataSource>(DataSource);
-    const rssAcceptRepository = dataSource.getRepository(RssAccept);
-    const feedRepository = dataSource.getRepository(Feed);
+    const rssAcceptRepository = app.get(RssAcceptRepository);
+    const feedRepository = app.get(FeedRepository);
     const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
       rssAcceptRepository.save({

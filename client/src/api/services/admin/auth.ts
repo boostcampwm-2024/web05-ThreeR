@@ -10,4 +10,8 @@ export const auth = {
     const response = await axiosInstance.get<AuthApiResponse>("/api/admin/sessionId");
     return response.status;
   },
+  logout: async (): Promise<{ message: string }> => {
+    const response = await axiosInstance.post<{ message: string }>("api/admin/logout");
+    return response.data;
+  },
 };

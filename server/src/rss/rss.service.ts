@@ -18,8 +18,8 @@ export class RssService {
   constructor(
     private readonly rssRepository: RssRepository,
     private readonly rssAcceptRepository: RssAcceptRepository,
-    private readonly emailService: EmailService,
     private readonly rssRejectRepository: RssRejectRepository,
+    private readonly emailService: EmailService,
     private readonly dataSource: DataSource,
   ) {}
 
