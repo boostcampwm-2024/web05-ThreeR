@@ -24,6 +24,7 @@ import {
 } from './rss.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { RejectRssDto } from './dto/rss-reject.dto';
+import { RssManagementDto } from './dto/rss-management.dto';
 
 @ApiTags('RSS')
 @Controller('rss')
@@ -50,9 +51,11 @@ export class RssController {
 
   @ApiAcceptRss()
   @UseGuards(CookieAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post('accept/:id')
   @HttpCode(201)
-  async acceptRss(@Param('id', ParseIntPipe) id: number) {
+  async acceptRss(@Param() params: RssManagementDto) {
+    const { id } = params;
     await this.rssService.acceptRss(id);
     return ApiResponse.responseWithNoContent('승인이 완료되었습니다.');
   }
@@ -61,11 +64,12 @@ export class RssController {
   @UsePipes(ValidationPipe)
   @UseGuards(CookieAuthGuard)
   @Post('reject/:id')
-  @HttpCode(200)
+  @HttpCode(201)
   async rejectRss(
     @Body() body: RejectRssDto,
-    @Param('id', ParseIntPipe) id: number,
+    @Param() params: RssManagementDto,
   ) {
+    const { id } = params;
     await this.rssService.rejectRss(id, body.description);
     return ApiResponse.responseWithNoContent('거절이 완료되었습니다.');
   }
