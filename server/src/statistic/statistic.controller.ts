@@ -6,7 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiStatistic } from './statistic.api-docs';
+import { ApiPlatformStatistic, ApiStatistic } from './statistic.api-docs';
 import { StatisticService } from './statistic.service';
 import { ApiResponse } from '../common/response/common.response';
 import { ApiTags } from '@nestjs/swagger';
@@ -19,7 +19,6 @@ export class StatisticController {
   constructor(private readonly statisticService: StatisticService) {}
 
   @ApiStatistic('today')
-  @UseGuards(CookieAuthGuard)
   @Get('today')
   @UsePipes(
     new ValidationPipe({
@@ -32,7 +31,6 @@ export class StatisticController {
   }
 
   @ApiStatistic('all')
-  @UseGuards(CookieAuthGuard)
   @Get('all')
   @UsePipes(
     new ValidationPipe({
@@ -42,5 +40,12 @@ export class StatisticController {
   async getAllStatistic(@Query() queryObj: StatisticQueryDto) {
     const data = await this.statisticService.getAllViewCount(queryObj.limit);
     return ApiResponse.responseWithData('전체 조회수 통계 조회 완료', data);
+  }
+
+  @ApiPlatformStatistic()
+  @Get('platform')
+  async getPlatformStatistic() {
+    const data = await this.statisticService.getPlatformGroupCount();
+    return ApiResponse.responseWithData('블로그 플랫폼 통계 조회 완료', data);
   }
 }

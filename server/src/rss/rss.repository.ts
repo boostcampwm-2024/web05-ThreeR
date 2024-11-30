@@ -33,4 +33,13 @@ export class RssAcceptRepository extends Repository<RssAccept> {
   constructor(private readonly dataSource: DataSource) {
     super(RssAccept, dataSource.createEntityManager());
   }
+
+  countByBlogPlatform() {
+    return this.createQueryBuilder()
+      .select(['blog_platform as platform'])
+      .addSelect('COUNT(blog_platform)', 'count')
+      .groupBy('blog_platform')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+  }
 }
