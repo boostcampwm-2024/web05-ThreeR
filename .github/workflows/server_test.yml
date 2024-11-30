@@ -19,6 +19,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
+      # 디버깅 추가
+      - name: Debug PR Info
+        run: |
+          echo "Pull Request Event: ${{ github.event_name }}"
+          echo "Changed files:"
+          git diff --name-only origin/main...HEAD
+
       # 2. Node.js 환경 설정
       - name: Set up Node.js
         uses: actions/setup-node@v4
