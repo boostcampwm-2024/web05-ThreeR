@@ -1,13 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../src/app.module';
+import { TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { Rss, RssAccept } from '../../src/rss/rss.entity';
-import { HttpExceptionsFilter } from './../../src/common/filters/http-exception.filter';
-import { InternalExceptionsFilter } from '../../src/common/filters/internal-exceptions.filter';
-import { WinstonLoggerService } from '../../src/common/logger/logger.service';
 
 describe('Rss Register E2E Test : POST /api/rss', () => {
   let app: INestApplication;
@@ -16,18 +12,8 @@ describe('Rss Register E2E Test : POST /api/rss', () => {
   let moduleFixture: TestingModule;
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    const logger = app.get(WinstonLoggerService);
-    app.setGlobalPrefix('api');
-    app.useGlobalFilters(
-      new InternalExceptionsFilter(logger),
-      new HttpExceptionsFilter(),
-    );
-    await app.init();
+    app = global.testApp;
+    moduleFixture = global.testModuleFixture;
   });
 
   beforeEach(async () => {

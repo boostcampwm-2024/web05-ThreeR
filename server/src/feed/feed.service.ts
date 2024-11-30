@@ -60,6 +60,7 @@ export class FeedService {
           return null;
         }
         feed['author'] = feed.blog['name'];
+        feed['blogPlatform'] = feed.blog['blogPlatform'];
         delete feed.blog;
         return feed;
       }),

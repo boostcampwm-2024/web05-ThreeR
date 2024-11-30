@@ -3,25 +3,56 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 
 import { RejectModal } from "@/components/admin/rss/RejectModal";
-import { RssRequestCard } from "@/components/admin/rss/RssRequestCard";
+import AcceptedTab from "@/components/admin/taps/AcceptedTap";
+import PendingTab from "@/components/admin/taps/PendingTap";
+import RejectedTab from "@/components/admin/taps/RejectedTap";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { useFetchRss } from "@/hooks/queries/useFetchRss";
+import { useFetchRss, useFetchAccept, useFetchReject } from "@/hooks/queries/useFetchRss";
 import { useAdminAccept, useAdminReject } from "@/hooks/queries/useRssActions";
 
+import { useAdminSearchStore } from "@/store/useSearchStore";
+import { AdminRssData } from "@/types/rss";
 import { AdminRequest } from "@/types/rss";
 
 type SelectedBlogType = {
   blogName: string;
   blogId: number;
 };
-export const AdminTabs = () => {
+
+export const AdminTabs = ({ setLogout }: { setLogout: () => void }) => {
   const [selectedBlog, setSelectedBlog] = useState<SelectedBlogType>({ blogId: 0, blogName: "" });
-  const { data, isLoading, error, refetchRss } = useFetchRss();
+  const [reason, setReason] = useState("");
+  const { searchParam } = useAdminSearchStore();
+  const {
+    data: pendingData,
+    isLoading: isPendingLoading,
+    error: pendingError,
+    refetchData: refetchRss,
+  } = useFetchRss();
+
+  const {
+    data: acceptedData,
+    isLoading: isAcceptedLoading,
+    error: acceptedError,
+    refetchData: refetchAccept,
+  } = useFetchAccept();
+
+  const {
+    data: rejectedData,
+    isLoading: isRejectedLoading,
+    error: rejectedError,
+    refetchData: refetchReject,
+  } = useFetchReject();
 
   const onSuccess = () => {
+    setReason("");
     refetchRss();
+    refetchAccept();
+    refetchReject();
   };
 
   const onError = (error: unknown) => {
@@ -32,7 +63,10 @@ export const AdminTabs = () => {
     } else {
       console.error("Unknown Error:", error);
     }
+    setReason("");
     refetchRss();
+    refetchAccept();
+    refetchReject();
   };
 
   const { mutate: acceptMutate } = useAdminAccept(onSuccess, onError);
@@ -46,45 +80,74 @@ export const AdminTabs = () => {
     setSelectedBlog({ blogName, blogId });
   };
 
-  if (isLoading || !data) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
+  if (isPendingLoading || isAcceptedLoading || isRejectedLoading) return <div>Loading...</div>;
+  if (pendingError || acceptedError || rejectedError)
+    return (
+      <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-80">
+        <Alert className="w-[300px] h-[100px] fixed top-[50%] left-[50%] transform -translate-y-1/2 -translate-x-1/2">
+          <AlertTitle>세션이 만료되었습니다!</AlertTitle>
+          <AlertDescription>다시 로그인을 시도해 주세요.</AlertDescription>
+          <Button className="absolute right-1" onClick={setLogout}>
+            확인
+          </Button>
+        </Alert>
+      </div>
+    );
 
-  const pendingRss = data?.data;
+  const pendingRss: AdminRssData[] =
+    searchParam === ""
+      ? pendingData.data
+      : pendingData.data.filter(
+          (data: AdminRssData) =>
+            data.name.includes(searchParam) || data.userName.includes(searchParam) || data.rssUrl.includes(searchParam)
+        );
+  const acceptedRss: AdminRssData[] =
+    searchParam === ""
+      ? acceptedData.data
+      : acceptedData.data.filter(
+          (data: AdminRssData) =>
+            data.name.includes(searchParam) || data.userName.includes(searchParam) || data.rssUrl.includes(searchParam)
+        );
+  const rejectedRss: AdminRssData[] =
+    searchParam === ""
+      ? rejectedData.data
+      : rejectedData.data.filter(
+          (data: AdminRssData) =>
+            data.name.includes(searchParam) || data.userName.includes(searchParam) || data.rssUrl.includes(searchParam)
+        );
 
   return (
     <div>
       <Tabs defaultValue="pending" className="mb-8">
-        <TabsList className="grid w-full grid-cols-3 lg:w-auto">
-          <TabsTrigger value="pending" className="relative">
+        <TabsList className="flex w-full lg:w-auto items-center">
+          <TabsTrigger value="pending" className="relative w-full">
             대기 중
             <Badge variant="secondary" className="ml-2">
               {pendingRss.length}
             </Badge>
           </TabsTrigger>
-          <TabsTrigger value="approved">승인됨</TabsTrigger>
-          <TabsTrigger value="rejected">거부됨</TabsTrigger>
+          <TabsTrigger value="accepted" className="w-full">
+            승인됨
+          </TabsTrigger>
+          <TabsTrigger value="rejected" className="w-full">
+            거부됨
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="space-y-4 mt-4">
-          {pendingRss.map((request) => (
-            <RssRequestCard
-              key={request.id}
-              request={request}
-              onApprove={() => handleActions(request, "accept")}
-              onReject={() =>
-                handleSelectedBlog({
-                  blogName: request.name,
-                  blogId: request.id,
-                })
-              }
-            />
-          ))}
-        </TabsContent>
+        <PendingTab
+          data={pendingRss}
+          onApprove={(request) => handleActions(request, "accept")}
+          onReject={(request) => handleSelectedBlog({ blogName: request.name, blogId: request.id })}
+        />
+        <AcceptedTab data={acceptedRss} />
+        <RejectedTab data={rejectedRss} />
       </Tabs>
       <RejectModal
         blogName={selectedBlog?.blogName}
-        onSubmit={() => handleActions({ id: selectedBlog.blogId }, "reject")}
+        onSubmit={() => handleActions({ id: selectedBlog.blogId, rejectMessage: reason }, "reject")}
         onCancel={() => setSelectedBlog({ blogId: 0, blogName: "" })}
+        rejectMessage={reason}
+        handleReason={setReason}
       />
     </div>
   );

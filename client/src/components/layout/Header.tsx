@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 
 import RssRegistrationModal from "@/components/RssRegistration/RssRegistrationModal";
 import { Chat } from "@/components/chat/Chat";
+import { OpenChat } from "@/components/chat/ChatButton";
 import SideBar from "@/components/layout/Sidebar";
 import SearchButton from "@/components/search/SearchButton";
 import SearchModal from "@/components/search/SearchModal";
@@ -17,6 +18,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
@@ -26,14 +28,14 @@ import logo from "@/assets/logo-denamu-main.svg";
 import { TOAST_MESSAGES } from "@/constants/messages";
 
 export default function Header() {
-  const [modals, setModals] = useState({ search: false, rss: false, login: false });
+  const [modals, setModals] = useState({ search: false, rss: false, login: false, chat: false });
   const { toast } = useCustomToast();
-
-  const toggleModal = (modalType: "search" | "rss" | "login") => {
+  const toggleModal = (modalType: "search" | "rss" | "login" | "chat") => {
     if (modalType === "login") {
       toast(TOAST_MESSAGES.SERVICE_NOT_PREPARED);
       return;
     }
+
     setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
   };
 
@@ -42,12 +44,22 @@ export default function Header() {
   return (
     <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
-          <div className="flex-shrink-0">
+        <div className="h-20 items-center overflow-hidden flex justify-between relative z-50">
+          {/* 로고 영역 */}
+          <div className="flex-shrink-0 relative z-50">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
-          <DesktopNavigation toggleModal={toggleModal} />
-          <MobileNavigation toggleModal={toggleModal} />
+
+          {/* 중앙 검색 버튼 */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-full flex justify-center z-40">
+            <SearchButton handleSearchModal={() => toggleModal("search")} />
+          </div>
+
+          {/* 내비게이션 */}
+          <div className="flex-shrink-0 z-50">
+            <DesktopNavigation toggleModal={toggleModal} />
+            <MobileNavigation toggleModal={toggleModal} />
+          </div>
         </div>
       </div>
       <AnimatePresence>
@@ -62,17 +74,16 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
   return (
     <div className="hidden md:flex md:items-center">
       <NavigationMenu>
-        <NavigationMenuList className="gap-2">
+        <NavigationMenuList>
           <NavigationMenuItem>
             <div className="flex h-full items-center">
-              <Chat />
+              <SidebarProvider defaultOpen={false}>
+                <Chat />
+                <OpenChat />
+              </SidebarProvider>
             </div>
           </NavigationMenuItem>
-          <NavigationMenuItem>
-            <div className="flex h-full items-center">
-              <SearchButton handleSearchModal={() => toggleModal("search")} />
-            </div>
-          </NavigationMenuItem>
+
           <NavigationMenuItem>
             <NavigationMenuLink
               className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}

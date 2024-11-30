@@ -1,18 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import ChatButton from "@/components/chat/ChatButton";
 import ChatFooter from "@/components/chat/layout/ChatFooter";
 import ChatHeader from "@/components/chat/layout/ChatHeader";
 import ChatSection from "@/components/chat/layout/ChatSection";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 
 import { useChatStore } from "@/store/useChatStore";
 
 export function Chat() {
-  const { chatHistory, userCount, connect, disconnect, getHistory } = useChatStore();
-
+  const { userCount, connect, disconnect, getHistory } = useChatStore();
+  const [isFull, setIsFull] = useState<boolean>(false);
   // Socket 연결 관리
   useEffect(() => {
+    if (userCount >= 500) {
+      setIsFull(true);
+    }
     connect();
     getHistory();
     return () => {
@@ -21,15 +23,12 @@ export function Chat() {
   }, []);
 
   return (
-    <Sheet>
-      <SheetTrigger>
-        <ChatButton />
-      </SheetTrigger>
-      <SheetContent className="flex flex-col h-full w-full">
-        <ChatHeader userCount={userCount} />
-        <ChatSection chatHistory={chatHistory} />
+    <Sidebar side="right" variant="floating">
+      <SidebarContent className="flex flex-col h-full w-full">
+        <ChatHeader />
+        <ChatSection isFull={isFull} />
         <ChatFooter />
-      </SheetContent>
-    </Sheet>
+      </SidebarContent>
+    </Sidebar>
   );
 }

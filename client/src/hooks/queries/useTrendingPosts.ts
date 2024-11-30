@@ -1,15 +1,14 @@
 import { useEffect } from "react";
 
-import { posts } from "@/api/services/posts";
 import { TrendingPostsApiResponse } from "@/types/post";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useTrendingPosts = () => {
   const queryClient = useQueryClient();
 
-  const query = useQuery<TrendingPostsApiResponse, Error>({
+  const query = useQuery<TrendingPostsApiResponse>({
     queryKey: ["trending-posts"],
-    queryFn: posts.trending,
+    queryFn: () => Promise.resolve({ message: "", data: [] }),
     refetchOnWindowFocus: false,
   });
 
