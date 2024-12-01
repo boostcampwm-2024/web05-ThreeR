@@ -59,12 +59,12 @@ export const selectAllRss = async (): Promise<FeedObj[]> => {
 export const insertFeeds = async (resultData: FeedDetail[]) => {
   let successCount = 0;
   let lastFeedId;
-  try {
-    const query = `
+  const query = `
         INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
         VALUES (?, ?, ?, ?, ?)
     `;
-    for (const feed of resultData) {
+  for (const feed of resultData) {
+    try {
       lastFeedId = (
         await executeQuery(query, [
           feed.blogId,
@@ -75,12 +75,13 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
         ])
       )[INSERT_ID];
       successCount++;
+    } catch (error) {
+      logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
     }
-  } catch (error) {
-    logger.error(`누락된 피드 데이터가 존재합니다. 에러 내용: ${error}`);
   }
+
   logger.info(
-    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`,
+    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
   );
   lastFeedId = lastFeedId - successCount + 1;
   return lastFeedId;
@@ -96,7 +97,7 @@ export const deleteRecentFeedStartId = async () => {
     await redis.set(redisConstant.FEED_RECENT_KEY, "false");
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
+      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
     );
   } finally {
     if (redis) await redis.quit();
@@ -128,7 +129,7 @@ export const setRecentFeedList = async (startId: number) => {
     await pipeLine.exec();
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
+      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
     );
   } finally {
     if (redis) await redis.quit();
