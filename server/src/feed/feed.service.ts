@@ -195,4 +195,27 @@ export class FeedService {
       await redis.del(...keys);
     }
   }
+
+  async getRecentFeedList() {
+    const redis = this.redisService.redisClient;
+    const recentFeedList = [];
+    if ((await redis.get(redisKeys.FEED_RECENT_KEY)) === 'true') {
+      const keys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
+      if (keys.length <= 0) {
+        return recentFeedList;
+      }
+      const pipeLine = redis.pipeline();
+      for (const key of keys) {
+        pipeLine.hgetall(key);
+      }
+      const result = await pipeLine.exec();
+      recentFeedList.push(...result.map(([, data]) => data));
+    }
+
+    return recentFeedList.sort((currentFeed, nextFeed) => {
+      const dateCurrent = new Date(currentFeed.createdAt);
+      const dateNext = new Date(nextFeed.createdAt);
+      return dateNext.getTime() - dateCurrent.getTime();
+    });
+  }
 }

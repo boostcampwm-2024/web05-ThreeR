@@ -24,19 +24,11 @@ const Rss = [
   },
   {
     name: "Velog",
-    url: "https://velog.io/{@username}/rss",
+    url: "https://v2.velog.io/rss/@{username}",
   },
   {
     name: "Medium",
-    url: "https://medium.com/feed/{@username}",
-  },
-  {
-    name: "Blogger",
-    url: "https://{blogname}.blogspot.com/feeds/posts/default",
-  },
-  {
-    name: "Dev.to",
-    url: "https://dev.to/feed/{username}",
+    url: "https://medium.com/feed/@{username}",
   },
 ];
 

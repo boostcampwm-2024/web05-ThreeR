@@ -20,6 +20,7 @@ export interface AdminRssData {
   userName: string;
   email: string;
   rssUrl: string;
+  description?: string;
 }
 export interface AdminRss {
   message: string;
