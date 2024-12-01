@@ -4,7 +4,7 @@ export interface RawFeed {
   pubDate: string;
 }
 
-export interface FeedObj {
+export interface RssObj {
   id: number;
   rssUrl: string;
 }

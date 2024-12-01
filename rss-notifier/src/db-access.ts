@@ -1,5 +1,5 @@
-import logger from "./logger.js";
-import { FeedObj, FeedDetail } from "./types.js";
+import logger from "./logger";
+import { RssObj, FeedDetail } from "./types";
 import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 import Redis from "ioredis";
@@ -50,7 +50,7 @@ export const executeQuery = async (query: string, params: any[] = []) => {
   }
 };
 
-export const selectAllRss = async (): Promise<FeedObj[]> => {
+export const selectAllRss = async (): Promise<RssObj[]> => {
   const query = `SELECT id, rss_url as rssUrl
                  FROM rss_accept`;
   return executeQuery(query);
