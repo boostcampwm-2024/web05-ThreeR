@@ -26,11 +26,15 @@ describe('POST /api/admin/logout E2E Test', () => {
 
   it('관리자 로그인이 되어 있지 않으면 로그아웃을 정상적으로 할 수 없다.', async () => {
     // when
-    const response = await request(app.getHttpServer()).post(
+    const noCookieResponse = await request(app.getHttpServer()).post(
       '/api/admin/logout',
     );
+    const noSessionResponse = await request(app.getHttpServer())
+      .post('/api/admin/logout')
+      .set('Cookie', 'sessionId=invalid');
 
     // then
-    expect(response.status).toBe(401);
+    expect(noCookieResponse.status).toBe(401);
+    expect(noSessionResponse.status).toBe(401);
   });
 });
