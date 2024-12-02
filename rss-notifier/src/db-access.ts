@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 import Redis from "ioredis";
 import * as process from "node:process";
+import { PoolConnection } from "mysql2/promise";
 
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? "rss-notifier/.env" : ".env",
@@ -34,12 +35,12 @@ export const createRedisClient = async () => {
   });
 };
 
-export const executeQuery = async (query: string, params: any[] = []) => {
-  let connection;
+export const executeQuery = async <T>(query: string, params: any[] = []) => {
+  let connection: PoolConnection;
   try {
     connection = await pool.getConnection();
     const [rows] = await connection.query(query, params);
-    return rows;
+    return rows as T[];
   } catch (err) {
     logger.error("쿼리 " + query + " 실행 중 오류 발생:", err);
     throw err;
@@ -66,7 +67,7 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   for (const feed of resultData) {
     try {
       lastFeedId = (
-        await executeQuery(query, [
+        await executeQuery<FeedDetail>(query, [
           feed.blogId,
           feed.pubDate,
           feed.title,
@@ -100,7 +101,8 @@ export const deleteRecentFeed = async () => {
         "COUNT",
         "100",
       );
-      keysToDelete.push(keys);
+      keysToDelete.push(...keys);
+      cursor = newCursor;
     } while (cursor !== "0");
 
     if (keysToDelete.length > 0) {
@@ -132,7 +134,7 @@ export const setRecentFeedList = async (startId: number) => {
                    FROM feed f
                    JOIN rss_accept r ON f.blog_id = r.id
                    WHERE f.id >= ${startId}`;
-    const resultList = await executeQuery(query);
+    const resultList = await executeQuery<RssObj>(query);
     const pipeLine = redis.pipeline();
     for (const feed of resultList) {
       pipeLine.hset(`feed:recent:${feed.id}`, feed);
