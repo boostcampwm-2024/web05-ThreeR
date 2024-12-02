@@ -31,14 +31,10 @@ describe('GET api/feed E2E Test', () => {
     const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
-    const feedIdArray = [];
-    for (const feed of response.body.data.result) {
-      feedIdArray.push(feed.id);
-    }
 
     //then
     expect(response.status).toBe(200);
-    expect(feedIdArray).toStrictEqual([
+    expect(response.body.data.result.map((feed) => feed.id)).toStrictEqual([
       latestId,
       latestId - 1,
       latestId - 2,
@@ -57,14 +53,10 @@ describe('GET api/feed E2E Test', () => {
     const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
-    const feedIdArray = [];
-    for (const feed of response.body.data.result) {
-      feedIdArray.push(feed.id);
-    }
 
     //then
     expect(response.status).toBe(200);
-    expect(feedIdArray).toStrictEqual([
+    expect(response.body.data.result.map((feed) => feed.id)).toStrictEqual([
       testQuery.lastId - 1,
       testQuery.lastId - 2,
       testQuery.lastId - 3,
@@ -83,14 +75,10 @@ describe('GET api/feed E2E Test', () => {
     const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
-    const feedIdArray = [];
-    for (const feed of response.body.data.result) {
-      feedIdArray.push(feed.id);
-    }
 
     //then
     expect(response.status).toBe(200);
-    expect(feedIdArray).toStrictEqual([
+    expect(response.body.data.result.map((feed) => feed.id)).toStrictEqual([
       testQuery.lastId - 1,
       testQuery.lastId - 2,
       testQuery.lastId - 3,
@@ -113,14 +101,10 @@ describe('GET api/feed E2E Test', () => {
     const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
-    const feedIdArray = [];
-    for (const feed of response.body.data.result) {
-      feedIdArray.push(feed.id);
-    }
 
     //then
     expect(response.status).toBe(200);
-    expect(feedIdArray).toStrictEqual([]);
+    expect(response.body.data.result.map((feed) => feed.id)).toStrictEqual([]);
     expect(response.body.data.hasMore).toBe(false);
     expect(response.body.data.lastId).toBe(0);
   });
