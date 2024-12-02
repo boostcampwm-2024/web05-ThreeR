@@ -18,7 +18,7 @@ export class AdminService {
   private readonly SESSION_TTL = 60 * 60 * 12;
 
   constructor(
-    private readonly loginRepository: AdminRepository,
+    private readonly adminRepository: AdminRepository,
     private readonly redisService: RedisService,
   ) {}
 
@@ -30,9 +30,7 @@ export class AdminService {
     const cookie = request.cookies['sessionId'];
     const { loginId, password } = loginAdminDto;
 
-    const admin = await this.loginRepository.findOne({
-      where: { loginId },
-    });
+    const admin = await this.adminRepository.findAdminByLoginId(loginId);
 
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
       throw new UnauthorizedException('아이디 혹은 비밀번호가 잘못되었습니다.');
@@ -92,12 +90,11 @@ export class AdminService {
     response.clearCookie('sessionId');
   }
 
-  async registerAdmin(registerAdminDto: RegisterAdminDto) {
+  async createAdmin(registerAdminDto: RegisterAdminDto) {
     let { loginId, password } = registerAdminDto;
 
-    const existingAdmin = await this.loginRepository.findOne({
-      where: { loginId },
-    });
+    const existingAdmin =
+      await this.adminRepository.findAdminByLoginId(loginId);
 
     if (existingAdmin) {
       throw new ConflictException('이미 존재하는 아이디입니다.');
@@ -106,6 +103,6 @@ export class AdminService {
     const saltRounds = 10;
     password = await bcrypt.hash(password, saltRounds);
 
-    return this.loginRepository.registerAdmin({ loginId, password });
+    return this.adminRepository.registerAdmin({ loginId, password });
   }
 }

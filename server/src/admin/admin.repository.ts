@@ -18,4 +18,10 @@ export class AdminRepository extends Repository<Admin> {
     await this.save(admin);
     return admin;
   }
+
+  async findAdminByLoginId(loginId: string) {
+    return await this.findOne({
+      where: { loginId },
+    });
+  }
 }

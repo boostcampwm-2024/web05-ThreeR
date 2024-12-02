@@ -15,22 +15,20 @@ import { Request, Response } from 'express';
 import { AdminService } from './admin.service';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  ApiCheckAdminSessionId,
-  ApiLogout,
-  ApiPostLoginAdmin,
-  ApiPostRegisterAdmin,
-} from './admin.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { CookieAuthGuard } from '../common/guard/auth.guard';
+import { ApiLoginAdmin } from './api-docs/loginAdmin.api-docs';
+import { ApigetSessionIdAdmin } from './api-docs/getSessionIdAdmin.api-docs';
+import { ApiLogoutAdmin } from './api-docs/logoutAdmin.api-docs';
+import { ApiCreateAdmin } from './api-docs/createAdmin.api-docs';
 
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @ApiPostLoginAdmin()
+  @ApiLoginAdmin()
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
@@ -45,7 +43,7 @@ export class AdminController {
     );
   }
 
-  @ApiLogout()
+  @ApiLogoutAdmin()
   @UseGuards(CookieAuthGuard)
   @Post('/logout')
   async logoutAdmin(
@@ -59,23 +57,23 @@ export class AdminController {
     );
   }
 
-  @ApiPostRegisterAdmin()
+  @ApiCreateAdmin()
   @UseGuards(CookieAuthGuard)
   @Post('/register')
   @UsePipes(ValidationPipe)
-  async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
-    await this.adminService.registerAdmin(registerAdminDto);
+  async createAdmin(@Body() registerAdminDto: RegisterAdminDto) {
+    await this.adminService.createAdmin(registerAdminDto);
     return ApiResponse.responseWithNoContent(
       '성공적으로 관리자 계정이 생성되었습니다.',
     );
   }
 
-  @ApiCheckAdminSessionId()
+  @ApigetSessionIdAdmin()
   @Get('/sessionId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(CookieAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
-  async checkAdminSessionId() {
+  async getSessionIdAdmin() {
     return ApiResponse.responseWithNoContent('정상적인 sessionId 입니다.');
   }
 }
