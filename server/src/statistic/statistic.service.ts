@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { RedisService } from '../common/redis/redis.service';
 import { FeedRepository } from '../feed/feed.repository';
 import { redisKeys } from '../common/redis/redis.constant';
+import { PlatformResponseDto } from './dto/platform-response.dto';
 
 @Injectable()
 export class StatisticService {
@@ -48,7 +49,8 @@ export class StatisticService {
   }
 
   async getPlatformGroupCount() {
-    const platform = await this.rssAcceptRepository.countByBlogPlatform();
-    return platform;
+    const platformStatistics =
+      await this.rssAcceptRepository.countByBlogPlatform();
+    return PlatformResponseDto.platformToResults(platformStatistics);
   }
 }
