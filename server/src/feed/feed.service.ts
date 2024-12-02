@@ -27,7 +27,7 @@ export class FeedService {
     private readonly eventService: EventEmitter2,
   ) {}
 
-  async getFeedData(queryFeedDto: QueryFeedDto) {
+  async readFeedList(queryFeedDto: QueryFeedDto) {
     const feedList = await this.feedRepository.findFeed(queryFeedDto);
     const hasMore = this.existNextFeed(feedList, queryFeedDto.limit);
     if (hasMore) feedList.pop();
@@ -46,7 +46,7 @@ export class FeedService {
     return lastFeed.id;
   }
 
-  async getTrendList() {
+  async readTrendFeedList() {
     const trendFeedIdList = await this.redisService.redisClient.lrange(
       redisKeys.FEED_ORIGIN_TREND_KEY,
       0,
@@ -88,11 +88,11 @@ export class FeedService {
       redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
     }
-    const trendFeeds = await this.getTrendList();
+    const trendFeeds = await this.readTrendFeedList();
     this.eventService.emit('ranking-update', trendFeeds);
   }
 
-  async search(searchFeedReq: SearchFeedReq) {
+  async searchFeedList(searchFeedReq: SearchFeedReq) {
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
 
@@ -195,7 +195,7 @@ export class FeedService {
     }
   }
 
-  async getRecentFeedList() {
+  async readRecentFeedList() {
     const redis = this.redisService.redisClient;
     const recentFeedList = [];
     if ((await redis.get(redisKeys.FEED_RECENT_KEY)) === 'true') {

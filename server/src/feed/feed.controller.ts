@@ -44,18 +44,18 @@ export class FeedController {
       transform: true,
     }),
   )
-  async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
+  async readFeedList(@Query() queryFeedDto: QueryFeedDto) {
     return ApiResponse.responseWithData(
       '피드 조회 완료',
-      await this.feedService.getFeedData(queryFeedDto),
+      await this.feedService.readFeedList(queryFeedDto),
     );
   }
 
   @ApiGetTrendSse()
   @Sse('trend/sse')
-  async sseTrendList() {
+  async readTrendFeedList() {
     return new Observable((observer) => {
-      this.feedService.getTrendList().then((trendData) => {
+      this.feedService.readTrendFeedList().then((trendData) => {
         observer.next({
           data: {
             message: '현재 트렌드 피드 수신 완료',
@@ -83,8 +83,8 @@ export class FeedController {
     }),
     new ValidationPipe(),
   )
-  async searchFeed(@Query() searchFeedReq: SearchFeedReq) {
-    const data = await this.feedService.search(searchFeedReq);
+  async searchFeedList(@Query() searchFeedReq: SearchFeedReq) {
+    const data = await this.feedService.searchFeedList(searchFeedReq);
     return ApiResponse.responseWithData('검색 결과 조회 완료', data);
   }
 
@@ -112,10 +112,10 @@ export class FeedController {
   @ApiGetRecentFeedList()
   @Get('/recent')
   @HttpCode(HttpStatus.OK)
-  async getRecentFeedList() {
+  async readRecentFeedList() {
     return ApiResponse.responseWithData(
       '최신 피드 업데이트 완료',
-      await this.feedService.getRecentFeedList(),
+      await this.feedService.readRecentFeedList(),
     );
   }
 }
