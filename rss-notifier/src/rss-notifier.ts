@@ -6,20 +6,10 @@ import {
   deleteRecentFeedStartId,
   setRecentFeedList,
 } from "./db-access.js";
-import { FeedObj, FeedDetail, RawFeed } from "./types.js";
+import { RssObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 import { unescape } from "html-escaper";
-
-const htmlEntities = {
-  "&middot;": "·",
-  "&nbsp;": " ",
-};
-
-const xmlParser = new XMLParser();
-const TIME_INTERVAL = process.env.TIME_INTERVAL
-  ? parseInt(process.env.TIME_INTERVAL)
-  : 1;
 
 const getImageUrl = async (link: string): Promise<string> => {
   const response = await fetch(link, {
@@ -42,6 +32,7 @@ const getImageUrl = async (link: string): Promise<string> => {
 };
 
 const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
+  const xmlParser = new XMLParser();
   const response = await fetch(rssUrl, {
     headers: {
       Accept: "application/rss+xml, application/xml, text/xml",
@@ -65,14 +56,17 @@ const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
 };
 
 const findNewFeeds = async (
-  rssObj: FeedObj,
-  now: number,
+  rssObj: RssObj,
+  now: number
 ): Promise<FeedDetail[]> => {
   try {
+    const TIME_INTERVAL = process.env.TIME_INTERVAL
+      ? parseInt(process.env.TIME_INTERVAL)
+      : 1;
     const feeds = await fetchRss(rssObj.rssUrl);
 
     const filteredFeeds = feeds.filter((item) => {
-      const pubDate = new Date(item.pubDate).setMinutes(0, 0, 0);
+      const pubDate = new Date(item.pubDate).setSeconds(0, 0);
       const timeDiff = (now - pubDate) / (1000 * 60 * TIME_INTERVAL);
       return timeDiff >= 0 && timeDiff < 1;
     });
@@ -90,19 +84,23 @@ const findNewFeeds = async (
           link: decodeURIComponent(feed.link),
           imageUrl: imageUrl,
         };
-      }),
+      })
     );
 
     return detailedFeeds;
   } catch (err) {
     logger.warn(
-      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`,
+      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`
     );
     return [];
   }
 };
 
 const customUnescape = (text: string): string => {
+  const htmlEntities = {
+    "&middot;": "·",
+    "&nbsp;": " ",
+  };
   Object.keys(htmlEntities).forEach((entity) => {
     const value = htmlEntities[entity];
     const regex = new RegExp(entity, "g");
@@ -113,22 +111,22 @@ const customUnescape = (text: string): string => {
 };
 
 export const performTask = async () => {
+  const currentTime = new Date();
   const rssObjects = await selectAllRss();
 
   if (rssObjects.length === 0) {
     logger.info("등록된 RSS가 없습니다.");
     return;
   }
-  const currentTime = new Date();
 
   let idx = 0;
   const newFeeds = await Promise.all(
     rssObjects.map(async (rssObj) => {
       logger.info(
-        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`,
+        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
       );
-      return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
-    }),
+      return await findNewFeeds(rssObj, currentTime.setSeconds(0, 0));
+    })
   );
 
   const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
