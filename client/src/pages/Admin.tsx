@@ -24,7 +24,7 @@ export default function Admin() {
       return (
         <>
           <RssRequestSearchBar />
-          <AdminTabs setLogout={() => setIsLogin(true)} />
+          <AdminTabs setLogout={() => setIsLogin(false)} />
         </>
       );
     }

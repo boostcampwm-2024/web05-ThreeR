@@ -16,7 +16,7 @@ export class FeedFixture {
         path: `https://test.com/test${index}`,
         thumbnail: `https://test.com/test${index}.png`,
       },
-      rssAccept,
+      blog: rssAccept,
     });
     return Object.assign(feed, overwrites);
   }
