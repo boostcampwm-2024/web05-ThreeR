@@ -81,23 +81,35 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   }
 
   logger.info(
-    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
+    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`,
   );
   lastFeedId = lastFeedId - successCount + 1;
   return lastFeedId;
 };
 
-export const deleteRecentFeedStartId = async () => {
+export const deleteRecentFeed = async () => {
   const redis = await createRedisClient();
   try {
-    const keys = await redis.keys(redisConstant.FEED_RECENT_ALL_KEY);
-    if (keys.length > 0) {
-      await redis.del(...keys);
+    const keysToDelete = [];
+    let cursor = "0";
+    do {
+      const [newCursor, keys] = await redis.scan(
+        cursor,
+        "MATCH",
+        redisConstant.FEED_RECENT_ALL_KEY,
+        "COUNT",
+        "100",
+      );
+      keysToDelete.push(keys);
+    } while (cursor !== "0");
+
+    if (keysToDelete.length > 0) {
+      await redis.del(...keysToDelete);
     }
     await redis.set(redisConstant.FEED_RECENT_KEY, "false");
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
+      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
     );
   } finally {
     if (redis) await redis.quit();
@@ -129,7 +141,7 @@ export const setRecentFeedList = async (startId: number) => {
     await pipeLine.exec();
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
+      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
     );
   } finally {
     if (redis) await redis.quit();
