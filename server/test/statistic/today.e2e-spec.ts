@@ -19,7 +19,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
       rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
       redisService.redisClient.zadd(redisKeys.FEED_TREND_KEY, 5, '1', 4, '2'),
     ]);
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 2; i++) {
       await feedRepository.save(FeedFixture.createFeedFixture(blog, {}, i));
     }
   });
