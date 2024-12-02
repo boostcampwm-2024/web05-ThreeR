@@ -17,16 +17,14 @@ import {
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { SearchFeedReq } from './dto/search-feed.dto';
-import {
-  ApiGetFeedList,
-  ApiSearchFeed,
-  ApiUpdateFeedViewCount,
-  ApiGetTrendSse,
-  ApiGetRecentFeedList,
-} from './feed.api-docs';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ApiReadFeedList } from './api-docs/readFeedList.api-docs';
+import { ApiReadTrendFeedList } from './api-docs/readTrendFeedList.api-docs';
+import { ApiSearchFeedList } from './api-docs/searchFeedList.api-docs';
+import { ApiUpdateFeedViewCount } from './api-docs/updateFeedViewCount.api-docs';
+import { ApiReadRecentFeedList } from './api-docs/readRecentFeedList.api-docs';
 
 @ApiTags('Feed')
 @Controller('feed')
@@ -36,7 +34,7 @@ export class FeedController {
     private readonly eventService: EventEmitter2,
   ) {}
 
-  @ApiGetFeedList()
+  @ApiReadFeedList()
   @Get('')
   @HttpCode(HttpStatus.OK)
   @UsePipes(
@@ -51,7 +49,7 @@ export class FeedController {
     );
   }
 
-  @ApiGetTrendSse()
+  @ApiReadTrendFeedList()
   @Sse('trend/sse')
   async readTrendFeedList() {
     return new Observable((observer) => {
@@ -74,7 +72,7 @@ export class FeedController {
     });
   }
 
-  @ApiSearchFeed()
+  @ApiSearchFeedList()
   @Get('search')
   @HttpCode(HttpStatus.OK)
   @UsePipes(
@@ -109,7 +107,7 @@ export class FeedController {
     );
   }
 
-  @ApiGetRecentFeedList()
+  @ApiReadRecentFeedList()
   @Get('/recent')
   @HttpCode(HttpStatus.OK)
   async readRecentFeedList() {
