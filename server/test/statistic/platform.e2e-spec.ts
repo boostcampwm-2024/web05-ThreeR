@@ -19,9 +19,12 @@ describe('GET /api/statistic/platform E2E Test', () => {
   });
 
   it('요청을 받으면 블로그 플랫폼별 통계 결과를 응답한다.', async () => {
+    // when
     const response = await request(app.getHttpServer()).get(
       '/api/statistic/platform',
     );
+
+    // then
     expect(response.status).toBe(200);
     expect(response.body.data).toStrictEqual([
       {
