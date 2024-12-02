@@ -1,7 +1,6 @@
 import { MessageCircleMore } from "lucide-react";
 import { X } from "lucide-react";
 
-import { NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { useSidebar } from "@/components/ui/sidebar";
 
 export default function ChatButton() {
@@ -11,12 +10,11 @@ export function OpenChat() {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <button onClick={toggleSidebar} className="">
-      <NavigationMenuLink className={`${navigationMenuTriggerStyle()} flex gap-2 `} href="#">
-
-        <MessageCircleMore size={16} />
-        <span>채팅</span>
-      </NavigationMenuLink>
+    <button
+      onClick={toggleSidebar}
+      className="fixed text-white bottom-[18.5rem] right-7 bg-[#3498DB] hover:bg-[#2980B9] !rounded-full p-3"
+    >
+      <MessageCircleMore size={25} />
     </button>
   );
 }

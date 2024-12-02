@@ -14,6 +14,7 @@ export default function SearchButton({ handleSearchModal }: { handleSearchModal:
                    justify-between 
                    items-center 
                    hover:bg-primary/5 
+                   max-w-[400px]
                    
                    "
       onClick={handleSearchModal}

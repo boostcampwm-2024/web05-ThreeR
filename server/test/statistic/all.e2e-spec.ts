@@ -1,35 +1,25 @@
+import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { RedisService } from '../../src/common/redis/redis.service';
-import * as request from 'supertest';
-import { redisKeys } from '../../src/common/redis/redis.constant';
-import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
-import { FeedRepository } from '../../src/feed/feed.repository';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
+import { FeedRepository } from '../../src/feed/feed.repository';
 
-describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
+describe('All view count statistic E2E Test : GET /api/statistic/all', () => {
   let app: INestApplication;
-
   beforeAll(async () => {
     app = global.testApp;
-    const feedRepository = app.get(FeedRepository);
     const rssAcceptRepository = app.get(RssAcceptRepository);
+    const feedRepository = app.get(FeedRepository);
     const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
-      rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
+      rssAcceptRepository.save({
+        id: 1,
+        name: 'test',
+        userName: 'test',
+        email: 'test@test.com',
+        rssUrl: 'https://test.com/rss',
+      }),
       redisService.redisClient.set('auth:test1234', 'test'),
-      redisService.redisClient.zadd(
-        redisKeys.FEED_TREND_KEY,
-        '1',
-        5,
-        '2',
-        4,
-        '3',
-        3,
-        '4',
-        2,
-        '5',
-        1,
-      ),
     ]);
     await feedRepository.save([
       {
@@ -37,6 +27,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         createdAt: '2024-11-26 09:00:00',
         title: 'test1',
         path: 'test1',
+        viewCount: 5,
         thumbnail: 'https://test.com/test.png',
         blog: blog,
       },
@@ -45,6 +36,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         createdAt: '2024-11-26 09:00:00',
         title: 'test2',
         path: 'test2',
+        viewCount: 4,
         thumbnail: 'https://test.com/test.png',
         blog: blog,
       },
@@ -53,6 +45,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         createdAt: '2024-11-26 09:00:00',
         title: 'test3',
         path: 'test3',
+        viewCount: 3,
         thumbnail: 'https://test.com/test.png',
         blog: blog,
       },
@@ -61,6 +54,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         createdAt: '2024-11-26 09:00:00',
         title: 'test4',
         path: 'test4',
+        viewCount: 2,
         thumbnail: 'https://test.com/test.png',
         blog: blog,
       },
@@ -69,6 +63,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         createdAt: '2024-11-26 09:00:00',
         title: 'test5',
         path: 'test5',
+        viewCount: 1,
         thumbnail: 'https://test.com/test.png',
         blog: blog,
       },
@@ -78,21 +73,22 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
   describe('limit 값을 올바르게 입력하지 않았을 경우', () => {
     it('실수를 입력한다.', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/statistic/today?limit=1.1')
+        .get('/api/statistic/all?limit=1.1')
         .set('Cookie', 'sessionId=test1234');
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('정수로 입력해주세요.');
     });
     it('문자열을 입력한다.', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/statistic/today?limit=test')
+        .get('/api/statistic/all?limit=test')
         .set('Cookie', 'sessionId=test1234');
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('정수로 입력해주세요.');
     });
+
     it('음수를 입력한다.', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/statistic/today?limit=-100')
+        .get('/api/statistic/all?limit=-100')
         .set('Cookie', 'sessionId=test1234');
       expect(response.status).toBe(400);
       expect(response.body).toStrictEqual({
@@ -104,11 +100,11 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
   describe('limit 값을 올바르게 입력했을 경우', () => {
     it('값을 입력 하지 않는다.', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/statistic/today')
+        .get('/api/statistic/all')
         .set('Cookie', 'sessionId=test1234');
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({
-        message: '금일 조회수 통계 조회 완료',
+        message: '전체 조회수 통계 조회 완료',
         data: [
           {
             id: 1,
@@ -140,11 +136,11 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
     });
     it('양수를 입력한다.', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/statistic/today?limit=1')
+        .get('/api/statistic/all?limit=1')
         .set('Cookie', 'sessionId=test1234');
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({
-        message: '금일 조회수 통계 조회 완료',
+        message: '전체 조회수 통계 조회 완료',
         data: [
           {
             id: 1,

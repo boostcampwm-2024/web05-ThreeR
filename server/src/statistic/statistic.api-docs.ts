@@ -2,12 +2,18 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiQuery,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export function ApiTodayStatistic() {
+
+export function ApiStatistic(category: 'today' | 'all') {
+  const type = category === 'all' ? '전체' : '금일';
   return applyDecorators(
+    ApiOperation({
+      summary: `${type} 게시글 조회수 통계 API`,
+    }),
     ApiQuery({
       name: 'limit',
       required: false,
@@ -42,7 +48,7 @@ export function ApiTodayStatistic() {
         },
       },
       example: {
-        message: '금일 조회수 통계 조회 완료',
+        message: `${type} 조회수 통계 조회 완료`,
         data: [
           {
             id: 1,
@@ -58,10 +64,44 @@ export function ApiTodayStatistic() {
         message: '오류 메세지',
       },
     }),
-    ApiUnauthorizedResponse({
-      description: 'Unauthorized',
+  );
+}
+
+export function ApiPlatformStatistic() {
+  return applyDecorators(
+    ApiOperation({
+      summary: '블로그 플랫폼 통계 조회 API',
+    }),
+    ApiOkResponse({
+      description: 'Ok',
+      schema: {
+        properties: {
+          message: {
+            type: 'string',
+          },
+          data: {
+            type: 'array',
+            items: {
+              properties: {
+                platform: {
+                  type: 'string',
+                },
+                count: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+      },
       example: {
-        message: '인증되지 않은 요청입니다.',
+        message: '블로그 플랫폼 통계 조회 완료',
+        data: [
+          {
+            platform: 'test',
+            count: 30,
+          },
+        ],
       },
     }),
   );

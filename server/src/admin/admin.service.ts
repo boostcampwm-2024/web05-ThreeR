@@ -58,7 +58,7 @@ export class AdminService {
       cursor = newCursor;
 
       if (!keys.length) {
-        continue;
+        break;
       }
 
       const values = await this.redisService.redisClient.mget(keys);
@@ -84,6 +84,12 @@ export class AdminService {
     );
 
     response.cookie('sessionId', sessionId, cookieConfig[process.env.NODE_ENV]);
+  }
+
+  async logoutAdmin(request: Request, response: Response) {
+    const sid = request.cookies['sessionId'];
+    this.redisService.redisClient.del(`auth:${sid}`);
+    response.clearCookie('sessionId');
   }
 
   async registerAdmin(registerAdminDto: RegisterAdminDto) {

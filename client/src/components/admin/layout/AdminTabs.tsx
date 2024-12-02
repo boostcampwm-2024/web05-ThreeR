@@ -6,7 +6,9 @@ import { RejectModal } from "@/components/admin/rss/RejectModal";
 import AcceptedTab from "@/components/admin/taps/AcceptedTap";
 import PendingTab from "@/components/admin/taps/PendingTap";
 import RejectedTab from "@/components/admin/taps/RejectedTap";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useFetchRss, useFetchAccept, useFetchReject } from "@/hooks/queries/useFetchRss";
@@ -21,7 +23,7 @@ type SelectedBlogType = {
   blogId: number;
 };
 
-export const AdminTabs = () => {
+export const AdminTabs = ({ setLogout }: { setLogout: () => void }) => {
   const [selectedBlog, setSelectedBlog] = useState<SelectedBlogType>({ blogId: 0, blogName: "" });
   const [reason, setReason] = useState("");
   const { searchParam } = useAdminSearchStore();
@@ -79,7 +81,18 @@ export const AdminTabs = () => {
   };
 
   if (isPendingLoading || isAcceptedLoading || isRejectedLoading) return <div>Loading...</div>;
-  if (pendingError || acceptedError || rejectedError) return <div>Error loading data</div>;
+  if (pendingError || acceptedError || rejectedError)
+    return (
+      <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-80">
+        <Alert className="w-[300px] h-[100px] fixed top-[50%] left-[50%] transform -translate-y-1/2 -translate-x-1/2">
+          <AlertTitle>세션이 만료되었습니다!</AlertTitle>
+          <AlertDescription>다시 로그인을 시도해 주세요.</AlertDescription>
+          <Button className="absolute right-1" onClick={setLogout}>
+            확인
+          </Button>
+        </Alert>
+      </div>
+    );
 
   const pendingRss: AdminRssData[] =
     searchParam === ""
