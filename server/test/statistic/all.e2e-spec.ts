@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
 import { FeedRepository } from '../../src/feed/feed.repository';
@@ -25,7 +25,7 @@ describe('GET /api/statistic/all E2E Test', () => {
 
   it('값을 입력 하지 않으면 10개의 데이터만 응답한다.', async () => {
     // when
-    const response = await request(app.getHttpServer()).get(
+    const response = await supertest(app.getHttpServer()).get(
       '/api/statistic/all',
     );
 
@@ -35,7 +35,7 @@ describe('GET /api/statistic/all E2E Test', () => {
   });
   it('양수를 입력하면 제한된 개수의 통계 결과를 응답한다.', async () => {
     // when
-    const response = await request(app.getHttpServer()).get(
+    const response = await supertest(app.getHttpServer()).get(
       '/api/statistic/all?limit=1',
     );
 
