@@ -6,8 +6,9 @@ import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 import { FeedFixture } from '../fixture/feed.fixture';
 import { Feed } from '../../src/feed/feed.entity';
 
-describe('All view count statistic E2E Test : GET /api/statistic/all', () => {
+describe('GET /api/statistic/all E2E Test', () => {
   let app: INestApplication;
+
   beforeAll(async () => {
     app = global.testApp;
     const rssAcceptRepository = app.get(RssAcceptRepository);
@@ -22,7 +23,7 @@ describe('All view count statistic E2E Test : GET /api/statistic/all', () => {
     await feedRepository.save(feeds);
   });
 
-  it('값을 입력 하지 않는다.', async () => {
+  it('값을 입력 하지 않으면 10개의 데이터만 응답한다.', async () => {
     // when
     const response = await request(app.getHttpServer()).get(
       '/api/statistic/all',
@@ -32,7 +33,7 @@ describe('All view count statistic E2E Test : GET /api/statistic/all', () => {
     expect(response.status).toBe(200);
     expect(response.body.data.map((item) => item.id)).toStrictEqual([2, 1]);
   });
-  it('양수를 입력한다.', async () => {
+  it('양수를 입력하면 제한된 개수의 통계 결과를 응답한다.', async () => {
     // when
     const response = await request(app.getHttpServer()).get(
       '/api/statistic/all?limit=1',
