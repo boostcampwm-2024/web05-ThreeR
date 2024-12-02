@@ -11,10 +11,10 @@ export default function Chart() {
   const { chartAll, chartToday, chartPlatform } = data;
 
   return (
-    <div>
+    <div className="p-8">
       <div className="flex">
-        <BarChartItem title="전체 조회수" description="전체 조회수 TOP5" data={chartAll.data} />
-        <BarChartItem title="오늘의 조회수" description="금일 조회수 TOP5" data={chartToday.data} />
+        <BarChartItem title="전체 조회수" description="전체 조회수 TOP5" data={chartAll.data} color={true} />
+        <BarChartItem title="오늘의 조회수" description="금일 조회수 TOP5" data={chartToday.data} color={false} />
       </div>
       <div>
         <PieChartItem data={chartPlatform.data} title="플랫폼별 블로그 수" />

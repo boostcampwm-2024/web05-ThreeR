@@ -1,37 +1,30 @@
-import { LabelList, Pie, PieChart } from "recharts";
+import { LabelList, Pie, PieChart, Cell } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 import { ChartPlatform } from "@/types/chart";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-];
 type BarType = {
   data: ChartPlatform[];
   title: string;
 };
 
-const chartConfig = {
+const chartConfig: ChartConfig = {
   count: {
-    label: "Visitors",
+    label: "Count",
   },
   tistory: {
     label: "Tistory",
-    color: "hsl(210, 50%, 50%)",
+    color: "hsl(210, 60%, 70%)",
   },
   velog: {
     label: "Velog",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(150, 60%, 70%)",
   },
-  medium: {
-    label: "Medium",
-    color: "hsl(var(--chart-3))",
+  etc: {
+    label: "etc",
+    color: "hsl(30, 60%, 70%)",
   },
 } satisfies ChartConfig;
 
@@ -47,8 +40,11 @@ export default function PieChartItem({ data, title }: BarType) {
           className="mx-auto aspect-square max-h-[250px] [&_.recharts-text]:fill-background"
         >
           <PieChart>
-            <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
-            <Pie data={data} dataKey="count">
+            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+            <Pie data={data} dataKey="count" nameKey="platform">
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={chartConfig[entry.platform]?.color || "#ccc"} />
+              ))}
               <LabelList dataKey="platform" className="fill-background" stroke="none" fontSize={12} />
             </Pie>
           </PieChart>

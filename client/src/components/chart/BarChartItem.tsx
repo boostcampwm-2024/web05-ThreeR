@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useRef } from "react";
+
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,17 +11,45 @@ type BarType = {
   data: ChartType[];
   title: string;
   description: string;
+  color: boolean;
 };
 
-export default function BarChartItem({ data, title, description }: BarType) {
+export default function BarChartItem({ data, title, description, color }: BarType) {
+  const [componentWidth, setComponentWidth] = useState(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setComponentWidth(entry.contentRect.width);
+      }
+    });
+
+    if (cardRef.current) {
+      resizeObserver.observe(cardRef.current);
+    }
+    return () => {
+      if (cardRef.current) {
+        resizeObserver.unobserve(cardRef.current);
+      }
+    };
+  }, []);
+  const truncateText = (text: string) => {
+    const charWidth = 55;
+    const maxChars = Math.floor(componentWidth / charWidth);
+
+    return text.length > maxChars ? `${text.slice(0, Math.max(0, maxChars - 3))}...` : text;
+  };
+
   const chartConfig = {
     desktop: {
       label: "Desktop",
-      color: "hsl(var(--chart-1))",
+      color: color ? "hsl(200, 70%, 68%)" : "hsl(120, 70%, 68%)",
     },
   } satisfies ChartConfig;
+
   return (
-    <Card className="w-[50%]">
+    <Card ref={cardRef} className="w-[50%]">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -33,9 +63,9 @@ export default function BarChartItem({ data, title, description }: BarType) {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 20)}
+              tickFormatter={(value) => truncateText(value)}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltip cursor={true} content={<ChartTooltipContent />} />
             <Bar dataKey="viewCount" fill="var(--color-desktop)" radius={8} />
           </BarChart>
         </ChartContainer>
