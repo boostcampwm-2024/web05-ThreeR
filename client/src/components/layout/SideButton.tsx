@@ -7,6 +7,8 @@ import { Chat } from "@/components/chat/Chat";
 import { OpenChat } from "@/components/chat/ChatButton";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+import { useTapStore } from "@/store/useTapStore";
+
 export default function SideButton() {
   const scrollToTop = () => {
     window.scrollTo({
@@ -14,17 +16,27 @@ export default function SideButton() {
       behavior: "smooth",
     });
   };
-
+  const { setTap } = useTapStore();
   return (
     <div className="flex h-full items-center ">
       <SidebarProvider defaultOpen={false}>
         <Chat />
         <OpenChat />
       </SidebarProvider>
-      <button className="fixed text-white bottom-[6.5rem] right-7 bg-primary hover:bg-secondary !rounded-full p-3">
+      <button
+        className="fixed text-white bottom-[6.5rem] right-7 bg-primary hover:bg-secondary !rounded-full p-3"
+        onClick={() => {
+          setTap("main");
+        }}
+      >
         <Home size={25} />
       </button>
-      <button className="fixed text-white bottom-[10.5rem] right-7 bg-[#1ABC9C] hover:bg-[#16A085] !rounded-full p-3">
+      <button
+        className="fixed text-white bottom-[10.5rem] right-7 bg-[#1ABC9C] hover:bg-[#16A085] !rounded-full p-3"
+        onClick={() => {
+          setTap("chart");
+        }}
+      >
         <ChartArea size={25} />
       </button>
       <button className="fixed text-white bottom-[14.5rem] right-7 bg-[#F1C40F] hover:bg-[#D4AC0D] !rounded-full p-3">
