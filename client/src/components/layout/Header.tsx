@@ -4,8 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
 
 import RssRegistrationModal from "@/components/RssRegistration/RssRegistrationModal";
-import { Chat } from "@/components/chat/Chat";
-import { OpenChat } from "@/components/chat/ChatButton";
+import SideButton from "@/components/layout/SideButton";
 import SideBar from "@/components/layout/Sidebar";
 import SearchButton from "@/components/search/SearchButton";
 import SearchModal from "@/components/search/SearchModal";
@@ -18,7 +17,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
@@ -76,14 +74,8 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <div className="flex h-full items-center">
-              <SidebarProvider defaultOpen={false}>
-                <Chat />
-                <OpenChat />
-              </SidebarProvider>
-            </div>
+            <SideButton />
           </NavigationMenuItem>
-
           <NavigationMenuItem>
             <NavigationMenuLink
               className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}

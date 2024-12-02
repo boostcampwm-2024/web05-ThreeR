@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { RedisService } from '../../src/common/redis/redis.service';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
+import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 
 describe('Blog platform count statistic E2E Test : GET /api/statistic/platform', () => {
   let app: INestApplication;
@@ -22,32 +23,13 @@ describe('Blog platform count statistic E2E Test : GET /api/statistic/platform',
   });
 
   it('데이터가 올바르게 출력된다.', async () => {
-    await rssAcceptRepository.save([
-      {
-        id: 1,
-        name: 'test',
-        userName: 'test1',
-        email: 'test',
-        rssUrl: 'test1',
-        blog_platform: 'etc',
-      },
-      {
-        id: 2,
-        name: 'test',
-        userName: 'test2',
-        email: 'test2',
-        rssUrl: 'test2',
-        blogPlatform: 'etc',
-      },
-      {
-        id: 3,
-        name: 'test',
-        userName: 'test3',
-        email: 'test3',
-        rssUrl: 'test3',
-        blogPlatform: 'velog',
-      },
-    ]);
+    await rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture({}));
+    await rssAcceptRepository.save(
+      RssAcceptFixture.createRssAcceptFixture({}, 2),
+    );
+    await rssAcceptRepository.save(
+      RssAcceptFixture.createRssAcceptFixture({ blogPlatform: 'velog' }, 3),
+    );
     const response = await request(app.getHttpServer()).get(
       '/api/statistic/platform',
     );

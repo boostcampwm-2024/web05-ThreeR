@@ -19,7 +19,6 @@ import {
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import { redisKeys } from '../common/redis/redis.constant';
-
 @Injectable()
 export class FeedService {
   constructor(
