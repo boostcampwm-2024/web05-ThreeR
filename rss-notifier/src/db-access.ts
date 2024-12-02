@@ -59,7 +59,7 @@ export const selectAllRss = async (): Promise<RssObj[]> => {
 
 export const insertFeeds = async (resultData: FeedDetail[]) => {
   let successCount = 0;
-  let lastFeedId;
+  let lastFeedId: number;
   const query = `
         INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
         VALUES (?, ?, ?, ?, ?)
