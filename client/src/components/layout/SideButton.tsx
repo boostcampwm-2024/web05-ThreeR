@@ -1,7 +1,6 @@
 import { Home } from "lucide-react";
 import { ArrowUp } from "lucide-react";
 import { ChartArea } from "lucide-react";
-import { CircleHelp } from "lucide-react";
 
 import { Chat } from "@/components/chat/Chat";
 import { OpenChat } from "@/components/chat/ChatButton";
@@ -38,9 +37,6 @@ export default function SideButton() {
         }}
       >
         <ChartArea size={25} />
-      </button>
-      <button className="fixed text-white bottom-[14.5rem] right-7 bg-[#F1C40F] hover:bg-[#D4AC0D] !rounded-full p-3">
-        <CircleHelp size={25} />
       </button>
       <button
         className="fixed text-white bottom-[2.5rem] right-7 bg-[#9B59B6] hover:bg-[#8E44AD] !rounded-full p-3"
