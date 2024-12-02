@@ -1,12 +1,12 @@
 import BarChartItem from "@/components/chart/BarChartItem";
+import ChartSkeleton from "@/components/chart/ChartSkeleton";
 import PieChartItem from "@/components/chart/PieChartItem";
 
 import { useChart } from "@/hooks/queries/useChart";
 
 export default function Chart() {
   const { data, isLoading, error } = useChart();
-  if (!data) return <p>데이터를 불러오는 중입니다...</p>;
-  if (isLoading) return <p>Loading...</p>;
+  if (!data || isLoading) return <ChartSkeleton />;
   if (error) return <p>Error loading data</p>;
   const { chartAll, chartToday, chartPlatform } = data;
 
