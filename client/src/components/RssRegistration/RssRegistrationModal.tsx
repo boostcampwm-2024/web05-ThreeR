@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 import FormInput from "@/components/RssRegistration/FormInput";
+import Alert from "@/components/common/Alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +18,7 @@ import { useRegisterRss } from "@/hooks/queries/useRegisterRss";
 
 import { validateRssUrl, validateName, validateEmail, validateBlogger } from "./RssValidation";
 import { useRegisterModalStore } from "@/store/useRegisterModalStrore";
+import { AlertType } from "@/types/alert";
 import { RegisterRss } from "@/types/rss";
 
 const Rss = [
@@ -33,6 +37,8 @@ const Rss = [
 ];
 
 export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: () => void; rssOpen: boolean }) {
+  const [alertOpen, setAlertOpen] = useState<AlertType>({ title: "", content: "", isOpen: false });
+
   const {
     rssUrl,
     bloggerName,
@@ -52,17 +58,20 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
   } = useRegisterModalStore();
 
   const onSuccess = () => {
-    alert("RSS 등록이 성공적으로 완료되었습니다.");
-    resetInputs();
-    onClose();
+    setAlertOpen({ title: "RSS 요청 성공", content: "관리자의 검토 후 RSS를 등록하도록 하겠습니다.", isOpen: true });
   };
 
-  const onError = (error: any) => {
-    alert(`RSS 등록에 실패했습니다: ${error.message}`);
+  const onError = () => {
+    setAlertOpen({ title: "RSS 요청 실패", content: "네트워크 상황을 살펴보고 다시 요청해주세요.", isOpen: true });
   };
 
   const { mutate } = useRegisterRss(onSuccess, onError);
 
+  const handleAlertClose = () => {
+    setAlertOpen({ title: "", content: "", isOpen: false });
+    resetInputs();
+    onClose();
+  };
   const handleRegister = () => {
     const data: RegisterRss = {
       rssUrl: rssUrl,
@@ -133,6 +142,7 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
           </Button>
         </DialogFooter>
       </DialogContent>
+      <Alert alertOpen={alertOpen} onClose={handleAlertClose} />
     </Dialog>
   );
 }

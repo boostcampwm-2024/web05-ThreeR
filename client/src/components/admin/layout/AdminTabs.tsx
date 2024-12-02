@@ -84,10 +84,10 @@ export const AdminTabs = ({ setLogout }: { setLogout: () => void }) => {
   if (pendingError || acceptedError || rejectedError)
     return (
       <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-80">
-        <Alert className="w-[300px] h-[100px] fixed top-[50%] left-[50%] transform -translate-y-1/2 -translate-x-1/2">
+        <Alert className="w-[25vw] h-[20vh] fixed top-[50%] left-[50%] transform -translate-y-1/2 -translate-x-1/2 flex flex-col justify-between">
           <AlertTitle>세션이 만료되었습니다!</AlertTitle>
           <AlertDescription>다시 로그인을 시도해 주세요.</AlertDescription>
-          <Button className="absolute right-1" onClick={setLogout}>
+          <Button className="" onClick={setLogout}>
             확인
           </Button>
         </Alert>
