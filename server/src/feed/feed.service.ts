@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
@@ -19,6 +15,7 @@ import {
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import { redisKeys } from '../common/redis/redis.constant';
+
 @Injectable()
 export class FeedService {
   constructor(
@@ -96,58 +93,27 @@ export class FeedService {
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
 
-    const qb = this.feedRepository
-      .createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.blog', 'rss_accept')
-      .addSelect(this.getMatchAgainstExpression(type, 'find'), 'relevance')
-      .where(this.getWhereCondition(type))
-      .setParameters({ find })
-      .orderBy('relevance', 'DESC')
-      .addOrderBy('feed.createdAt', 'DESC')
-      .skip(offset)
-      .take(limit);
+    const [result, totalCount] = await this.feedRepository.searchFeedList(
+      find,
+      limit,
+      type,
+      offset,
+    );
 
-    const [result, totalCount] = await qb.getManyAndCount();
     const results = SearchFeedResult.feedsToResults(result);
     const totalPages = Math.ceil(totalCount / limit);
 
     return new SearchFeedRes(totalCount, results, totalPages, limit);
   }
 
-  private getMatchAgainstExpression(type: string, parameter: string): string {
-    switch (type) {
-      case 'title':
-        return `MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
-      case 'blogName':
-        return `MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
-      case 'all':
-        return `(MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE) + MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE))`;
-      default:
-        throw new BadRequestException('검색 타입이 잘못되었습니다.');
-    }
-  }
-
-  private getWhereCondition(type: string): string {
-    switch (type) {
-      case 'title':
-        return 'MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE)';
-      case 'blogName':
-        return 'MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE)';
-      case 'all':
-        return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
-      default:
-        throw new BadRequestException('검색 타입이 잘못되었습니다.');
-    }
-  }
-
   async updateFeedViewCount(feedId: number, ip: string, cookie, response) {
     const redis = this.redisService.redisClient;
     const [feed, hasCookie, hasIpFlag] = await Promise.all([
-      this.feedRepository.findOne({ where: { id: feedId } }),
+      this.feedRepository.findFeedById(feedId),
       Boolean(cookie?.[`View_count_${feedId}`]),
       redis.sismember(`feed:${feedId}:ip`, ip),
     ]);
-
+    console.log(hasIpFlag);
     if (!feed) {
       throw new NotFoundException(`${feedId}번 피드를 찾을 수 없습니다.`);
     }
@@ -162,9 +128,7 @@ export class FeedService {
 
     await Promise.all([
       redis.sadd(`feed:${feedId}:ip`, ip),
-      this.feedRepository.update(feedId, {
-        viewCount: feed.viewCount + 1,
-      }),
+      this.feedRepository.updateFeedViewCount(feedId),
       redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
     ]);
   }
