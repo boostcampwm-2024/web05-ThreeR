@@ -1,12 +1,13 @@
 import { useState } from "react";
 
 import { AxiosError } from "axios";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 
 import { useAdminRegister } from "@/hooks/queries/useAdminAuth";
 
@@ -77,7 +78,14 @@ export default function AdminMember() {
                 autoCapitalize="off"
                 spellCheck="false"
               />
-              <Switch id="airplane-mode" onCheckedChange={setViewPassword} className="absolute right-1 bottom-2" />
+              <Toggle
+                aria-label="Toggle bold"
+                variant={"outline"}
+                className="absolute right-1 bottom-0 hover:bg-transparent active:bg-transparent focus:bg-transparent"
+                onPressedChange={setViewPassword}
+              >
+                {viewPassword ? <Eye /> : <EyeOff />}
+              </Toggle>
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">

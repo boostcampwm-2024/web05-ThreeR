@@ -4,8 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
 
 import RssRegistrationModal from "@/components/RssRegistration/RssRegistrationModal";
-import { Chat } from "@/components/chat/Chat";
-import { OpenChat } from "@/components/chat/ChatButton";
+import SideButton from "@/components/layout/SideButton";
 import SideBar from "@/components/layout/Sidebar";
 import SearchButton from "@/components/search/SearchButton";
 import SearchModal from "@/components/search/SearchModal";
@@ -18,7 +17,6 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
@@ -44,14 +42,19 @@ export default function Header() {
   return (
     <div className="border-b border-primary/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="h-20 items-center overflow-hidden flex justify-between">
-          <div className="flex-shrink-0 ">
+        <div className="h-20 items-center overflow-hidden flex justify-between relative z-50">
+          {/* 로고 영역 */}
+          <div className="flex-shrink-0 relative z-50">
             <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
           </div>
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-[30%]">
+
+          {/* 중앙 검색 버튼 */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-full flex justify-center z-40">
             <SearchButton handleSearchModal={() => toggleModal("search")} />
           </div>
-          <div className="flex-shrink-0">
+
+          {/* 내비게이션 */}
+          <div className="flex-shrink-0 z-50">
             <DesktopNavigation toggleModal={toggleModal} />
             <MobileNavigation toggleModal={toggleModal} />
           </div>
@@ -71,14 +74,8 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <div className="flex h-full items-center">
-              <SidebarProvider defaultOpen={false}>
-                <Chat />
-                <OpenChat />
-              </SidebarProvider>
-            </div>
+            <SideButton />
           </NavigationMenuItem>
-
           <NavigationMenuItem>
             <NavigationMenuLink
               className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}

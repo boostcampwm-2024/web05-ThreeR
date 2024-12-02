@@ -22,6 +22,7 @@ import {
   ApiSearchFeed,
   ApiUpdateFeedViewCount,
   ApiGetTrendSse,
+  ApiGetRecentFeedList,
 } from './feed.api-docs';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
@@ -105,6 +106,16 @@ export class FeedController {
     await this.feedService.updateFeedViewCount(feedId, ip, cookie, response);
     return ApiResponse.responseWithNoContent(
       '요청이 성공적으로 처리되었습니다.',
+    );
+  }
+
+  @ApiGetRecentFeedList()
+  @Get('/recent')
+  @HttpCode(HttpStatus.OK)
+  async getRecentFeedList() {
+    return ApiResponse.responseWithData(
+      '최신 피드 업데이트 완료',
+      await this.feedService.getRecentFeedList(),
     );
   }
 }
