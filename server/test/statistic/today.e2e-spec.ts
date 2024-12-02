@@ -6,6 +6,7 @@ import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 import { FeedRepository } from '../../src/feed/feed.repository';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
 import { FeedFixture } from '../fixture/feed.fixture';
+import { Feed } from '../../src/feed/feed.entity';
 
 describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
   let app: INestApplication;
@@ -19,9 +20,11 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
       rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
       redisService.redisClient.zadd(redisKeys.FEED_TREND_KEY, 5, '1', 4, '2'),
     ]);
+    const feeds: Feed[] = [];
     for (let i = 1; i <= 2; i++) {
-      await feedRepository.save(FeedFixture.createFeedFixture(blog, {}, i));
+      feeds.push(FeedFixture.createFeedFixture(blog, {}, i));
     }
+    await feedRepository.save(feeds);
   });
   it('값을 입력 하지 않아 10개의 데이터만 요청한다.', async () => {
     // when
