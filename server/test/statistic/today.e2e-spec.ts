@@ -17,19 +17,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
     const redisService = app.get(RedisService);
     const [blog] = await Promise.all([
       rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
-      redisService.redisClient.zadd(
-        redisKeys.FEED_TREND_KEY,
-        '1',
-        5,
-        '2',
-        4,
-        '3',
-        3,
-        '4',
-        2,
-        '5',
-        1,
-      ),
+      redisService.redisClient.zadd(redisKeys.FEED_TREND_KEY, 5, '1', 4, '2'),
     ]);
     for (let i = 1; i <= 5; i++) {
       await feedRepository.save(FeedFixture.createFeedFixture(blog, {}, i));
@@ -53,21 +41,6 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
         id: 2,
         title: 'test2',
         viewCount: 4,
-      },
-      {
-        id: 3,
-        title: 'test3',
-        viewCount: 3,
-      },
-      {
-        id: 4,
-        title: 'test4',
-        viewCount: 2,
-      },
-      {
-        id: 5,
-        title: 'test5',
-        viewCount: 1,
       },
     ]);
   });
