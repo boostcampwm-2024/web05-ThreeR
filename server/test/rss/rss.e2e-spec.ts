@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
-import * as supertest from 'supertest';
+import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { Rss, RssAccept } from '../../src/rss/rss.entity';
 import { RssFixture } from '../fixture/rss.fixture';
@@ -31,7 +31,7 @@ describe('/api/rss E2E Test', () => {
       const requestDto = RssRegisterDto.from(RssFixture.createRssFixture());
 
       // when
-      const response = await supertest(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/rss')
         .send(requestDto);
 
@@ -42,10 +42,10 @@ describe('/api/rss E2E Test', () => {
     it('이미 신청한 RSS를 또 신청한다면 거부를 한다.', async () => {
       // given
       const requestDto = RssRegisterDto.from(RssFixture.createRssFixture());
-      await supertest(app.getHttpServer()).post('/api/rss').send(requestDto);
+      await request(app.getHttpServer()).post('/api/rss').send(requestDto);
 
       // when
-      const response = await supertest(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/rss')
         .send(requestDto);
 
@@ -61,7 +61,7 @@ describe('/api/rss E2E Test', () => {
       const rssRegisterDto = RssRegisterDto.from(acceptedRss);
 
       // when
-      const response = await supertest(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/rss')
         .send(rssRegisterDto);
 
@@ -74,7 +74,7 @@ describe('/api/rss E2E Test', () => {
     describe('정상적인 요청을 한다.', () => {
       it('RSS가 등록되지 않은 경우 빈 리스트를 반환한다.', async () => {
         // when - then
-        const response = await supertest(app.getHttpServer()).get('/api/rss');
+        const response = await request(app.getHttpServer()).get('/api/rss');
         expect(response.status).toBe(200);
         expect(response.body.data).toEqual([]);
       });
@@ -85,7 +85,7 @@ describe('/api/rss E2E Test', () => {
         const expectedResult = await rssRepository.save(rss);
 
         // when
-        const response = await supertest(app.getHttpServer()).get('/api/rss');
+        const response = await request(app.getHttpServer()).get('/api/rss');
 
         //then
         expect(response.status).toBe(200);
