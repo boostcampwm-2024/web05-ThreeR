@@ -4,9 +4,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-
 
 export function ApiStatistic(category: 'today' | 'all') {
   const type = category === 'all' ? '전체' : '금일';
@@ -62,46 +60,6 @@ export function ApiStatistic(category: 'today' | 'all') {
       description: 'Bad Request',
       example: {
         message: '오류 메세지',
-      },
-    }),
-  );
-}
-
-export function ApiPlatformStatistic() {
-  return applyDecorators(
-    ApiOperation({
-      summary: '블로그 플랫폼 통계 조회 API',
-    }),
-    ApiOkResponse({
-      description: 'Ok',
-      schema: {
-        properties: {
-          message: {
-            type: 'string',
-          },
-          data: {
-            type: 'array',
-            items: {
-              properties: {
-                platform: {
-                  type: 'string',
-                },
-                count: {
-                  type: 'number',
-                },
-              },
-            },
-          },
-        },
-      },
-      example: {
-        message: '블로그 플랫폼 통계 조회 완료',
-        data: [
-          {
-            platform: 'test',
-            count: 30,
-          },
-        ],
       },
     }),
   );

@@ -12,7 +12,7 @@ export class StatisticService {
     private readonly feedRepository: FeedRepository,
     private readonly rssAcceptRepository: RssAcceptRepository,
   ) {}
-  async getTodayViewCount(limit: number) {
+  async readTodayStatistic(limit: number) {
     const ranking = await this.redisService.redisClient.zrevrange(
       redisKeys.FEED_TREND_KEY,
       0,
@@ -37,18 +37,13 @@ export class StatisticService {
     return result;
   }
 
-  async getAllViewCount(limit: number) {
-    const ranking = await this.feedRepository.find({
-      select: ['id', 'title', 'viewCount'],
-      order: {
-        viewCount: 'DESC',
-      },
-      take: limit,
-    });
+  async readAllStatistic(limit: number) {
+    const ranking =
+      await this.feedRepository.findAllStatisticsOrderByViewCount(limit);
     return ranking;
   }
 
-  async getPlatformGroupCount() {
+  async readPlatformStatistic() {
     const platformStatistics =
       await this.rssAcceptRepository.countByBlogPlatform();
     return PlatformResponseDto.platformToResults(platformStatistics);

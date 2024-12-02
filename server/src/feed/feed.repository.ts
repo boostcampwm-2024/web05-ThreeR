@@ -26,4 +26,14 @@ export class FeedRepository extends Repository<Feed> {
       relations: ['blog'],
     });
   }
+
+  async findAllStatisticsOrderByViewCount(limit: number) {
+    return this.find({
+      select: ['id', 'title', 'viewCount'],
+      order: {
+        viewCount: 'DESC',
+      },
+      take: limit,
+    });
+  }
 }
