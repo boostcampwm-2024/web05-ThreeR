@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { AxiosError } from "axios";
+import { TriangleAlert } from "lucide-react";
 
 import { RejectModal } from "@/components/admin/rss/RejectModal";
 import AcceptedTab from "@/components/admin/taps/AcceptedTap";
@@ -85,8 +86,13 @@ export const AdminTabs = ({ setLogout }: { setLogout: () => void }) => {
     return (
       <div className="w-full h-full fixed top-0 left-0 bg-black bg-opacity-80">
         <Alert className="w-[25vw] h-[20vh] fixed top-[50%] left-[50%] transform -translate-y-1/2 -translate-x-1/2 flex flex-col justify-between">
-          <AlertTitle>세션이 만료되었습니다!</AlertTitle>
-          <AlertDescription>다시 로그인을 시도해 주세요.</AlertDescription>
+          <div className="flex gap-4 items-center pt-5">
+            <TriangleAlert />
+            <div className="flex flex-col gap-3">
+              <AlertTitle className="flex items-center gap-3">세션이 만료되었습니다!</AlertTitle>
+              <AlertDescription>서비스를 계속 사용하려면 로그인하세요.</AlertDescription>
+            </div>
+          </div>
           <Button className="" onClick={setLogout}>
             확인
           </Button>

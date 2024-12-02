@@ -58,11 +58,19 @@ export default function RssRegistrationModal({ onClose, rssOpen }: { onClose: ()
   } = useRegisterModalStore();
 
   const onSuccess = () => {
-    setAlertOpen({ title: "RSS 요청 성공", content: "관리자의 검토 후 RSS를 등록하도록 하겠습니다.", isOpen: true });
+    setAlertOpen({
+      title: "RSS 요청 성공!",
+      content: "관리자가 검토후 처리 결과를 입력해주신 메일을 통해 전달드릴 예정이에요!",
+      isOpen: true,
+    });
   };
 
   const onError = () => {
-    setAlertOpen({ title: "RSS 요청 실패", content: "네트워크 상황을 살펴보고 다시 요청해주세요.", isOpen: true });
+    setAlertOpen({
+      title: "RSS 요청 실패!",
+      content: "입력한 정보를 확인하거나 다시 시도해주세요. 문제가 계속되면 관리자에게 문의하세요!",
+      isOpen: true,
+    });
   };
 
   const { mutate } = useRegisterRss(onSuccess, onError);
