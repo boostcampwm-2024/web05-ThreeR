@@ -15,7 +15,7 @@ describe('/api/rss E2E Test', () => {
   let rssRepository: Repository<Rss>;
   let rssAcceptRepository: Repository<RssAccept>;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     app = global.testApp;
     rssRepository = app.get(RssRepository);
     rssAcceptRepository = app.get(RssAcceptRepository);
