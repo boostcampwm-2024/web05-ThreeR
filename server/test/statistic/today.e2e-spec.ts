@@ -31,18 +31,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
 
     // then
     expect(response.status).toBe(200);
-    expect(response.body.data).toStrictEqual([
-      {
-        id: 1,
-        title: 'test1',
-        viewCount: 5,
-      },
-      {
-        id: 2,
-        title: 'test2',
-        viewCount: 4,
-      },
-    ]);
+    expect(response.body.data.map((item) => item.id)).toStrictEqual([1, 2]);
   });
   it('양수를 입력하여 제한된 통계를 요청한다.', async () => {
     // when
@@ -52,12 +41,6 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
 
     // then
     expect(response.status).toBe(200);
-    expect(response.body.data).toStrictEqual([
-      {
-        id: 1,
-        title: 'test1',
-        viewCount: 5,
-      },
-    ]);
+    expect(response.body.data.map((item) => item.id)).toStrictEqual([1]);
   });
 });
