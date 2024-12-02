@@ -16,7 +16,11 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: "rss-notifier/rss-notifier.log",
+      filename: `${
+        process.env.NODE_ENV === "production"
+          ? "rss-notifier/logs/rss-notifier.log"
+          : "logs/rss-notifier.log"
+      }`,
     }),
   ],
 });
