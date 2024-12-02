@@ -1,21 +1,18 @@
-import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
 interface RejectModalProps {
   blogName?: string;
+  rejectMessage: string;
+  handleReason: (reason: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }
 
-export const RejectModal = ({ blogName, onSubmit, onCancel }: RejectModalProps) => {
-  const [reason, setReason] = useState("");
-
+export const RejectModal = ({ blogName, rejectMessage, handleReason, onSubmit, onCancel }: RejectModalProps) => {
   const handleSubmit = () => {
     onSubmit();
-    setReason("");
     onCancel();
   };
 
@@ -30,14 +27,14 @@ export const RejectModal = ({ blogName, onSubmit, onCancel }: RejectModalProps) 
           <Textarea
             placeholder="거부 사유를 입력하세요..."
             className="min-h-[120px]"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            value={rejectMessage}
+            onChange={(e) => handleReason(e.target.value)}
           />
           <DialogFooter>
             <Button variant="outline" onClick={onCancel}>
               취소
             </Button>
-            <Button variant="destructive" onClick={handleSubmit} disabled={!reason.trim()}>
+            <Button variant="destructive" onClick={handleSubmit} disabled={!rejectMessage.trim()}>
               거부하기
             </Button>
           </DialogFooter>

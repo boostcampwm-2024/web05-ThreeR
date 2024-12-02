@@ -1,6 +1,11 @@
 import logger from "./logger.js";
 import "dotenv/config";
-import { selectAllRss, insertFeeds } from "./db-access.js";
+import {
+  selectAllRss,
+  insertFeeds,
+  deleteRecentFeedStartId,
+  setRecentFeedList,
+} from "./db-access.js";
 import { FeedObj, FeedDetail, RawFeed } from "./types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
@@ -61,7 +66,7 @@ const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
 
 const findNewFeeds = async (
   rssObj: FeedObj,
-  now: number
+  now: number,
 ): Promise<FeedDetail[]> => {
   try {
     const feeds = await fetchRss(rssObj.rssUrl);
@@ -85,13 +90,13 @@ const findNewFeeds = async (
           link: decodeURIComponent(feed.link),
           imageUrl: imageUrl,
         };
-      })
+      }),
     );
 
     return detailedFeeds;
   } catch (err) {
     logger.warn(
-      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`
+      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`,
     );
     return [];
   }
@@ -111,7 +116,7 @@ export const performTask = async () => {
   const rssObjects = await selectAllRss();
 
   if (rssObjects.length === 0) {
-    logger.info("등록된 RSS 피드가 없습니다.");
+    logger.info("등록된 RSS가 없습니다.");
     return;
   }
   const currentTime = new Date();
@@ -119,12 +124,11 @@ export const performTask = async () => {
   let idx = 0;
   const newFeeds = await Promise.all(
     rssObjects.map(async (rssObj) => {
-      idx += 1;
       logger.info(
-        `[${idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
+        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`,
       );
       return await findNewFeeds(rssObj, currentTime.setMinutes(0, 0, 0));
-    })
+    }),
   );
 
   const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
@@ -135,9 +139,11 @@ export const performTask = async () => {
 
   if (result.length === 0) {
     logger.info("새로운 피드가 없습니다.");
+    await deleteRecentFeedStartId();
     return;
   }
 
   logger.info(`총 ${result.length}개의 새로운 피드가 있습니다.`);
-  await insertFeeds(result);
+  const recentFeedStartId = await insertFeeds(result);
+  await setRecentFeedList(recentFeedStartId);
 };
