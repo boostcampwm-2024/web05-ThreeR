@@ -3,8 +3,8 @@ import { RssRegisterDto } from '../../src/rss/dto/rss-register.dto';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { Rss, RssAccept } from '../../src/rss/rss.entity';
-import { RssFixture } from './fixture/rssFixture';
-import { RssAcceptFixture } from './fixture/rssAcceptFixture';
+import { RssFixture } from '../fixture/rss.fixture';
+import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 import {
   RssAcceptRepository,
   RssRepository,
