@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as supertest from 'supertest';
+import * as request from 'supertest';
 import { RedisService } from '../../../src/common/redis/redis.service';
 import { RssRejectRepository } from '../../../src/rss/rss.repository';
 import { RssReject } from '../../../src/rss/rss.entity';
@@ -23,17 +23,21 @@ describe('GET /api/rss/history/reject E2E Test', () => {
 
   it('관리자 로그인이 되어있지 않으면 조회할 수 없다.', async () => {
     // when
-    const response = await supertest(app.getHttpServer()).get(
+    const noCookieResponse = await request(app.getHttpServer()).get(
       '/api/rss/history/reject',
     );
+    const noSessionResponse = await request(app.getHttpServer())
+      .get('/api/rss/history/reject')
+      .set('Cookie', 'sessionId=invalid');
 
     // then
-    expect(response.status).toBe(401);
+    expect(noCookieResponse.status).toBe(401);
+    expect(noSessionResponse.status).toBe(401);
   });
 
   it('관리자 로그인이 되어 있으면 최신순으로 기록 데이터를 응답한다.', async () => {
     // when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get('/api/rss/history/reject')
       .set('Cookie', 'sessionId=sid');
 
