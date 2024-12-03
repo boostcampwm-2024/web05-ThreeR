@@ -9,6 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { RedisService } from '../common/redis/redis.service';
 import { Injectable } from '@nestjs/common';
 import { getRandomNickname } from '@woowa-babble/random-nickname';
+import * as cron from 'node-cron';
 
 const CLIENT_KEY_PREFIX = 'socket_client:';
 const CHAT_HISTORY_KEY = 'chat:history';
@@ -25,7 +26,30 @@ const MAX_CLIENTS = 500;
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
+  private cronTask: cron.ScheduledTask;
+
   constructor(private readonly redisService: RedisService) {}
+
+  onModuleInit() {
+    this.startMidnightCron();
+  }
+
+  onModuleDestroy() {
+    this.cronTask.stop();
+  }
+
+  private startMidnightCron() {
+    this.cronTask = cron.schedule('0 0 * * *', () => {
+      this.emitMidnightMessage();
+    });
+  }
+
+  private emitMidnightMessage() {
+    this.server.emit('midnight', {
+      message: '자정이 되었습니다!',
+      timestamp: new Date(),
+    });
+  }
 
   async handleConnection(client: Socket) {
     const userCount = this.server.engine.clientsCount;
