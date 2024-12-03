@@ -30,6 +30,7 @@ describe('POST api/admin/login E2E Test', () => {
 
     //then
     expect(response.status).toBe(200);
+    expect(response.headers['set-cookie'][0]).toContain('sessionId=');
   });
 
   it('등록되지 않은 ID로 로그인을 시도하면 401 UnAuthorized 예외가 발생한다.', async () => {
