@@ -21,7 +21,7 @@ import { ApiCreateRss } from './api-docs/createRss.api-docs';
 import { ApiAcceptRss } from './api-docs/acceptRss.api-docs';
 import { ApiReadAcceptHistory } from './api-docs/readAcceptHistoryRss.api-docs';
 import { ApiReadRejectHistory } from './api-docs/readRejectHistoryRss.api-docs';
-import { ApiReadRss } from './api-docs/readRss.api-docs';
+import { ApiReadAllRss } from './api-docs/readAllRss.api-docs';
 import { ApiRejectRss } from './api-docs/rejectRss.api-docs';
 
 @ApiTags('RSS')
@@ -37,7 +37,7 @@ export class RssController {
     return ApiResponse.responseWithNoContent('신청이 완료되었습니다.');
   }
 
-  @ApiReadRss()
+  @ApiReadAllRss()
   @Get()
   @HttpCode(200)
   async getRss() {

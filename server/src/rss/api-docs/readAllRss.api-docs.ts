@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
-export function ApiReadRss() {
+export function ApiReadAllRss() {
   return applyDecorators(
     ApiOperation({
       summary: 'RSS 전체 조회 API',
