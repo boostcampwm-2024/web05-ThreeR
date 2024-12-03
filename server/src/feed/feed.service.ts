@@ -55,7 +55,10 @@ export class FeedService {
     );
     const trendFeeds = await Promise.all(
       trendFeedIdList.map(async (feedId) => {
-        const feed = await this.feedRepository.findTrendFeed(parseInt(feedId));
+        const feed = await this.feedRepository.findOne({
+          where: { id: parseInt(feedId) },
+          relations: ['blog'],
+        });
         if (!feed) {
           return null;
         }
@@ -113,22 +116,19 @@ export class FeedService {
   }
 
   private validateSearchType(type: string) {
-    switch (type) {
-      case 'title':
-        return true;
-      case 'blogName':
-        return true;
-      case 'all':
-        return true;
-      default:
-        return false;
-    }
+    const searchType = {
+      title: 'title',
+      blogName: 'blogName',
+      all: 'all',
+    };
+
+    return searchType.hasOwnProperty(type);
   }
 
   async updateFeedViewCount(feedId: number, ip: string, cookie, response) {
     const redis = this.redisService.redisClient;
     const [feed, hasCookie, hasIpFlag] = await Promise.all([
-      this.feedRepository.findFeedById(feedId),
+      this.feedRepository.findOne({ where: { id: feedId } }),
       Boolean(cookie?.[`View_count_${feedId}`]),
       redis.sismember(`feed:${feedId}:ip`, ip),
     ]);
@@ -147,7 +147,9 @@ export class FeedService {
 
     await Promise.all([
       redis.sadd(`feed:${feedId}:ip`, ip),
-      this.feedRepository.updateFeedViewCount(feedId),
+      this.feedRepository.update(feedId, {
+        viewCount: () => 'view_count + 1',
+      }),
       redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
     ]);
   }

@@ -21,13 +21,6 @@ export class FeedRepository extends Repository<Feed> {
     });
   }
 
-  async findTrendFeed(feedId: number) {
-    return this.findOne({
-      where: { id: feedId },
-      relations: ['blog'],
-    });
-  }
-
   async searchFeedList(
     find: string,
     limit: number,
@@ -67,15 +60,5 @@ export class FeedRepository extends Repository<Feed> {
       case 'all':
         return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
     }
-  }
-
-  async findFeedById(feedId: number) {
-    return this.findOne({ where: { id: feedId } });
-  }
-
-  async updateFeedViewCount(feedId: number) {
-    await this.update(feedId, {
-      viewCount: () => 'view_count + 1',
-    });
   }
 }
