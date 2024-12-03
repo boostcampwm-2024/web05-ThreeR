@@ -12,7 +12,7 @@ export const CTASection = () => {
   };
 
   return (
-    <Section className="min-h-screen flex items-center px-8">
+    <Section id="cta-section" className="min-h-screen flex items-center px-8">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl font-bold mb-6">지금 바로 시작하세요</h2>
         <p className="text-gray-600 mb-8">개발자들의 인사이트 가득한 블로그 세상으로 초대합니다</p>
