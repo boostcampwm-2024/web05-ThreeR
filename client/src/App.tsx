@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 
+import AboutService from "@/pages/AboutService";
 import Admin from "@/pages/Admin";
 import Home from "@/pages/Home";
 
@@ -55,6 +56,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/about" element={<AboutService />} />
       </Routes>
       <ReactQueryDevtools />
     </QueryClientProvider>
