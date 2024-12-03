@@ -114,10 +114,10 @@ export class RssService {
     type Platform = 'medium' | 'tistory' | 'velog' | 'github' | 'etc';
 
     const platformRegexp: { [key in Platform]: RegExp } = {
-      medium: /^https:\/\/medium\.com\/feed\/@[\w\-]+$/,
-      tistory: /^https:\/\/[a-zA-Z0-9\-]+\.tistory\.com\/rss$/,
-      velog: /^https:\/\/v2\.velog\.io\/rss\/@[\w\-]+$/,
-      github: /^https:\/\/[\w\-]+\.github\.io\/feed\.xml$/,
+      medium: /^https:\/\/medium\.com/,
+      tistory: /^https:\/\/[a-zA-Z0-9\-]+\.tistory\.com/,
+      velog: /^https:\/\/v2\.velog\.io/,
+      github: /^https:\/\/[\w\-]+\.github\.io/,
       etc: /.*/,
     };
 
