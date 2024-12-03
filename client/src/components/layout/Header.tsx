@@ -82,6 +82,15 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
               onClick={() => toggleModal("login")}
               href="#"
             >
+              서비스 소개
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}
+              onClick={() => toggleModal("login")}
+              href="#"
+            >
               로그인
             </NavigationMenuLink>
           </NavigationMenuItem>
