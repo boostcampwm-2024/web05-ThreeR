@@ -51,6 +51,9 @@ describe('POST /api/feed/:feedId E2E Test', () => {
       //then
       expect(response.status).toBe(200);
       expect(feedDailyViewCount).toBe(1);
+      expect(response.headers['set-cookie'][0]).toContain(
+        `View_count_${testFeedId}`,
+      );
     } finally {
       //cleanup
       await Promise.all([
@@ -105,5 +108,8 @@ describe('POST /api/feed/:feedId E2E Test', () => {
     //then
     expect(response.status).toBe(200);
     expect(feedDailyViewCount).toBeNull();
+    expect(response.headers['set-cookie'][0]).toContain(
+      `View_count_${testFeedId}`,
+    );
   });
 });
