@@ -6,8 +6,9 @@ import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 import { FeedRepository } from '../../src/feed/feed.repository';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
 import { FeedFixture } from '../fixture/feed.fixture';
+import { Feed } from '../../src/feed/feed.entity';
 
-describe('Today view count statistic E2E Test : GET /api/statistic/today', () => {
+describe('GET /api/statistic/today E2E Test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -19,11 +20,13 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
       rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
       redisService.redisClient.zadd(redisKeys.FEED_TREND_KEY, 5, '1', 4, '2'),
     ]);
+    const feeds: Feed[] = [];
     for (let i = 1; i <= 2; i++) {
-      await feedRepository.save(FeedFixture.createFeedFixture(blog, {}, i));
+      feeds.push(FeedFixture.createFeedFixture(blog, {}, i));
     }
+    await feedRepository.save(feeds);
   });
-  it('값을 입력 하지 않아 10개의 데이터만 요청한다.', async () => {
+  it('값을 입력 하지 않으면 10개의 데이터만 응답한다.', async () => {
     // when
     const response = await request(app.getHttpServer()).get(
       '/api/statistic/today',
@@ -33,7 +36,7 @@ describe('Today view count statistic E2E Test : GET /api/statistic/today', () =>
     expect(response.status).toBe(200);
     expect(response.body.data.map((item) => item.id)).toStrictEqual([1, 2]);
   });
-  it('양수를 입력하여 제한된 통계를 요청한다.', async () => {
+  it('양수를 입력하면 제한된 개수의 통계 결과를 응답한다.', async () => {
     // when
     const response = await request(app.getHttpServer()).get(
       '/api/statistic/today?limit=1',

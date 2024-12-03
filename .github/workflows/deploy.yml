@@ -24,7 +24,7 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
 
-            cd /root/web05-Denamu
+            cd /var/web05-Denamu
             git pull origin main
             cd server/
 
