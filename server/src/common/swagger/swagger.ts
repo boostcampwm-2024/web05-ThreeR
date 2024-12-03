@@ -9,5 +9,5 @@ export function setupSwagger(app: INestApplication) {
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, documentFactory);
+  SwaggerModule.setup('api/swagger', app, documentFactory);
 }
