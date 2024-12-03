@@ -1,23 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export function useKeyboardShortcut(key: string, callback: () => void, withCtrl: boolean = false) {
-  const [isComposing, setIsComposing] = useState(false);
-
   useEffect(() => {
+    let isComposing = false;
+
     const handleCompositionStart = () => {
-      setIsComposing(true);
+      isComposing = true;
     };
 
     const handleCompositionEnd = () => {
-      setIsComposing(false);
+      isComposing = false;
     };
 
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (isComposing) {
-        return;
-      }
-
-      if (e.key === key && (!withCtrl || e.ctrlKey)) {
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!isComposing && e.key === key && (!withCtrl || e.ctrlKey)) {
         e.preventDefault();
         callback();
       }
@@ -25,12 +21,12 @@ export function useKeyboardShortcut(key: string, callback: () => void, withCtrl:
 
     window.addEventListener("compositionstart", handleCompositionStart);
     window.addEventListener("compositionend", handleCompositionEnd);
-    window.addEventListener("keydown", handleKeydown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
       window.removeEventListener("compositionstart", handleCompositionStart);
       window.removeEventListener("compositionend", handleCompositionEnd);
-      window.removeEventListener("keydown", handleKeydown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [key, callback, withCtrl, isComposing]);
+  }, [key, callback, withCtrl]);
 }
