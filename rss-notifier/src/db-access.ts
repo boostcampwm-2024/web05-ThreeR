@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 import Redis from "ioredis";
 import * as process from "node:process";
+import { PoolConnection } from "mysql2/promise";
 
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? "rss-notifier/.env" : ".env",
@@ -34,12 +35,12 @@ export const createRedisClient = async () => {
   });
 };
 
-export const executeQuery = async (query: string, params: any[] = []) => {
-  let connection;
+export const executeQuery = async <T>(query: string, params: any[] = []) => {
+  let connection: PoolConnection;
   try {
     connection = await pool.getConnection();
     const [rows] = await connection.query(query, params);
-    return rows;
+    return rows as T[];
   } catch (err) {
     logger.error("쿼리 " + query + " 실행 중 오류 발생:", err);
     throw err;
@@ -58,7 +59,7 @@ export const selectAllRss = async (): Promise<RssObj[]> => {
 
 export const insertFeeds = async (resultData: FeedDetail[]) => {
   let successCount = 0;
-  let lastFeedId;
+  let lastFeedId: number;
   const query = `
         INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
         VALUES (?, ?, ?, ?, ?)
@@ -66,7 +67,7 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   for (const feed of resultData) {
     try {
       lastFeedId = (
-        await executeQuery(query, [
+        await executeQuery<FeedDetail>(query, [
           feed.blogId,
           feed.pubDate,
           feed.title,
@@ -81,23 +82,36 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   }
 
   logger.info(
-    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
+    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`,
   );
   lastFeedId = lastFeedId - successCount + 1;
   return lastFeedId;
 };
 
-export const deleteRecentFeedStartId = async () => {
+export const deleteRecentFeed = async () => {
   const redis = await createRedisClient();
   try {
-    const keys = await redis.keys(redisConstant.FEED_RECENT_ALL_KEY);
-    if (keys.length > 0) {
-      await redis.del(...keys);
+    const keysToDelete = [];
+    let cursor = "0";
+    do {
+      const [newCursor, keys] = await redis.scan(
+        cursor,
+        "MATCH",
+        redisConstant.FEED_RECENT_ALL_KEY,
+        "COUNT",
+        "100",
+      );
+      keysToDelete.push(...keys);
+      cursor = newCursor;
+    } while (cursor !== "0");
+
+    if (keysToDelete.length > 0) {
+      await redis.del(...keysToDelete);
     }
     await redis.set(redisConstant.FEED_RECENT_KEY, "false");
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
+      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
     );
   } finally {
     if (redis) await redis.quit();
@@ -120,7 +134,7 @@ export const setRecentFeedList = async (startId: number) => {
                    FROM feed f
                    JOIN rss_accept r ON f.blog_id = r.id
                    WHERE f.id >= ${startId}`;
-    const resultList = await executeQuery(query);
+    const resultList = await executeQuery<RssObj>(query);
     const pipeLine = redis.pipeline();
     for (const feed of resultList) {
       pipeLine.hset(`feed:recent:${feed.id}`, feed);
@@ -129,7 +143,7 @@ export const setRecentFeedList = async (startId: number) => {
     await pipeLine.exec();
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
+      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
     );
   } finally {
     if (redis) await redis.quit();
