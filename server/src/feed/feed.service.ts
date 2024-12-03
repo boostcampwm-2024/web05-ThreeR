@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { Feed } from './feed.entity';
@@ -92,18 +96,33 @@ export class FeedService {
   async searchFeedList(searchFeedReq: SearchFeedReq) {
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
+    if (this.validateSearchType(type)) {
+      const [result, totalCount] = await this.feedRepository.searchFeedList(
+        find,
+        limit,
+        type,
+        offset,
+      );
 
-    const [result, totalCount] = await this.feedRepository.searchFeedList(
-      find,
-      limit,
-      type,
-      offset,
-    );
+      const results = SearchFeedResult.feedsToResults(result);
+      const totalPages = Math.ceil(totalCount / limit);
 
-    const results = SearchFeedResult.feedsToResults(result);
-    const totalPages = Math.ceil(totalCount / limit);
+      return new SearchFeedRes(totalCount, results, totalPages, limit);
+    }
+    throw new BadRequestException('검색 타입이 잘못되었습니다.');
+  }
 
-    return new SearchFeedRes(totalCount, results, totalPages, limit);
+  private validateSearchType(type: string) {
+    switch (type) {
+      case 'title':
+        return true;
+      case 'blogName':
+        return true;
+      case 'all':
+        return true;
+      default:
+        return false;
+    }
   }
 
   async updateFeedViewCount(feedId: number, ip: string, cookie, response) {
@@ -113,7 +132,7 @@ export class FeedService {
       Boolean(cookie?.[`View_count_${feedId}`]),
       redis.sismember(`feed:${feedId}:ip`, ip),
     ]);
-    console.log(hasIpFlag);
+
     if (!feed) {
       throw new NotFoundException(`${feedId}번 피드를 찾을 수 없습니다.`);
     }

@@ -55,8 +55,6 @@ export class FeedRepository extends Repository<Feed> {
         return `MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
       case 'all':
         return `(MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE) + MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE))`;
-      default:
-        throw new BadRequestException('검색 타입이 잘못되었습니다.');
     }
   }
 
@@ -68,8 +66,6 @@ export class FeedRepository extends Repository<Feed> {
         return 'MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE)';
       case 'all':
         return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
-      default:
-        throw new BadRequestException('검색 타입이 잘못되었습니다.');
     }
   }
 
