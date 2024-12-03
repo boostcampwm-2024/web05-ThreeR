@@ -1,21 +1,14 @@
 import logger from "./logger";
 import { RssObj, FeedDetail } from "./types";
-import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 import Redis from "ioredis";
 import * as process from "node:process";
+import { CONNECTION_LIMIT, INSERT_ID, redisConstant } from "./constant";
+import * as dotenv from "dotenv";
 
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? "rss-notifier/.env" : ".env",
 });
-
-const CONNECTION_LIMIT = 50;
-const INSERT_ID = "insertId";
-
-const redisConstant = {
-  FEED_RECENT_ALL_KEY: "feed:recent:*",
-  FEED_RECENT_KEY: "feed:recent",
-};
 
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
