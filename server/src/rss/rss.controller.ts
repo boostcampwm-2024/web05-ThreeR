@@ -34,18 +34,18 @@ export class RssController {
   @ApiPostRegisterRss()
   @Post()
   @UsePipes(ValidationPipe)
-  async postRegisterRss(@Body() rssRegisterDto: RssRegisterDto) {
-    await this.rssService.registerRss(rssRegisterDto);
+  async createRss(@Body() rssRegisterDto: RssRegisterDto) {
+    await this.rssService.createRss(rssRegisterDto);
     return ApiResponse.responseWithNoContent('신청이 완료되었습니다.');
   }
 
   @ApiGetRss()
   @Get()
   @HttpCode(200)
-  async getRss() {
+  async readAllRss() {
     return ApiResponse.responseWithData(
       'Rss 조회 완료',
-      await this.rssService.getAllRss(),
+      await this.rssService.readAllRss(),
     );
   }
 
@@ -77,8 +77,8 @@ export class RssController {
   @ApiAcceptHistory()
   @UseGuards(CookieAuthGuard)
   @Get('history/accept')
-  async getHistoryAcceptRss() {
-    const rssAcceptHistory = await this.rssService.acceptRssHistory();
+  async readAcceptHistory() {
+    const rssAcceptHistory = await this.rssService.readAcceptHistory();
     return ApiResponse.responseWithData(
       '승인 기록 조회가 완료되었습니다.',
       rssAcceptHistory,
@@ -88,8 +88,8 @@ export class RssController {
   @ApiRejectHistory()
   @UseGuards(CookieAuthGuard)
   @Get('history/reject')
-  async getHistoryRejectRss() {
-    const rssRejectHistory = await this.rssService.rejectRssHistory();
+  async readRejectHistory() {
+    const rssRejectHistory = await this.rssService.readRejectHistory();
     return ApiResponse.responseWithData(
       'RSS 거절 기록을 조회하였습니다.',
       rssRejectHistory,
