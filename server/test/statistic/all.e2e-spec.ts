@@ -13,9 +13,9 @@ describe('GET /api/statistic/all E2E Test', () => {
     app = global.testApp;
     const rssAcceptRepository = app.get(RssAcceptRepository);
     const feedRepository = app.get(FeedRepository);
-    const [blog] = await Promise.all([
-      rssAcceptRepository.save(RssAcceptFixture.createRssAcceptFixture()),
-    ]);
+    const blog = await rssAcceptRepository.save(
+      RssAcceptFixture.createRssAcceptFixture(),
+    );
     const feeds: Feed[] = [];
     for (let i = 1; i <= 2; i++) {
       feeds.push(FeedFixture.createFeedFixture(blog, { viewCount: i - 1 }, i));
