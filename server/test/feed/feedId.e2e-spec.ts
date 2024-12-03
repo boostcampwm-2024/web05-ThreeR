@@ -1,4 +1,4 @@
-import * as supertest from 'supertest';
+import * as request from 'supertest';
 import { redisKeys } from '../../src/common/redis/redis.constant';
 import { INestApplication } from '@nestjs/common';
 import { RedisService } from '../../src/common/redis/redis.service';
@@ -38,7 +38,7 @@ describe('POST /api/feed/:feedId E2E Test', () => {
 
     try {
       //when
-      const response = await supertest(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post(`/api/feed/${testFeedId}`)
         .set('X-Forwarded-For', testNewIp);
       const feedDailyViewCount = parseInt(
@@ -68,7 +68,7 @@ describe('POST /api/feed/:feedId E2E Test', () => {
     const notExistFeedId = 50000;
 
     //when
-    const response = await supertest(app.getHttpServer()).post(
+    const response = await request(app.getHttpServer()).post(
       `/api/feed/${notExistFeedId}`,
     );
 
@@ -78,7 +78,7 @@ describe('POST /api/feed/:feedId E2E Test', () => {
 
   it('쿠키가 있으면 조회수는 올라가지 않는다.', async () => {
     //when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post(`/api/feed/${testFeedId}`)
       .set('Cookie', `View_count_${testFeedId}=${testFeedId}`)
       .set('X-Forwarded-For', testIp);
@@ -94,7 +94,7 @@ describe('POST /api/feed/:feedId E2E Test', () => {
 
   it('쿠키가 없지만 Redis에 IP가 저장되어 있으면 조회수는 올라가지 않는다.', async () => {
     //when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post(`/api/feed/${testFeedId}`)
       .set('X-Forwarded-For', testIp);
     const feedDailyViewCount = await redisService.redisClient.zscore(

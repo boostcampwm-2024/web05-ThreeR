@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as supertest from 'supertest';
+import * as request from 'supertest';
 import { FeedFixture } from '../fixture/feed.fixture';
 import { FeedRepository } from '../../src/feed/feed.repository';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
@@ -28,7 +28,7 @@ describe('GET api/feed E2E Test', () => {
     const testQuery = { limit: 5 };
 
     //when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
 
@@ -50,7 +50,7 @@ describe('GET api/feed E2E Test', () => {
     const testQuery = { limit: 5, lastId: 11 };
 
     //when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
 
@@ -72,7 +72,7 @@ describe('GET api/feed E2E Test', () => {
     const testQuery = { limit: 15, lastId: 10 };
 
     //when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
 
@@ -98,7 +98,7 @@ describe('GET api/feed E2E Test', () => {
     const testQuery = { limit: 15, lastId: 1 };
 
     //when
-    const response = await supertest(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get('/api/feed')
       .query(testQuery);
 
