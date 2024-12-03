@@ -14,6 +14,7 @@ import * as cron from 'node-cron';
 const CLIENT_KEY_PREFIX = 'socket_client:';
 const CHAT_HISTORY_KEY = 'chat:history';
 const CHAT_HISTORY_LIMIT = 20;
+const CHAT_MIDNIGHT_CLIENT_NAME = 'system';
 const MAX_CLIENTS = 500;
 
 @Injectable()
@@ -45,10 +46,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private emitMidnightMessage() {
-    this.server.emit('midnight', {
-      message: '자정이 되었습니다!',
+    const broadcastPayload = {
+      username: CHAT_MIDNIGHT_CLIENT_NAME,
+      message: '',
       timestamp: new Date(),
-    });
+    };
+    this.server.emit('message', broadcastPayload);
   }
 
   async handleConnection(client: Socket) {
