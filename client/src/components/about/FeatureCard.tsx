@@ -20,15 +20,13 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
       )}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="relative rounded-xl overflow-hidden bg-gray-100">
-          {feature.imageSrc ? (
-            <img src={feature.imageSrc} alt={feature.imageAlt} className="w-full aspect-video object-cover" />
-          ) : (
-            <div className="w-full aspect-video flex items-center justify-center text-gray-400">
-              <span>이미지 준비 중</span>
-            </div>
-          )}
-        </div>
+        {feature.imageSrc ? (
+          <img src={feature.imageSrc} alt={feature.imageAlt} className="w-full aspect-video object-cover" />
+        ) : (
+          <div className="w-full aspect-video flex items-center justify-center">
+            <span>이미지 준비 중</span>
+          </div>
+        )}
 
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-2">
