@@ -1,5 +1,5 @@
-import { pool } from "./db-access.js";
-import logger from "./logger.js";
+import { pool } from "./common/db-access.js";
+import logger from "./common/logger.js";
 import { performTask } from "./rss-notifier.js";
 
 async function runNotifier() {

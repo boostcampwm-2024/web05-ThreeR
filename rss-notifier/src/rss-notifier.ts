@@ -1,12 +1,12 @@
-import logger from "./logger.js";
+import logger from "./common/logger.js";
 import "dotenv/config";
 import {
   selectAllRss,
   insertFeeds,
   setRecentFeedList,
   deleteRecentFeed,
-} from "./db-access.js";
-import { RssObj, FeedDetail, RawFeed } from "./types.js";
+} from "./common/db-access.js";
+import { RssObj, FeedDetail, RawFeed } from "./common/types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 import { unescape } from "html-escaper";
@@ -57,7 +57,7 @@ const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
 
 const findNewFeeds = async (
   rssObj: RssObj,
-  now: number,
+  now: number
 ): Promise<FeedDetail[]> => {
   try {
     const TIME_INTERVAL = process.env.TIME_INTERVAL
@@ -84,13 +84,13 @@ const findNewFeeds = async (
           link: decodeURIComponent(feed.link),
           imageUrl: imageUrl,
         };
-      }),
+      })
     );
 
     return detailedFeeds;
   } catch (err) {
     logger.warn(
-      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`,
+      `[${rssObj.rssUrl}] 에서 데이터 조회 중 오류 발생으로 인한 스킵 처리. 오류 내용 : ${err}`
     );
     return [];
   }
@@ -123,10 +123,10 @@ export const performTask = async () => {
   const newFeeds = await Promise.all(
     rssObjects.map(async (rssObj) => {
       logger.info(
-        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`,
+        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
       );
       return await findNewFeeds(rssObj, currentTime.setSeconds(0, 0));
-    }),
+    })
   );
 
   const result = newFeeds.flat().sort((currentFeed, nextFeed) => {

@@ -1,22 +1,15 @@
 import logger from "./logger";
 import { RssObj, FeedDetail } from "./types";
-import * as dotenv from "dotenv";
 import * as mysql from "mysql2/promise";
 import Redis from "ioredis";
 import * as process from "node:process";
+import { CONNECTION_LIMIT, INSERT_ID, redisConstant } from "./constant";
+import * as dotenv from "dotenv";
 import { PoolConnection } from "mysql2/promise";
 
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? "rss-notifier/.env" : ".env",
 });
-
-const CONNECTION_LIMIT = 50;
-const INSERT_ID = "insertId";
-
-const redisConstant = {
-  FEED_RECENT_ALL_KEY: "feed:recent:*",
-  FEED_RECENT_KEY: "feed:recent",
-};
 
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -82,7 +75,7 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   }
 
   logger.info(
-    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`,
+    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
   );
   lastFeedId = lastFeedId - successCount + 1;
   return lastFeedId;
@@ -99,7 +92,7 @@ export const deleteRecentFeed = async () => {
         "MATCH",
         redisConstant.FEED_RECENT_ALL_KEY,
         "COUNT",
-        "100",
+        "100"
       );
       keysToDelete.push(...keys);
       cursor = newCursor;
@@ -111,7 +104,7 @@ export const deleteRecentFeed = async () => {
     await redis.set(redisConstant.FEED_RECENT_KEY, "false");
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
+      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
     );
   } finally {
     if (redis) await redis.quit();
@@ -143,7 +136,7 @@ export const setRecentFeedList = async (startId: number) => {
     await pipeLine.exec();
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`,
+      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
     );
   } finally {
     if (redis) await redis.quit();
