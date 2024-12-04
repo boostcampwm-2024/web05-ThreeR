@@ -140,9 +140,10 @@ export class FeedService {
       const redis = this.redisService.redisClient;
       const [feed, hasCookie, hasIpFlag] = await Promise.all([
         this.feedRepository.findOne({ where: { id: feedId } }),
-        Boolean(cookie?.[`View_count_${feedId}`]),
+        Boolean(cookie?.includes(`View_count_${feedId}=${feedId}`)),
         redis.sismember(`feed:${feedId}:ip`, ip),
       ]);
+
       if (!feed) {
         throw new NotFoundException(`${feedId}번 피드를 찾을 수 없습니다.`);
       }
