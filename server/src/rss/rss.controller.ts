@@ -14,24 +14,22 @@ import { CookieAuthGuard } from '../common/guard/auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { RssService } from './rss.service';
 import { RssRegisterDto } from './dto/rss-register.dto';
-import {
-  ApiPostRegisterRss,
-  ApiGetRss,
-  ApiAcceptRss,
-  ApiRejectRss,
-  ApiAcceptHistory,
-  ApiRejectHistory,
-} from './rss.api-docs';
 import { ApiResponse } from '../common/response/common.response';
 import { RejectRssDto } from './dto/rss-reject.dto';
 import { RssManagementDto } from './dto/rss-management.dto';
+import { ApiCreateRss } from './api-docs/createRss.api-docs';
+import { ApiAcceptRss } from './api-docs/acceptRss.api-docs';
+import { ApiReadAcceptHistory } from './api-docs/readAcceptHistoryRss.api-docs';
+import { ApiReadRejectHistory } from './api-docs/readRejectHistoryRss.api-docs';
+import { ApiReadAllRss } from './api-docs/readAllRss.api-docs';
+import { ApiRejectRss } from './api-docs/rejectRss.api-docs';
 
 @ApiTags('RSS')
 @Controller('rss')
 export class RssController {
   constructor(private readonly rssService: RssService) {}
 
-  @ApiPostRegisterRss()
+  @ApiCreateRss()
   @Post()
   @UsePipes(ValidationPipe)
   async postRegisterRss(@Body() rssRegisterDto: RssRegisterDto) {
@@ -39,7 +37,7 @@ export class RssController {
     return ApiResponse.responseWithNoContent('신청이 완료되었습니다.');
   }
 
-  @ApiGetRss()
+  @ApiReadAllRss()
   @Get()
   @HttpCode(200)
   async getRss() {
@@ -74,7 +72,7 @@ export class RssController {
     return ApiResponse.responseWithNoContent('거절이 완료되었습니다.');
   }
 
-  @ApiAcceptHistory()
+  @ApiReadAcceptHistory()
   @UseGuards(CookieAuthGuard)
   @Get('history/accept')
   async getHistoryAcceptRss() {
@@ -85,7 +83,7 @@ export class RssController {
     );
   }
 
-  @ApiRejectHistory()
+  @ApiReadRejectHistory()
   @UseGuards(CookieAuthGuard)
   @Get('history/reject')
   async getHistoryRejectRss() {
