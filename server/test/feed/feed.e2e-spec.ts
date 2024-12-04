@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { FeedFixture } from '../fixture/feed.fixture';
 import { FeedRepository } from '../../src/feed/feed.repository';
 import { RssAcceptRepository } from '../../src/rss/rss.repository';
-import { RssFixture } from '../fixture/rss.fixture';
+import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 
 describe('GET api/feed E2E Test', () => {
   let app: INestApplication;
@@ -14,7 +14,9 @@ describe('GET api/feed E2E Test', () => {
     const feedRepository = app.get(FeedRepository);
     const rssAcceptRepository = app.get(RssAcceptRepository);
 
-    const blog = await rssAcceptRepository.save(RssFixture.createRssFixture());
+    const blog = await rssAcceptRepository.save(
+      RssAcceptFixture.createRssAcceptFixture(),
+    );
 
     const feeds = Array.from({ length: latestId }).map((_, i) => {
       return FeedFixture.createFeedFixture(blog, _, i + 1);
