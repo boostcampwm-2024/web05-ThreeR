@@ -23,7 +23,7 @@ export class RssService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async registerRss(rssRegisterDto: RssRegisterDto) {
+  async createRss(rssRegisterDto: RssRegisterDto) {
     const [alreadyURLRss, alreadyURLBlog] = await Promise.all([
       this.rssRepository.findOne({
         where: {
@@ -48,7 +48,7 @@ export class RssService {
     await this.rssRepository.insertNewRss(rssRegisterDto);
   }
 
-  async getAllRss() {
+  async readAllRss() {
     return await this.rssRepository.find();
   }
 
@@ -94,7 +94,7 @@ export class RssService {
     this.emailService.sendMail(result, false, description);
   }
 
-  async acceptRssHistory() {
+  async readAcceptHistory() {
     return await this.rssAcceptRepository.find({
       order: {
         id: 'DESC',
@@ -102,7 +102,7 @@ export class RssService {
     });
   }
 
-  async rejectRssHistory() {
+  async readRejectHistory() {
     return await this.rssRejectRepository.find({
       order: {
         id: 'DESC',
