@@ -2,6 +2,7 @@ import Avvvatars from "avvvatars-react";
 
 import { Avatar } from "@/components/ui/avatar";
 
+import { formatDate } from "@/utils/date";
 import { formatTime } from "@/utils/time";
 
 import { ChatType } from "@/types/chat";
@@ -12,6 +13,8 @@ type ChatItemProps = {
 };
 const chatStyle = "p-3 bg-gray-200 text-black break-words whitespace-pre-wrap rounded-md inline-block max-w-[90%]";
 export default function ChatItem({ chatItem, isSameUser }: ChatItemProps) {
+  if (chatItem.username === "system")
+    return <div className="flex justify-center">{formatDate(chatItem.timestamp)}</div>;
   return (
     <div className="flex flex-col ">
       {!isSameUser ? (
