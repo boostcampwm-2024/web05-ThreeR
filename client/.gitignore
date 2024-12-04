@@ -26,3 +26,9 @@ dist-ssr
 
 # vite test coverage
 /coverage
+
+# build output
+vite.config.js
+vite.config.d.ts
+*.tsbuildinfo
+stats.html
