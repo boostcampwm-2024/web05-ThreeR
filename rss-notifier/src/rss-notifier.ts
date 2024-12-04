@@ -3,8 +3,8 @@ import "dotenv/config";
 import {
   selectAllRss,
   insertFeeds,
-  deleteRecentFeedStartId,
   setRecentFeedList,
+  deleteRecentFeed,
 } from "./common/db-access.js";
 import { RssObj, FeedDetail, RawFeed } from "./common/types.js";
 import { XMLParser } from "fast-xml-parser";
@@ -135,9 +135,9 @@ export const performTask = async () => {
     return dateCurrent.getTime() - dateNext.getTime();
   });
 
+  await deleteRecentFeed();
   if (result.length === 0) {
     logger.info("새로운 피드가 없습니다.");
-    await deleteRecentFeedStartId();
     return;
   }
 

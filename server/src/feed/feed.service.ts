@@ -19,6 +19,7 @@ import {
 import { Response } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import { redisKeys } from '../common/redis/redis.constant';
+
 @Injectable()
 export class FeedService {
   constructor(
@@ -27,7 +28,7 @@ export class FeedService {
     private readonly eventService: EventEmitter2,
   ) {}
 
-  async getFeedData(queryFeedDto: QueryFeedDto) {
+  async readFeedList(queryFeedDto: QueryFeedDto) {
     const feedList = await this.feedRepository.findFeed(queryFeedDto);
     const hasMore = this.existNextFeed(feedList, queryFeedDto.limit);
     if (hasMore) feedList.pop();
@@ -46,7 +47,7 @@ export class FeedService {
     return lastFeed.id;
   }
 
-  async getTrendList() {
+  async readTrendFeedList() {
     const trendFeedIdList = await this.redisService.redisClient.lrange(
       redisKeys.FEED_ORIGIN_TREND_KEY,
       0,
@@ -54,7 +55,10 @@ export class FeedService {
     );
     const trendFeeds = await Promise.all(
       trendFeedIdList.map(async (feedId) => {
-        const feed = await this.feedRepository.findTrendFeed(parseInt(feedId));
+        const feed = await this.feedRepository.findOne({
+          where: { id: parseInt(feedId) },
+          relations: ['blog'],
+        });
         if (!feed) {
           return null;
         }
@@ -88,56 +92,37 @@ export class FeedService {
       redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
     }
-    const trendFeeds = await this.getTrendList();
+    const trendFeeds = await this.readTrendFeedList();
     this.eventService.emit('ranking-update', trendFeeds);
   }
 
-  async search(searchFeedReq: SearchFeedReq) {
+  async searchFeedList(searchFeedReq: SearchFeedReq) {
     const { find, page, limit, type } = searchFeedReq;
     const offset = (page - 1) * limit;
+    if (this.validateSearchType(type)) {
+      const [result, totalCount] = await this.feedRepository.searchFeedList(
+        find,
+        limit,
+        type,
+        offset,
+      );
 
-    const qb = this.feedRepository
-      .createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.blog', 'rss_accept')
-      .addSelect(this.getMatchAgainstExpression(type, 'find'), 'relevance')
-      .where(this.getWhereCondition(type))
-      .setParameters({ find })
-      .orderBy('relevance', 'DESC')
-      .addOrderBy('feed.createdAt', 'DESC')
-      .skip(offset)
-      .take(limit);
+      const results = SearchFeedResult.feedsToResults(result);
+      const totalPages = Math.ceil(totalCount / limit);
 
-    const [result, totalCount] = await qb.getManyAndCount();
-    const results = SearchFeedResult.feedsToResults(result);
-    const totalPages = Math.ceil(totalCount / limit);
-
-    return new SearchFeedRes(totalCount, results, totalPages, limit);
+      return new SearchFeedRes(totalCount, results, totalPages, limit);
+    }
+    throw new BadRequestException('검색 타입이 잘못되었습니다.');
   }
 
-  private getMatchAgainstExpression(type: string, parameter: string): string {
-    switch (type) {
-      case 'title':
-        return `MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
-      case 'blogName':
-        return `MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE)`;
-      case 'all':
-        return `(MATCH(feed.title) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE) + MATCH(rss_accept.name) AGAINST (:${parameter} IN NATURAL LANGUAGE MODE))`;
-      default:
-        throw new BadRequestException('검색 타입이 잘못되었습니다.');
-    }
-  }
+  private validateSearchType(type: string) {
+    const searchType = {
+      title: 'title',
+      blogName: 'blogName',
+      all: 'all',
+    };
 
-  private getWhereCondition(type: string): string {
-    switch (type) {
-      case 'title':
-        return 'MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE)';
-      case 'blogName':
-        return 'MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE)';
-      case 'all':
-        return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
-      default:
-        throw new BadRequestException('검색 타입이 잘못되었습니다.');
-    }
+    return searchType.hasOwnProperty(type);
   }
 
   async updateFeedViewCount(feedId: number, ip: string, cookie, response) {
@@ -163,7 +148,7 @@ export class FeedService {
     await Promise.all([
       redis.sadd(`feed:${feedId}:ip`, ip),
       this.feedRepository.update(feedId, {
-        viewCount: feed.viewCount + 1,
+        viewCount: () => 'view_count + 1',
       }),
       redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
     ]);
@@ -195,7 +180,7 @@ export class FeedService {
     }
   }
 
-  async getRecentFeedList() {
+  async readRecentFeedList() {
     const redis = this.redisService.redisClient;
     const recentFeedList = [];
     if ((await redis.get(redisKeys.FEED_RECENT_KEY)) === 'true') {
