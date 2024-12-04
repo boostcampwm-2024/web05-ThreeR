@@ -9,7 +9,7 @@ export interface Post {
   authorImageUrl?: string;
   tags?: string[];
   likes?: number;
-  blogPlatform: string;
+  blogPlatform?: string;
 }
 
 export interface LatestPostsApiResponse {
