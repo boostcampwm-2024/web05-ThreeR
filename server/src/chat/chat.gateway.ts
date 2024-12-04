@@ -17,6 +17,12 @@ const CHAT_HISTORY_LIMIT = 20;
 const CHAT_MIDNIGHT_CLIENT_NAME = 'system';
 const MAX_CLIENTS = 500;
 
+type BroadcastPayload = {
+  username: string;
+  message: string;
+  timestamp: Date;
+};
+
 @Injectable()
 @WebSocketGateway({
   cors: {
@@ -45,12 +51,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
-  private emitMidnightMessage() {
-    const broadcastPayload = {
+  private async emitMidnightMessage() {
+    const broadcastPayload: BroadcastPayload = {
       username: CHAT_MIDNIGHT_CLIENT_NAME,
       message: '',
       timestamp: new Date(),
     };
+
+    await this.saveMessageToRedis(broadcastPayload);
+
     this.server.emit('message', broadcastPayload);
   }
 
@@ -93,23 +102,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const redisKey = CLIENT_KEY_PREFIX + ip;
     const clientName = await this.redisService.redisClient.get(redisKey);
 
-    const broadcastPayload = {
+    const broadcastPayload: BroadcastPayload = {
       username: clientName,
       message: payload.message,
       timestamp: new Date(),
     };
+
+    await this.saveMessageToRedis(broadcastPayload);
+
     this.server.emit('message', broadcastPayload);
-
-    await this.redisService.redisClient.lpush(
-      CHAT_HISTORY_KEY,
-      JSON.stringify(broadcastPayload),
-    );
-
-    await this.redisService.redisClient.ltrim(
-      CHAT_HISTORY_KEY,
-      0,
-      CHAT_HISTORY_LIMIT - 1,
-    );
   }
 
   private getIp(client: Socket) {
@@ -123,7 +124,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private async getOrSetClientNameByIp(ip: string) {
     const redisKey = CLIENT_KEY_PREFIX + ip;
-    let clientName = await this.redisService.redisClient.get(redisKey);
+    let clientName: string = await this.redisService.redisClient.get(redisKey);
 
     if (clientName) {
       return clientName;
@@ -143,5 +144,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const type = 'animals';
 
     return getRandomNickname(type);
+  }
+
+  private async saveMessageToRedis(payload: BroadcastPayload) {
+    await this.redisService.redisClient.lpush(
+      CHAT_HISTORY_KEY,
+      JSON.stringify(payload),
+    );
+
+    await this.redisService.redisClient.ltrim(
+      CHAT_HISTORY_KEY,
+      0,
+      CHAT_HISTORY_LIMIT - 1,
+    );
   }
 }
