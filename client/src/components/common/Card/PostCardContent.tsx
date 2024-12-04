@@ -1,6 +1,8 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CardContent } from "@/components/ui/card";
 
+import { usePlatform } from "@/hooks/queries/usePlatform";
+
 import { formatDate } from "@/utils/date";
 
 import { Post } from "@/types/post";
@@ -11,14 +13,15 @@ interface PostCardContentProps {
 
 export const PostCardContent = ({ post }: PostCardContentProps) => {
   const authorInitial = post.author?.charAt(0)?.toUpperCase() || "?";
-
+  const { data, isLoading, error } = usePlatform(post.blogPlatform);
   return (
     <CardContent className="p-0">
       <div className="relative -mt-6 ml-4 mb-3">
         <Avatar className="h-8 w-8 ring-2 ring-background cursor-pointer">
-          {post.authorImageUrl ? (
-            <img src={post.authorImageUrl} alt={post.author} className="w-full h-full object-cover" />
+          {data ? (
+            <img src={data} alt={post.author} className="w-full h-full object-cover" />
           ) : (
+            // <p>{data}</p>
             <AvatarFallback className="text-xs bg-slate-200">{authorInitial}</AvatarFallback>
           )}
         </Avatar>

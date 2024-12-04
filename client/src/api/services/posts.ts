@@ -15,4 +15,8 @@ export const posts = {
       lastId: response.data.data.lastId,
     };
   },
+  blogPlatform: async (platform: string): Promise<string> => {
+    const response = await axiosInstance.get(`/files/${platform}-icon.svg`);
+    return response.data;
+  },
 };
