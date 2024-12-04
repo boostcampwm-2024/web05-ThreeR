@@ -16,7 +16,7 @@ import {
   SearchFeedRes,
   SearchFeedResult,
 } from './dto/search-feed.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { cookieConfig } from '../common/cookie/cookie.config';
 import { redisKeys } from '../common/redis/redis.constant';
 
@@ -125,33 +125,48 @@ export class FeedService {
     return searchType.hasOwnProperty(type);
   }
 
-  async updateFeedViewCount(feedId: number, ip: string, cookie, response) {
-    const redis = this.redisService.redisClient;
-    const [feed, hasCookie, hasIpFlag] = await Promise.all([
-      this.feedRepository.findOne({ where: { id: feedId } }),
-      Boolean(cookie?.[`View_count_${feedId}`]),
-      redis.sismember(`feed:${feedId}:ip`, ip),
-    ]);
+  async updateFeedViewCount(
+    feedId: number,
+    request: Request,
+    response: Response,
+  ) {
+    const cookie = request.headers.cookie;
+    const ip =
+      request.headers['CF-Connecting-IP'] ||
+      request.headers['x-forwarded-for'] ||
+      request.socket?.remoteAddress ||
+      'unknown';
+    if (ip && this.isString(ip)) {
+      const redis = this.redisService.redisClient;
+      const [feed, hasCookie, hasIpFlag] = await Promise.all([
+        this.feedRepository.findOne({ where: { id: feedId } }),
+        Boolean(cookie?.[`View_count_${feedId}`]),
+        redis.sismember(`feed:${feedId}:ip`, ip),
+      ]);
+      if (!feed) {
+        throw new NotFoundException(`${feedId}번 피드를 찾을 수 없습니다.`);
+      }
 
-    if (!feed) {
-      throw new NotFoundException(`${feedId}번 피드를 찾을 수 없습니다.`);
+      if (!hasCookie) {
+        this.createCookie(response, feedId);
+      }
+
+      if (hasCookie || hasIpFlag) {
+        return null;
+      }
+
+      await Promise.all([
+        redis.sadd(`feed:${feedId}:ip`, ip),
+        this.feedRepository.update(feedId, {
+          viewCount: () => 'view_count + 1',
+        }),
+        redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
+      ]);
     }
+  }
 
-    if (!hasCookie) {
-      this.createCookie(response, feedId);
-    }
-
-    if (hasCookie || hasIpFlag) {
-      return null;
-    }
-
-    await Promise.all([
-      redis.sadd(`feed:${feedId}:ip`, ip),
-      this.feedRepository.update(feedId, {
-        viewCount: () => 'view_count + 1',
-      }),
-      redis.zincrby(redisKeys.FEED_TREND_KEY, 1, feedId.toString()),
-    ]);
+  private isString(ip: string | string[]): ip is string {
+    return !Array.isArray(ip);
   }
 
   private createCookie(response: Response, feedId: number) {
@@ -182,7 +197,7 @@ export class FeedService {
 
   async readRecentFeedList() {
     const redis = this.redisService.redisClient;
-    const recentFeedList = [];
+    const recentFeedList: Feed[] = [];
     if ((await redis.get(redisKeys.FEED_RECENT_KEY)) === 'true') {
       const keys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
       if (keys.length <= 0) {
@@ -193,7 +208,7 @@ export class FeedService {
         pipeLine.hgetall(key);
       }
       const result = await pipeLine.exec();
-      recentFeedList.push(...result.map(([, data]) => data));
+      recentFeedList.push(...result.map(([, data]) => data as Feed));
     }
 
     return recentFeedList.sort((currentFeed, nextFeed) => {
