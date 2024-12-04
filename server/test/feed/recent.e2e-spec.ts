@@ -24,8 +24,13 @@ describe('GET /api/feed/recent E2E Test', () => {
     );
     const feedRepository = app.get(FeedRepository);
     const feedList: Feed[] = [];
+    const baseDate = new Date();
     for (let i = 0; i < 2; i++) {
-      feedList.push(FeedFixture.createFeedFixture(blog, {}, i + 1));
+      const date = new Date(baseDate);
+      date.setHours(date.getHours() + i);
+      feedList.push(
+        FeedFixture.createFeedFixture(blog, { createdAt: date }, i + 1),
+      );
     }
     const redisService = app.get(RedisService);
     const feeds = await feedRepository.save(feedList);
@@ -40,7 +45,7 @@ describe('GET /api/feed/recent E2E Test', () => {
 
     //then
     expect(response.status).toBe(200);
-    expect(response.body.data.map((feed) => feed.id)).toStrictEqual(['1', '2']);
+    expect(response.body.data.map((feed) => feed.id)).toStrictEqual(['2', '1']);
   });
 
   it('피드가 없다면 빈 배열을 반환한다.', async () => {
