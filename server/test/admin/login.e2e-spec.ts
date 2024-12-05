@@ -14,7 +14,7 @@ describe('POST api/admin/login E2E Test', () => {
   beforeAll(async () => {
     app = global.testApp;
     adminService = app.get(AdminService);
-    await adminService.registerAdmin(registerAdminDto);
+    await adminService.createAdmin(registerAdminDto);
   });
   it('등록된 계정이면 정상적으로 로그인할 수 있다.', async () => {
     //given

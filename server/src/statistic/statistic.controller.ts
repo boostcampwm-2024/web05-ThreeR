@@ -2,16 +2,15 @@ import {
   Controller,
   Get,
   Query,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiPlatformStatistic, ApiStatistic } from './statistic.api-docs';
 import { StatisticService } from './statistic.service';
 import { ApiResponse } from '../common/response/common.response';
 import { ApiTags } from '@nestjs/swagger';
-import { CookieAuthGuard } from '../common/guard/auth.guard';
 import { StatisticQueryDto } from './dto/statistic-query.dto';
+import { ApiReadPlatformStatistic } from './api-docs/readPlatformStatistic.api-docs';
+import { ApiStatistic } from './api-docs/statistic.api-docs';
 
 @ApiTags('Statistic')
 @Controller('statistic')
@@ -25,8 +24,8 @@ export class StatisticController {
       transform: true,
     }),
   )
-  async getTodayStatistic(@Query() queryObj: StatisticQueryDto) {
-    const data = await this.statisticService.getTodayViewCount(queryObj.limit);
+  async readTodayStatistic(@Query() queryObj: StatisticQueryDto) {
+    const data = await this.statisticService.readTodayStatistic(queryObj.limit);
     return ApiResponse.responseWithData('금일 조회수 통계 조회 완료', data);
   }
 
@@ -37,15 +36,15 @@ export class StatisticController {
       transform: true,
     }),
   )
-  async getAllStatistic(@Query() queryObj: StatisticQueryDto) {
-    const data = await this.statisticService.getAllViewCount(queryObj.limit);
+  async readAllStatistic(@Query() queryObj: StatisticQueryDto) {
+    const data = await this.statisticService.readAllStatistic(queryObj.limit);
     return ApiResponse.responseWithData('전체 조회수 통계 조회 완료', data);
   }
 
-  @ApiPlatformStatistic()
+  @ApiReadPlatformStatistic()
   @Get('platform')
-  async getPlatformStatistic() {
-    const data = await this.statisticService.getPlatformGroupCount();
+  async readPlatformStatistic() {
+    const data = await this.statisticService.readPlatformStatistic();
     return ApiResponse.responseWithData('블로그 플랫폼 통계 조회 완료', data);
   }
 }

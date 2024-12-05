@@ -92,7 +92,7 @@ export class AdminService {
     response.clearCookie('sessionId');
   }
 
-  async registerAdmin(registerAdminDto: RegisterAdminDto) {
+  async createAdmin(registerAdminDto: RegisterAdminDto) {
     let { loginId, password } = registerAdminDto;
 
     const existingAdmin = await this.adminRepository.findOne({
@@ -106,6 +106,6 @@ export class AdminService {
     const saltRounds = 10;
     password = await bcrypt.hash(password, saltRounds);
 
-    return this.adminRepository.registerAdmin({ loginId, password });
+    await this.adminRepository.createAdmin({ loginId, password });
   }
 }

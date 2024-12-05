@@ -61,4 +61,14 @@ export class FeedRepository extends Repository<Feed> {
         return '(MATCH(feed.title) AGAINST (:find IN NATURAL LANGUAGE MODE) OR MATCH(rss_accept.name) AGAINST (:find IN NATURAL LANGUAGE MODE))';
     }
   }
+
+  async findAllStatisticsOrderByViewCount(limit: number) {
+    return this.find({
+      select: ['id', 'title', 'viewCount'],
+      order: {
+        viewCount: 'DESC',
+      },
+      take: limit,
+    });
+  }
 }

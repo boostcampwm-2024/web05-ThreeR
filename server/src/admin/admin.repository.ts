@@ -9,7 +9,7 @@ export class AdminRepository extends Repository<Admin> {
     super(Admin, dataSource.createEntityManager());
   }
 
-  async registerAdmin(registerAdminDto: RegisterAdminDto) {
+  async createAdmin(registerAdminDto: RegisterAdminDto) {
     const { loginId, password } = registerAdminDto;
     const admin = this.create({
       loginId,

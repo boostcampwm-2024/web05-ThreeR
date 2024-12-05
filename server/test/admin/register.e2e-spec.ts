@@ -22,7 +22,7 @@ describe('POST api/admin/register E2E Test', () => {
     app = global.testApp;
     adminService = app.get(AdminService);
 
-    await adminService.registerAdmin(loginAdminDto);
+    await adminService.createAdmin(loginAdminDto);
   });
 
   it('관리자가 로그인되어 있으면 다른 관리자 계정 회원가입을 할 수 있다.', async () => {
