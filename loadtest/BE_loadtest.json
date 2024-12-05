@@ -1,0 +1,22 @@
+{
+  "config": {
+    "target": "http://192.168.1.77:3000",
+    "phases": [
+      {
+        "duration": 60,
+        "arrivalRate": 170
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "flow": [
+        {
+          "get": {
+            "url": "/api/feed"
+          }
+        }
+      ]
+    }
+  ]
+}

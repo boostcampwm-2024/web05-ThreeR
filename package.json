@@ -9,7 +9,11 @@
   },
   "scripts": {
     "prepare": "lefthook install",
-    "commit": "cz"
+    "commit": "cz",
+    "stress-fe": "artillery run -o loadtest/FE_Report loadtest/FE_loadtest.json",
+    "stress-be": "artillery run -o loadtest/BE_Report loadtest/BE_loadtest.json",
+    "stress-fe-html": "artillery report loadtest/FE_Report",
+    "stress-be-html": "artillery report loadtest/BE_Report"
   },
   "config": {
     "commitizen": {

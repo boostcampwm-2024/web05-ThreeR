@@ -16,6 +16,11 @@ psd
 thumb
 sketch
 
+loadtest/BE_Report
+loadtest/FE_Report
+loadtest/BE_Report.html
+loadtest/FE_Report.html
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
