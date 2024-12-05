@@ -1,4 +1,4 @@
-import Chart from "@/components/chart/Chart";
+import ChartTab from "@/components/chart/ChartTab.tsx";
 import Layout from "@/components/layout/Layout";
 import MainContent from "@/components/sections/MainContent";
 
@@ -9,7 +9,8 @@ export default function Home() {
 
   const renderFunction = () => {
     if (tap === "main") return <MainContent />;
-    return <Chart />;
+    return <ChartTab />;
   };
+
   return <Layout>{renderFunction()}</Layout>;
 }

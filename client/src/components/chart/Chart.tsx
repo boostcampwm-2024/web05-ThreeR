@@ -1,8 +1,11 @@
-import BarChartItem from "@/components/chart/BarChartItem";
+import { lazy, Suspense } from "react";
+
 import ChartSkeleton from "@/components/chart/ChartSkeleton";
-import PieChartItem from "@/components/chart/PieChartItem";
 
 import { useChart } from "@/hooks/queries/useChart";
+
+const BarChartItem = lazy(() => import("@/components/chart/BarChartItem"));
+const PieChartItem = lazy(() => import("@/components/chart/PieChartItem"));
 
 export default function Chart() {
   const { data, isLoading, error } = useChart();
@@ -13,11 +16,17 @@ export default function Chart() {
   return (
     <div className="p-8">
       <div className="flex">
-        <BarChartItem title="전체 조회수" description="전체 조회수 TOP5" data={chartAll.data} color={true} />
-        <BarChartItem title="오늘의 조회수" description="금일 조회수 TOP5" data={chartToday.data} color={false} />
+        <Suspense fallback={<ChartSkeleton />}>
+          <BarChartItem title="전체 조회수" description="전체 조회수 TOP5" data={chartAll.data} color={true} />
+        </Suspense>
+        <Suspense fallback={<ChartSkeleton />}>
+          <BarChartItem title="오늘의 조회수" description="금일 조회수 TOP5" data={chartToday.data} color={false} />
+        </Suspense>
       </div>
       <div>
-        <PieChartItem data={chartPlatform.data} title="플랫폼별 블로그 수" />
+        <Suspense fallback={<ChartSkeleton />}>
+          <PieChartItem data={chartPlatform.data} title="플랫폼별 블로그 수" />
+        </Suspense>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
@@ -33,10 +34,8 @@ export default function Header() {
       toast(TOAST_MESSAGES.SERVICE_NOT_PREPARED);
       return;
     }
-
     setModals((prev) => ({ ...prev, [modalType]: !prev[modalType] }));
   };
-
   useKeyboardShortcut("k", () => toggleModal("search"), true);
 
   return (
@@ -69,6 +68,8 @@ export default function Header() {
 }
 
 function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" | "rss" | "login") => void }) {
+  const navigate = useNavigate();
+
   return (
     <div className="hidden md:flex md:items-center">
       <NavigationMenu>
@@ -79,7 +80,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
           <NavigationMenuItem>
             <NavigationMenuLink
               className={`${navigationMenuTriggerStyle()} hover:text-primary hover:bg-primary/10`}
-              onClick={() => toggleModal("login")}
+              onClick={() => navigate("/about")}
               href="#"
             >
               서비스 소개
