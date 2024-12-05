@@ -1,6 +1,6 @@
 {
   "config": {
-    "target": "http://192.168.1.77:3000",
+    "target": "http://localhost:3000",
     "phases": [
       {
         "duration": 60,
