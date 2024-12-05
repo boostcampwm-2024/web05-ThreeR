@@ -9,7 +9,7 @@ export default function SearchResultItem({ title, blogName, path }: SearchResult
   return (
     <CommandItem className="flex flex-col items-start">
       <a href={path} className="hover:underline">
-        <p className=" text-sm text-">
+        <p className=" text-sm text-500">
           <SearchHighlight text={title} highlight={searchParam} />
         </p>
       </a>

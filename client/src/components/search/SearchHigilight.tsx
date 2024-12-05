@@ -3,8 +3,13 @@ interface SearchHighlightProps {
   highlight: string;
 }
 
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export default function SearchHighlight({ text, highlight }: SearchHighlightProps) {
-  const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+  const escapedHighlight = escapeRegExp(highlight);
+  const parts = text.split(new RegExp(`(${escapedHighlight})`, "gi"));
 
   return (
     <>
