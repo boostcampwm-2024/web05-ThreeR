@@ -106,6 +106,6 @@ export class AdminService {
     const saltRounds = 10;
     password = await bcrypt.hash(password, saltRounds);
 
-    return this.adminRepository.createAdmin({ loginId, password });
+    await this.adminRepository.createAdmin({ loginId, password });
   }
 }

@@ -18,7 +18,7 @@ describe('GET api/admin/sessionId E2E Test', () => {
     app = global.testApp;
     adminService = app.get(AdminService);
 
-    await adminService.registerAdmin(loginAdminDto);
+    await adminService.createAdmin(loginAdminDto);
   });
 
   it('쿠키의 session id가 유효하다면 관리자를 로그인 상태로 취급한다.', async () => {
