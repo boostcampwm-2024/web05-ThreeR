@@ -8,7 +8,10 @@
 
 <div align = 'center'>
 
-[프로젝트 위키](https://github.com/boostcampwm-2024/web05-Denamu/wiki) | [팀 노션](https://balsam-barometer-716.notion.site/9-Web05-12de624056ec805aa368dcf042f4bea7?pvs=74) | [피그마](https://www.figma.com/design/RcFu9MLQigDPZRrDW19Uic/Denamu---Design?node-id=36-5&node-type=frame&t=IzLL9ahn668ZHBRA-0) | [그라운드 룰](https://github.com/boostcampwm-2024/web05-Denamu/wiki/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0) | [컨벤션](https://github.com/boostcampwm-2024/web05-Denamu/wiki/%EC%BB%A8%EB%B2%A4%EC%85%98) | [프로젝트](https://github.com/orgs/boostcampwm-2024/projects/32)
+| [📑 팀 노션](https://balsam-barometer-716.notion.site/9-Web05-12de624056ec805aa368dcf042f4bea7?pvs=74) | [🎨 디자인 프로토타입](https://www.figma.com/design/RcFu9MLQigDPZRrDW19Uic/Denamu---Design?node-id=36-5&node-type=frame&t=IzLL9ahn668ZHBRA-0) |
+|----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| [📋 **프로젝트 위키**](https://github.com/boostcampwm-2024/web05-Denamu/wiki) |                               [🚀 **프로젝트 태스크보드**](https://github.com/orgs/boostcampwm-2024/projects/32)                               |
+
 
 </div>
 
