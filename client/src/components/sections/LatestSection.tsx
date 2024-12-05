@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { Rss } from "lucide-react";
 
 import { PostCardGrid } from "@/components/common/Card/PostCardGrid";
-import { LoadingIndicator } from "@/components/common/LoadingIndicator";
+import { PostGridSkeleton } from "@/components/common/Card/PostCardSkeleton.tsx";
 import { SectionHeader } from "@/components/common/SectionHeader";
 
 import { useInfiniteScrollQuery } from "@/hooks/queries/useInfiniteScrollQuery";
@@ -25,7 +25,7 @@ export default function LatestSection() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.3, rootMargin: "100px" }
     );
 
     if (observerTarget.current) {
@@ -35,16 +35,23 @@ export default function LatestSection() {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (isLoading) return <LoadingIndicator />;
-
   return (
     <section className="flex flex-col p-4 min-h-[300px]">
       <SectionHeader icon={Rss} text="최신 포스트" description="최근에 작성된 포스트" iconColor="text-orange-500" />
       <div className="flex-1 mt-4 p-4 rounded-lg">
-        <PostCardGrid posts={items} />
-        <div ref={observerTarget} className="h-10 flex items-center justify-center mt-4">
-          {isFetchingNextPage && <LoadingIndicator />}
-        </div>
+        {isLoading ? (
+          <PostGridSkeleton count={8} />
+        ) : (
+          <>
+            <PostCardGrid posts={items} />
+            {isFetchingNextPage && (
+              <div className="mt-8">
+                <PostGridSkeleton count={4} />
+              </div>
+            )}
+            <div ref={observerTarget} className="h-10" />
+          </>
+        )}
       </div>
     </section>
   );
