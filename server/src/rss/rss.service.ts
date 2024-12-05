@@ -37,12 +37,12 @@ export class RssService {
       }),
     ]);
 
-    if (alreadyURLRss) {
-      throw new ConflictException('이미 신청된 RSS URL입니다.');
-    }
-
-    if (alreadyURLBlog) {
-      throw new ConflictException('이미 등록된 RSS URL입니다.');
+    if (alreadyURLRss || alreadyURLBlog) {
+      throw new ConflictException(
+        alreadyURLRss
+          ? '이미 신청된 RSS URL입니다.'
+          : '이미 등록된 RSS URL입니다.',
+      );
     }
 
     await this.rssRepository.insertNewRss(rssRegisterDto);

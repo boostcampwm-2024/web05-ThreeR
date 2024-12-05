@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Admin = lazy(() => import("@/pages/Admin"));
+const AboutService = lazy(() => import("@/pages/AboutService"));
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,14 @@ export default function App() {
           element={
             <Suspense fallback={<LoadingPage />}>
               <Admin />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <Suspense fallback={<LoadingPage />}>
+              <AboutService />
             </Suspense>
           }
         />

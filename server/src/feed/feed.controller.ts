@@ -17,7 +17,7 @@ import {
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { SearchFeedReq } from './dto/search-feed.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { Observable } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ApiReadFeedList } from './api-docs/readFeedList.api-docs';
@@ -25,6 +25,7 @@ import { ApiReadTrendFeedList } from './api-docs/readTrendFeedList.api-docs';
 import { ApiSearchFeedList } from './api-docs/searchFeedList.api-docs';
 import { ApiUpdateFeedViewCount } from './api-docs/updateFeedViewCount.api-docs';
 import { ApiReadRecentFeedList } from './api-docs/readRecentFeedList.api-docs';
+import { Feed } from './feed.entity';
 
 @ApiTags('Feed')
 @Controller('feed')
@@ -61,7 +62,7 @@ export class FeedController {
           },
         });
       });
-      this.eventService.on('ranking-update', (trendData) => {
+      this.eventService.on('ranking-update', (trendData: Feed[]) => {
         observer.next({
           data: {
             message: '새로운 트렌드 피드 수신 완료',
@@ -92,16 +93,10 @@ export class FeedController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateFeedViewCount(
     @Param('feedId') feedId: number,
-    @Req() request,
+    @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const cookie = request.headers.cookie;
-    const ip =
-      request.headers['CF-Connecting-IP'] ||
-      request.headers['x-forwarded-for'] ||
-      request.socket?.remoteAddress ||
-      'unknown';
-    await this.feedService.updateFeedViewCount(feedId, ip, cookie, response);
+    await this.feedService.updateFeedViewCount(feedId, request, response);
     return ApiResponse.responseWithNoContent(
       '요청이 성공적으로 처리되었습니다.',
     );

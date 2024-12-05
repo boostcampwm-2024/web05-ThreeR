@@ -30,7 +30,7 @@ export default function SearchPages({ totalPages }: { totalPages: number }) {
   };
 
   return (
-    <Pagination className="flex gap-4">
+    <Pagination className="flex gap-4 absolute bottom-0">
       <PaginationPrevious onClick={() => handlePage("prev")} className="border-none min-w-[100px]" />
 
       <PaginationContent>
