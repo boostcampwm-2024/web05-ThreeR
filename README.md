@@ -8,7 +8,7 @@
 
 <div align = 'center'>
 
-[프로젝트 위키](https://github.com/boostcampwm-2024/web05-Denamu/wiki) | [팀 노션](https://balsam-barometer-716.notion.site/9-Web05-12de624056ec805aa368dcf042f4bea7?pvs=74) | [피그마](https://www.figma.com/design/RcFu9MLQigDPZRrDW19Uic/Denamu---Design?node-id=36-5&node-type=frame&t=IzLL9ahn668ZHBRA-0) | [그라운드 룰](https://github.com/boostcampwm-2024/web05-ThreeR/wiki/2.-%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0) | [컨벤션](https://github.com/boostcampwm-2024/web05-ThreeR/wiki/3.-%EC%BB%A8%EB%B2%A4%EC%85%98) | [프로젝트](https://github.com/orgs/boostcampwm-2024/projects/32)
+[프로젝트 위키](https://github.com/boostcampwm-2024/web05-Denamu/wiki) | [팀 노션](https://balsam-barometer-716.notion.site/9-Web05-12de624056ec805aa368dcf042f4bea7?pvs=74) | [피그마](https://www.figma.com/design/RcFu9MLQigDPZRrDW19Uic/Denamu---Design?node-id=36-5&node-type=frame&t=IzLL9ahn668ZHBRA-0) | [그라운드 룰](https://github.com/boostcampwm-2024/web05-Denamu/wiki/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%93%9C-%EB%A3%B0) | [컨벤션](https://github.com/boostcampwm-2024/web05-Denamu/wiki/%EC%BB%A8%EB%B2%A4%EC%85%98) | [프로젝트](https://github.com/orgs/boostcampwm-2024/projects/32)
 
 </div>
 
@@ -59,7 +59,8 @@ RSS 링크만으로 간편하게 블로그를 등록할 수 있어요. 등록된
 실시간 채팅을 통해 현재 데나무를 보고있는 개발자들과 실시간으로 자유롭게 소통할 수 있어요. 관심 있는 기술에 대해 바로 피드백을 주고받으며 함께 성장할 수 있어요.
 
 ## 🛠 기술 스택
-<img src="https://github.com/user-attachments/assets/893ca1d8-b8a3-411e-bb92-09b8b3a9a23e" alt="tech stack v3" >
+
+<img src="https://github.com/user-attachments/assets/a6434f11-8b71-4a7b-93fd-fcd7e0229fa0" alt="tech stack v3" >
 
 ## 🏗️ 인프라 아키텍처
 ![image](https://github.com/user-attachments/assets/6523b71d-2bee-4f24-b8ec-436b747c6cc7)
