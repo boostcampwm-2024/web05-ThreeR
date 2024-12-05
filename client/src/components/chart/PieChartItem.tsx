@@ -22,8 +22,8 @@ const chartConfig: ChartConfig = {
     label: "Velog",
     color: "hsl(150, 60%, 70%)",
   },
-  etc: {
-    label: "etc",
+  medium: {
+    label: "Medium",
     color: "hsl(30, 60%, 70%)",
   },
 } satisfies ChartConfig;

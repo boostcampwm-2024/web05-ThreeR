@@ -23,7 +23,7 @@ export class RssService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async registerRss(rssRegisterDto: RssRegisterDto) {
+  async createRss(rssRegisterDto: RssRegisterDto) {
     const [alreadyURLRss, alreadyURLBlog] = await Promise.all([
       this.rssRepository.findOne({
         where: {
@@ -37,18 +37,18 @@ export class RssService {
       }),
     ]);
 
-    if (alreadyURLRss) {
-      throw new ConflictException('이미 신청된 RSS URL입니다.');
-    }
-
-    if (alreadyURLBlog) {
-      throw new ConflictException('이미 등록된 RSS URL입니다.');
+    if (alreadyURLRss || alreadyURLBlog) {
+      throw new ConflictException(
+        alreadyURLRss
+          ? '이미 신청된 RSS URL입니다.'
+          : '이미 등록된 RSS URL입니다.',
+      );
     }
 
     await this.rssRepository.insertNewRss(rssRegisterDto);
   }
 
-  async getAllRss() {
+  async readAllRss() {
     return await this.rssRepository.find();
   }
 
@@ -94,7 +94,7 @@ export class RssService {
     this.emailService.sendMail(result, false, description);
   }
 
-  async acceptRssHistory() {
+  async readAcceptHistory() {
     return await this.rssAcceptRepository.find({
       order: {
         id: 'DESC',
@@ -102,7 +102,7 @@ export class RssService {
     });
   }
 
-  async rejectRssHistory() {
+  async readRejectHistory() {
     return await this.rssRejectRepository.find({
       order: {
         id: 'DESC',
@@ -114,10 +114,10 @@ export class RssService {
     type Platform = 'medium' | 'tistory' | 'velog' | 'github' | 'etc';
 
     const platformRegexp: { [key in Platform]: RegExp } = {
-      medium: /^https:\/\/medium\.com\/feed\/@[\w\-]+$/,
-      tistory: /^https:\/\/[a-zA-Z0-9\-]+\.tistory\.com\/rss$/,
-      velog: /^https:\/\/v2\.velog\.io\/rss\/@[\w\-]+$/,
-      github: /^https:\/\/[\w\-]+\.github\.io\/feed\.xml$/,
+      medium: /^https:\/\/medium\.com/,
+      tistory: /^https:\/\/[a-zA-Z0-9\-]+\.tistory\.com/,
+      velog: /^https:\/\/v2\.velog\.io/,
+      github: /^https:\/\/[\w\-]+\.github\.io/,
       etc: /.*/,
     };
 

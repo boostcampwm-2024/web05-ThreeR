@@ -9,11 +9,19 @@ import { Server, Socket } from 'socket.io';
 import { RedisService } from '../common/redis/redis.service';
 import { Injectable } from '@nestjs/common';
 import { getRandomNickname } from '@woowa-babble/random-nickname';
+import * as cron from 'node-cron';
 
 const CLIENT_KEY_PREFIX = 'socket_client:';
 const CHAT_HISTORY_KEY = 'chat:history';
 const CHAT_HISTORY_LIMIT = 20;
+const CHAT_MIDNIGHT_CLIENT_NAME = 'system';
 const MAX_CLIENTS = 500;
+
+type BroadcastPayload = {
+  username: string;
+  message: string;
+  timestamp: Date;
+};
 
 @Injectable()
 @WebSocketGateway({
@@ -25,7 +33,35 @@ const MAX_CLIENTS = 500;
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
+  private cronTask: cron.ScheduledTask;
+
   constructor(private readonly redisService: RedisService) {}
+
+  onModuleInit() {
+    this.startMidnightCron();
+  }
+
+  onModuleDestroy() {
+    this.cronTask.stop();
+  }
+
+  private startMidnightCron() {
+    this.cronTask = cron.schedule('0 0 * * *', () => {
+      this.emitMidnightMessage();
+    });
+  }
+
+  private async emitMidnightMessage() {
+    const broadcastPayload: BroadcastPayload = {
+      username: CHAT_MIDNIGHT_CLIENT_NAME,
+      message: '',
+      timestamp: new Date(),
+    };
+
+    await this.saveMessageToRedis(broadcastPayload);
+
+    this.server.emit('message', broadcastPayload);
+  }
 
   async handleConnection(client: Socket) {
     const userCount = this.server.engine.clientsCount;
@@ -66,23 +102,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const redisKey = CLIENT_KEY_PREFIX + ip;
     const clientName = await this.redisService.redisClient.get(redisKey);
 
-    const broadcastPayload = {
+    const broadcastPayload: BroadcastPayload = {
       username: clientName,
       message: payload.message,
       timestamp: new Date(),
     };
+
+    await this.saveMessageToRedis(broadcastPayload);
+
     this.server.emit('message', broadcastPayload);
-
-    await this.redisService.redisClient.lpush(
-      CHAT_HISTORY_KEY,
-      JSON.stringify(broadcastPayload),
-    );
-
-    await this.redisService.redisClient.ltrim(
-      CHAT_HISTORY_KEY,
-      0,
-      CHAT_HISTORY_LIMIT - 1,
-    );
   }
 
   private getIp(client: Socket) {
@@ -96,7 +124,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private async getOrSetClientNameByIp(ip: string) {
     const redisKey = CLIENT_KEY_PREFIX + ip;
-    let clientName = await this.redisService.redisClient.get(redisKey);
+    let clientName: string = await this.redisService.redisClient.get(redisKey);
 
     if (clientName) {
       return clientName;
@@ -116,5 +144,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const type = 'animals';
 
     return getRandomNickname(type);
+  }
+
+  private async saveMessageToRedis(payload: BroadcastPayload) {
+    await this.redisService.redisClient.lpush(
+      CHAT_HISTORY_KEY,
+      JSON.stringify(payload),
+    );
+
+    await this.redisService.redisClient.ltrim(
+      CHAT_HISTORY_KEY,
+      0,
+      CHAT_HISTORY_LIMIT - 1,
+    );
   }
 }

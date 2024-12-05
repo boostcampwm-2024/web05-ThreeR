@@ -45,6 +45,7 @@ export class AdminController {
 
   @ApiLogoutAdmin()
   @UseGuards(CookieAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @Post('/logout')
   async logoutAdmin(
     @Req() request: Request,

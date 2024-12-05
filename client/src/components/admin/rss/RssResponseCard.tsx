@@ -14,7 +14,7 @@ export const RssResponseCard = ({ request }: RssResponseCardProps) => {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">{request.name}</h3>
             <p className="text-sm text-muted-foreground">{request.rssUrl}</p>
-            <p className="text-sm text-muted-foreground">거부 사유:{request.description}</p>
+            {request.description && <p className="text-sm text-muted-foreground">거부 사유:{request.description}</p>}
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground">신청자: {request.userName}</span>
             </div>

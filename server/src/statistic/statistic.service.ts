@@ -25,7 +25,10 @@ export class StatisticService {
       const feedId = parseInt(ranking[i]);
       const score = parseFloat(ranking[i + 1]);
 
-      const feedData = await this.feedRepository.findTrendFeed(feedId);
+      const feedData = await this.feedRepository.findOne({
+        where: { id: feedId },
+        relations: ['blog'],
+      });
 
       result.push({
         id: feedData.id,

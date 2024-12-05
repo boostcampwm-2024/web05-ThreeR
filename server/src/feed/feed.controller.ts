@@ -17,16 +17,15 @@ import {
 import { FeedService } from './feed.service';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { SearchFeedReq } from './dto/search-feed.dto';
-import {
-  ApiGetFeedList,
-  ApiSearchFeed,
-  ApiUpdateFeedViewCount,
-  ApiGetTrendSse,
-  ApiGetRecentFeedList,
-} from './feed.api-docs';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { Observable } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ApiReadFeedList } from './api-docs/readFeedList.api-docs';
+import { ApiReadTrendFeedList } from './api-docs/readTrendFeedList.api-docs';
+import { ApiSearchFeedList } from './api-docs/searchFeedList.api-docs';
+import { ApiUpdateFeedViewCount } from './api-docs/updateFeedViewCount.api-docs';
+import { ApiReadRecentFeedList } from './api-docs/readRecentFeedList.api-docs';
+import { Feed } from './feed.entity';
 
 @ApiTags('Feed')
 @Controller('feed')
@@ -36,7 +35,7 @@ export class FeedController {
     private readonly eventService: EventEmitter2,
   ) {}
 
-  @ApiGetFeedList()
+  @ApiReadFeedList()
   @Get('')
   @HttpCode(HttpStatus.OK)
   @UsePipes(
@@ -44,18 +43,18 @@ export class FeedController {
       transform: true,
     }),
   )
-  async getFeedList(@Query() queryFeedDto: QueryFeedDto) {
+  async readFeedList(@Query() queryFeedDto: QueryFeedDto) {
     return ApiResponse.responseWithData(
       '피드 조회 완료',
-      await this.feedService.getFeedData(queryFeedDto),
+      await this.feedService.readFeedList(queryFeedDto),
     );
   }
 
-  @ApiGetTrendSse()
+  @ApiReadTrendFeedList()
   @Sse('trend/sse')
-  async sseTrendList() {
+  async readTrendFeedList() {
     return new Observable((observer) => {
-      this.feedService.getTrendList().then((trendData) => {
+      this.feedService.readTrendFeedList().then((trendData) => {
         observer.next({
           data: {
             message: '현재 트렌드 피드 수신 완료',
@@ -63,7 +62,7 @@ export class FeedController {
           },
         });
       });
-      this.eventService.on('ranking-update', (trendData) => {
+      this.eventService.on('ranking-update', (trendData: Feed[]) => {
         observer.next({
           data: {
             message: '새로운 트렌드 피드 수신 완료',
@@ -74,7 +73,7 @@ export class FeedController {
     });
   }
 
-  @ApiSearchFeed()
+  @ApiSearchFeedList()
   @Get('search')
   @HttpCode(HttpStatus.OK)
   @UsePipes(
@@ -83,8 +82,8 @@ export class FeedController {
     }),
     new ValidationPipe(),
   )
-  async searchFeed(@Query() searchFeedReq: SearchFeedReq) {
-    const data = await this.feedService.search(searchFeedReq);
+  async searchFeedList(@Query() searchFeedReq: SearchFeedReq) {
+    const data = await this.feedService.searchFeedList(searchFeedReq);
     return ApiResponse.responseWithData('검색 결과 조회 완료', data);
   }
 
@@ -94,28 +93,22 @@ export class FeedController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateFeedViewCount(
     @Param('feedId') feedId: number,
-    @Req() request,
+    @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const cookie = request.headers.cookie;
-    const ip =
-      request.headers['CF-Connecting-IP'] ||
-      request.headers['x-forwarded-for'] ||
-      request.socket?.remoteAddress ||
-      'unknown';
-    await this.feedService.updateFeedViewCount(feedId, ip, cookie, response);
+    await this.feedService.updateFeedViewCount(feedId, request, response);
     return ApiResponse.responseWithNoContent(
       '요청이 성공적으로 처리되었습니다.',
     );
   }
 
-  @ApiGetRecentFeedList()
+  @ApiReadRecentFeedList()
   @Get('/recent')
   @HttpCode(HttpStatus.OK)
-  async getRecentFeedList() {
+  async readRecentFeedList() {
     return ApiResponse.responseWithData(
       '최신 피드 업데이트 완료',
-      await this.feedService.getRecentFeedList(),
+      await this.feedService.readRecentFeedList(),
     );
   }
 }

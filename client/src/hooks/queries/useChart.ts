@@ -28,6 +28,7 @@ export const useChart = () => {
         chartPlatform,
       };
     },
+    refetchInterval: 1000 * 6 * 10,
     retry: 1,
   });
 

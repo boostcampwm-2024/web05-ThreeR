@@ -1,8 +1,9 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { IsInt, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class QueryFeedDto {
   @IsOptional()
+  @Min(0, { message: 'lastId 값은 0 이상이어야 합니다.' })
   @IsInt({
     message: '정수를 입력해주세요.',
   })
@@ -10,6 +11,7 @@ export class QueryFeedDto {
   lastId?: number;
 
   @IsOptional()
+  @Min(1, { message: 'limit 값은 1 이상이어야 합니다.' })
   @IsInt({
     message: '정수를 입력해주세요.',
   })

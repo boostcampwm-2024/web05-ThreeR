@@ -8,7 +8,7 @@ import SearchPages from "../searchPages/SearchPages";
 import SearchResultItem from "./SearchResultItem";
 import { useSearchStore } from "@/store/useSearchStore";
 
-const RESULT_PER_PAGE = 4;
+const RESULT_PER_PAGE = 5;
 const COMMANDCLASS = "flex h-[28rem] justify-center items-center";
 export default function SearchResults() {
   const { searchParam, currentFilter, page } = useSearchStore();
@@ -36,8 +36,8 @@ export default function SearchResults() {
     error: <div className={COMMANDCLASS}>에러발생</div>,
     // 정상적인 상황
     default: (
-      <CommandGroup heading={`검색결과 (총 ${totalItems}건)`}>
-        <CommandList className="h-[28rem]">
+      <CommandGroup heading={`검색결과 (총 ${totalItems}건)`} className="h-[28rem] relative">
+        <CommandList className="">
           {results.map((result, index) => (
             <SearchResultItem key={index} {...result} />
           ))}

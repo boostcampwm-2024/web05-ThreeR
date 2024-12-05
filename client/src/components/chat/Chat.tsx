@@ -24,7 +24,7 @@ export function Chat() {
 
   return (
     <Sidebar side="right" variant="floating">
-      <SidebarContent className="flex flex-col h-full w-full">
+      <SidebarContent>
         <ChatHeader />
         <ChatSection isFull={isFull} />
         <ChatFooter />
