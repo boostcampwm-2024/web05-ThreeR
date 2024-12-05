@@ -19,7 +19,7 @@ import { ApiResponse } from '../common/response/common.response';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { CookieAuthGuard } from '../common/guard/auth.guard';
 import { ApiLoginAdmin } from './api-docs/loginAdmin.api-docs';
-import { ApigetSessionIdAdmin } from './api-docs/getSessionIdAdmin.api-docs';
+import { ApiReadSessionIdAdmin } from './api-docs/readSessionIdAdmin.api-docs';
 import { ApiLogoutAdmin } from './api-docs/logoutAdmin.api-docs';
 import { ApiCreateAdmin } from './api-docs/createAdmin.api-docs';
 
@@ -68,12 +68,12 @@ export class AdminController {
     );
   }
 
-  @ApigetSessionIdAdmin()
+  @ApiReadSessionIdAdmin()
   @Get('/sessionId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(CookieAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
-  async getSessionIdAdmin() {
+  async readSessionIdAdmin() {
     return ApiResponse.responseWithNoContent('정상적인 sessionId 입니다.');
   }
 }
