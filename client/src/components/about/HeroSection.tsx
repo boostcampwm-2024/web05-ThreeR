@@ -3,8 +3,6 @@ import { ChevronsDown } from "lucide-react";
 import { Section } from "@/components/about/Section.tsx";
 import { Button } from "@/components/ui/button";
 
-import logo from "@/assets/logo-denamu-main.svg";
-
 export const HeroSection = () => {
   const scrollToBottom = () => {
     const ctaSection = document.querySelector("#cta-section");
@@ -18,7 +16,11 @@ export const HeroSection = () => {
       <div className="flex-shrink-0 min-h-[400px] md:min-h-[45vh] flex items-center justify-center p-8">
         <div className="text-center max-w-4xl">
           <div className="flex items-center justify-center space-x-2 mb-6">
-            <img src={logo} className="w-32 md:w-52" />
+            <img
+              src="https://api.denamu.site/files/Denamu_Logo_ENG.svg"
+              alt="Denamu English Logo"
+              className="w-32 md:w-52"
+            />
           </div>
           <h1 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#27ae60] via-[#2596be] to-[#228be6]">
             개발자를 위한 최고의 블로그 허브
@@ -34,7 +36,7 @@ export const HeroSection = () => {
 
       <div className="flex-grow flex items-start justify-center p-4 md:p-8">
         <img
-          src="https://github.com/user-attachments/assets/e91e80c0-1c1b-40d0-ae6c-0f0151e03796"
+          src="https://api.denamu.site/files/about-first.png"
           alt="Service Preview"
           className="max-w-[90%] md:max-w-[80%] h-auto object-contain"
         />
