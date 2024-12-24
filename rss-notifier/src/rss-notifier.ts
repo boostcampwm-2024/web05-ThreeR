@@ -25,10 +25,25 @@ const getImageUrl = async (link: string): Promise<string> => {
   const htmlData = await response.text();
   const root = parse(htmlData);
   const metaImage = root.querySelector('meta[property="og:image"]');
-  const imageUrl = metaImage?.getAttribute("content") ?? "";
-  if (imageUrl.length === 0) logger.warn(`${link}에서 사진 추출 실패`);
-
+  let imageUrl = metaImage?.getAttribute("content") ?? "";
+  if (!imageUrl.length) {
+    logger.warn(`${link}에서 사진 추출 실패`);
+    return imageUrl;
+  }
+  if (!isUrlPath(imageUrl)) {
+    imageUrl = getHttpOriginPath(link) + imageUrl;
+  }
   return imageUrl;
+};
+
+const isUrlPath = (imageUrl: string) => {
+  const reg = /^(http|https):\/\//;
+  return reg.test(imageUrl);
+};
+
+const getHttpOriginPath = (imageUrl: string) => {
+  const url = new URL(imageUrl);
+  return url.origin;
 };
 
 const fetchRss = async (rssUrl: string): Promise<RawFeed[]> => {
