@@ -8,7 +8,7 @@ import * as dotenv from "dotenv";
 import { PoolConnection } from "mysql2/promise";
 
 dotenv.config({
-  path: process.env.NODE_ENV === "production" ? "rss-notifier/.env" : ".env",
+  path: process.env.NODE_ENV === "production" ? "feed-crawler/.env" : ".env",
 });
 
 export const pool = mysql.createPool({

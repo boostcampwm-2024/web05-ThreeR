@@ -48,7 +48,7 @@ jobs:
             npm run build
 
             cd ..
-            cd rss-notifier/
+            cd feed-crawler/
 
             echo "PORT=${{ secrets.RSS_NOTIFIER_PORT }}" > .env
             echo "DB_HOST=${{ secrets.RSS_NOTIFIER_DB_HOST }}" >> .env
