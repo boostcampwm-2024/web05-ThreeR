@@ -86,14 +86,15 @@ export class FeedService {
       ),
       this.redisService.redisClient.zrevrange(redisKeys.FEED_TREND_KEY, 0, 3),
     ]);
+
     if (!_.isEqual(originTrend, nowTrend)) {
       const redisPipeline = this.redisService.redisClient.pipeline();
       redisPipeline.del(redisKeys.FEED_ORIGIN_TREND_KEY);
       redisPipeline.rpush(redisKeys.FEED_ORIGIN_TREND_KEY, ...nowTrend);
       await redisPipeline.exec();
+      const trendFeeds = await this.readTrendFeedList();
+      this.eventService.emit('ranking-update', trendFeeds);
     }
-    const trendFeeds = await this.readTrendFeedList();
-    this.eventService.emit('ranking-update', trendFeeds);
   }
 
   async searchFeedList(searchFeedReq: SearchFeedReq) {
