@@ -1,4 +1,4 @@
-export const PLATFORM_TYPES = ["tistory", "velog", "medium"] as const;
+export const PLATFORM_TYPES = ["tistory", "velog", "medium", "personal_blog"] as const;
 export type PlatformType = (typeof PLATFORM_TYPES)[number];
 
 interface Platform {
@@ -13,7 +13,7 @@ export const PLATFORMS: Record<PlatformType, Platform> = {
     name: "Tistory",
     prefix: "https://",
     suffix: ".tistory.com/rss",
-    placeholder: "블로그명",
+    placeholder: "서브도메인",
   },
   velog: {
     name: "Velog",
@@ -26,5 +26,11 @@ export const PLATFORMS: Record<PlatformType, Platform> = {
     prefix: "https://medium.com/feed/@",
     suffix: "",
     placeholder: "사용자명",
+  },
+  personal_blog: {
+    name: "개인 블로그",
+    prefix: "https://",
+    suffix: "",
+    placeholder: "블로그 주소",
   },
 };

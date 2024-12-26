@@ -10,7 +10,7 @@ interface PlatformSelectorProps {
 export const PlatformSelector = ({ platform, onPlatformChange }: PlatformSelectorProps) => {
   return (
     <Tabs defaultValue="tistory" value={platform} onValueChange={onPlatformChange}>
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4 ">
         {Object.entries(PLATFORMS).map(([key, { name }]) => (
           <TabsTrigger key={key} value={key}>
             {name}
