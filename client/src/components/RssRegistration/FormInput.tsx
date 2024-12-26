@@ -16,15 +16,18 @@ export default function FormInput({ id, label, value, placeholder, type = "text"
       <Label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
       </Label>
-      <Input
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        autoComplete="off"
-        className="flex-grow w-auto border-input focus:border-primary focus-visible:ring-primary placeholder:text-muted-foreground placeholder:text-sm"
-        type={type}
-      />
+      <div className="relative flex-grow">
+        <Input
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          autoComplete="off"
+          className="w-full peer border-0 border-b border-input bg-transparent focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none placeholder:text-muted-foreground placeholder:text-sm"
+          type={type}
+        />
+        <div className="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-primary transition-transform duration-300 ease-in-out peer-focus:scale-x-100" />
+      </div>
     </div>
   );
 }
