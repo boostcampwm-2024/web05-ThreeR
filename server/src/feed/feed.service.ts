@@ -76,7 +76,7 @@ export class FeedService {
     await this.redisService.redisClient.del(redisKeys.FEED_TREND_KEY);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async analyzeTrend() {
     const [originTrend, nowTrend] = await Promise.all([
       this.redisService.redisClient.lrange(
