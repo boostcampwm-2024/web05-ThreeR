@@ -34,6 +34,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
   private cronTask: cron.ScheduledTask;
+  private dayInit: boolean;
 
   constructor(private readonly redisService: RedisService) {}
 
@@ -47,7 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private startMidnightCron() {
     this.cronTask = cron.schedule('0 0 * * *', () => {
-      this.emitMidnightMessage();
+      this.dayInit = true;
     });
   }
 
@@ -109,6 +110,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
 
     await this.saveMessageToRedis(broadcastPayload);
+
+    if (this.dayInit) {
+      this.dayInit = false;
+      this.emitMidnightMessage();
+    }
 
     this.server.emit('message', broadcastPayload);
   }
