@@ -8,7 +8,7 @@ export const formatDate = (dateString: string | undefined | null) => {
     if (isNaN(date.getTime())) {
       return "-";
     }
-    return date.toISOString().split("T")[0];
+    return date.toLocaleDateString('en-CA');
   } catch (error) {
     console.error("Date formatting error:", error);
     return "-";
