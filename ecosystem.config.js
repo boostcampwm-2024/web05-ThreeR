@@ -15,11 +15,11 @@ module.exports = {
       },
     },
     {
-      name: "rss-notifier",
-      script: "./rss-notifier/dist/main.js",
+      name: "feed-crawler",
+      script: "./feed-crawler/dist/main.js",
       instances: "1",
       exec_mode: "fork",
-      cron_restart: `*/30 * * * *`, // 30분 마다 rss-notifier 재시작
+      cron_restart: `*/30 * * * *`, // 30분 마다 feed-crawler 재시작
       autorestart: false,
       watch: false,
       env: {

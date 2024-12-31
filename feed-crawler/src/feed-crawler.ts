@@ -1,5 +1,5 @@
 import logger from "./common/logger.js";
-import "dotenv/config";
+import "dotenv/config.js";
 import {
   selectAllRss,
   insertFeeds,
@@ -125,8 +125,22 @@ const customUnescape = (text: string): string => {
   return unescape(text);
 };
 
-export const performTask = async () => {
+const feedGroupByRss = (rssObjects: RssObj[]) => {
   const currentTime = new Date();
+  let idx = 0;
+  return Promise.all(
+    rssObjects.map(async (rssObj: RssObj) => {
+      logger.info(
+        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
+      );
+      return await findNewFeeds(rssObj, currentTime.setSeconds(0, 0));
+    })
+  );
+};
+
+export const performTask = async () => {
+  await deleteRecentFeed();
+
   const rssObjects = await selectAllRss();
 
   if (rssObjects.length === 0) {
@@ -134,29 +148,16 @@ export const performTask = async () => {
     return;
   }
 
-  let idx = 0;
-  const newFeeds = await Promise.all(
-    rssObjects.map(async (rssObj) => {
-      logger.info(
-        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
-      );
-      return await findNewFeeds(rssObj, currentTime.setSeconds(0, 0));
-    })
-  );
+  const newFeedsByRss = await feedGroupByRss(rssObjects);
+  const newFeeds = newFeedsByRss.flat();
 
-  const result = newFeeds.flat().sort((currentFeed, nextFeed) => {
-    const dateCurrent = new Date(currentFeed.pubDate);
-    const dateNext = new Date(nextFeed.pubDate);
-    return dateCurrent.getTime() - dateNext.getTime();
-  });
-
-  await deleteRecentFeed();
-  if (result.length === 0) {
+  if (newFeeds.length === 0) {
     logger.info("새로운 피드가 없습니다.");
     return;
   }
+  logger.info(`총 ${newFeeds.length}개의 새로운 피드가 있습니다.`);
 
-  logger.info(`총 ${result.length}개의 새로운 피드가 있습니다.`);
-  const recentFeedStartId = await insertFeeds(result);
-  await setRecentFeedList(recentFeedStartId);
+  const recentFeedIds = await insertFeeds(newFeeds);
+
+  await setRecentFeedList(recentFeedIds);
 };
