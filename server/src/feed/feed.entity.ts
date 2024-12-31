@@ -21,6 +21,7 @@ export class Feed extends BaseEntity {
     type: 'datetime',
     nullable: false,
   })
+  @Index()
   createdAt: Date;
 
   @Index({ fulltext: true, parser: 'ngram' })
