@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AnimatePresence } from "framer-motion";
@@ -22,12 +22,25 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useCustomToast } from "@/hooks/common/useCustomToast.ts";
 import { useKeyboardShortcut } from "@/hooks/common/useKeyboardShortcut";
 
-import logo from "@/assets/logo-denamu-main.svg";
+import logo_Desktop from "@/assets/logo-denamu-main.svg";
+import logo_Mobile from "@/assets/logo-denamu-title.svg";
 
 import { TOAST_MESSAGES } from "@/constants/messages";
 
 export default function Header() {
   const [modals, setModals] = useState({ search: false, rss: false, login: false, chat: false });
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const resizeWidth = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener("resize", resizeWidth);
+    return () => {
+      window.removeEventListener("resize", resizeWidth);
+    };
+  }, []);
+
   const { toast } = useCustomToast();
   const toggleModal = (modalType: "search" | "rss" | "login" | "chat") => {
     if (modalType === "login") {
@@ -44,7 +57,18 @@ export default function Header() {
         <div className="h-20 items-center overflow-hidden flex justify-between relative z-50">
           {/* 로고 영역 */}
           <div className="flex-shrink-0 relative z-50">
-            <img className="h-14 w-auto cursor-pointer" src={logo} alt="Logo" onClick={() => location.reload()} />
+            <img
+              className="h-14 w-auto cursor-pointer hidden md:block"
+              src={logo_Desktop}
+              alt="Logo"
+              onClick={() => location.reload()}
+            />
+            <img
+              className="h-14 w-auto cursor-pointer md:hidden"
+              src={logo_Mobile}
+              alt="Logo"
+              onClick={() => location.reload()}
+            />
           </div>
 
           {/* 중앙 검색 버튼 */}
@@ -54,8 +78,11 @@ export default function Header() {
 
           {/* 내비게이션 */}
           <div className="flex-shrink-0 z-50">
-            <DesktopNavigation toggleModal={toggleModal} />
-            <MobileNavigation toggleModal={toggleModal} />
+            {isDesktop ? (
+              <DesktopNavigation toggleModal={toggleModal} />
+            ) : (
+              <MobileNavigation toggleModal={toggleModal} />
+            )}
           </div>
         </div>
       </div>
@@ -71,7 +98,7 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
   const navigate = useNavigate();
 
   return (
-    <div className="hidden md:flex md:items-center">
+    <div>
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
@@ -107,8 +134,9 @@ function DesktopNavigation({ toggleModal }: { toggleModal: (modalType: "search" 
 }
 
 function MobileNavigation({ toggleModal }: { toggleModal: (modalType: "search" | "rss" | "login") => void }) {
+  const navigate = useNavigate();
   return (
-    <div className="md:hidden">
+    <div>
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="hover:border-primary hover:text-primary">
@@ -121,7 +149,7 @@ function MobileNavigation({ toggleModal }: { toggleModal: (modalType: "search" |
           </SheetHeader>
           <SideBar
             handleRssModal={() => toggleModal("rss")}
-            handleSearchModal={() => toggleModal("search")}
+            handleAboutPage={() => navigate("/about")}
             handleLoginModal={() => toggleModal("login")}
           />
         </SheetContent>

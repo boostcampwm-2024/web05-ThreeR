@@ -13,9 +13,10 @@ export default function SearchButton({ handleSearchModal }: { handleSearchModal:
                    flex 
                    justify-between 
                    items-center 
-                   hover:bg-primary/5 
-                   max-w-[400px]
-                   
+                   hover:bg-primary/5
+                   max-w-[50%]
+                   sm:max-w-[40%]
+                   md:max-w-[40%]
                    "
       onClick={handleSearchModal}
     >

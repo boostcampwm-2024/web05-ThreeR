@@ -1,19 +1,16 @@
-import { Search } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 
 type SideBarType = {
   handleRssModal: () => void;
-  handleSearchModal: () => void;
+  handleAboutPage: () => void;
   handleLoginModal: () => void;
 };
 
-export default function SideBar({ handleRssModal, handleSearchModal, handleLoginModal }: SideBarType) {
+export default function SideBar({ handleRssModal, handleAboutPage, handleLoginModal }: SideBarType) {
   return (
     <div className="flex flex-col gap-4 p-4">
-      <Button onClick={handleSearchModal} variant="outline">
-        <Search />
-        검색
+      <Button onClick={handleAboutPage} variant="outline">
+        서비스소개
       </Button>
       <Button variant="outline" className="w-full" onClick={handleLoginModal}>
         로그인
