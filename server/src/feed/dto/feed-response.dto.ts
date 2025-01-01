@@ -1,4 +1,4 @@
-import { Feed } from '../feed.entity';
+import { FeedView } from '../feed.entity';
 
 export class FeedResponseDto {
   private constructor(
@@ -10,22 +10,26 @@ export class FeedResponseDto {
     private createdAt: Date,
     private thumbnail: string,
     private viewCount: number,
+    private isNew: boolean,
   ) {}
 
-  private static mapFeedToFeedResponseDto(feed: Feed) {
+  private static mapFeedToFeedResponseDto(feed: FeedResponse) {
     return new FeedResponseDto(
-      feed.id,
-      feed.blog.name,
-      feed.blog.blogPlatform,
+      feed.feedId,
+      feed.blogName,
+      feed.blogPlatform,
       feed.title,
       feed.path,
       feed.createdAt,
       feed.thumbnail,
       feed.viewCount,
+      feed.isNew,
     );
   }
 
-  public static mapFeedsToFeedResponseDtoArray(FeedList: Feed[]) {
+  public static mapFeedsToFeedResponseDtoArray(FeedList: FeedResponse[]) {
     return FeedList.map(this.mapFeedToFeedResponseDto);
   }
 }
+
+export type FeedResponse = FeedView & { isNew: boolean };

@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FeedRepository } from './feed.repository';
+import { FeedRepository, FeedViewRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { Feed } from './feed.entity';
-import { FeedResponseDto } from './dto/feed-response.dto';
+import { Feed, FeedView } from './feed.entity';
+import { FeedResponse, FeedResponseDto } from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -24,27 +24,44 @@ import { redisKeys } from '../common/redis/redis.constant';
 export class FeedService {
   constructor(
     private readonly feedRepository: FeedRepository,
+    private readonly feedViewRepository: FeedViewRepository,
     private readonly redisService: RedisService,
     private readonly eventService: EventEmitter2,
   ) {}
 
-  async readFeedList(queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedRepository.findFeed(queryFeedDto);
+  async readFeedPagination(queryFeedDto: QueryFeedDto) {
+    const feedList = await this.feedViewRepository.findFeed(queryFeedDto);
     const hasMore = this.existNextFeed(feedList, queryFeedDto.limit);
     if (hasMore) feedList.pop();
     const lastId = this.getLastIdFromFeedList(feedList);
-    const result = FeedResponseDto.mapFeedsToFeedResponseDtoArray(feedList);
+    const newCheckFeedList = await this.checkNewFeeds(feedList);
+    const result =
+      FeedResponseDto.mapFeedsToFeedResponseDtoArray(newCheckFeedList);
     return { result, lastId, hasMore };
   }
 
-  private existNextFeed(feedList: Feed[], limit: number) {
+  private existNextFeed(feedList: FeedView[], limit: number) {
     return feedList.length > limit;
   }
 
-  private getLastIdFromFeedList(feedList: Feed[]) {
-    if (feedList.length === 0) return 0;
-    const lastFeed = feedList[feedList.length - 1];
-    return lastFeed.id;
+  private getLastIdFromFeedList(feedList: FeedView[]) {
+    return feedList.length ? feedList[feedList.length - 1].feedId : 0;
+  }
+
+  private async checkNewFeeds(feedList: FeedView[]): Promise<FeedResponse[]> {
+    const newFeedIds = (
+      await this.redisService.redisClient.keys('feed:recent:*')
+    ).map((key) => {
+      const id = key.match(/feed:recent:(\d+)/);
+      return parseInt(id[1]);
+    });
+
+    return feedList.map((feed): FeedResponse => {
+      return {
+        ...feed,
+        isNew: newFeedIds.includes(feed.feedId),
+      };
+    });
   }
 
   async readTrendFeedList() {
