@@ -35,7 +35,7 @@ export const executeQuery = async <T>(query: string, params: any[] = []) => {
     const [rows] = await connection.query(query, params);
     return rows as T[];
   } catch (err) {
-    logger.error("쿼리 " + query + " 실행 중 오류 발생:", err);
+    logger.error(`[MySQL] 쿼리 ${query} 실행 중 오류 발생`);
     throw err;
   } finally {
     if (connection) {
@@ -45,12 +45,14 @@ export const executeQuery = async <T>(query: string, params: any[] = []) => {
 };
 
 export const selectAllRss = async (): Promise<RssObj[]> => {
-  const query = `SELECT id, rss_url as rssUrl
+  const query = `SELECT id, rss_url as rssUrl, name as blogName, blog_platform as blogPlatform
                  FROM rss_accept`;
   return executeQuery(query);
 };
 
-export const insertFeeds = async (resultData: FeedDetail[]) => {
+export const insertFeeds = async (
+  resultData: FeedDetail[]
+): Promise<FeedDetail[]> => {
   const query = `
         INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
         VALUES (?, ?, ?, ?, ?)
@@ -73,20 +75,27 @@ export const insertFeeds = async (resultData: FeedDetail[]) => {
   );
   failedInserts.forEach((failed) => {
     const error = (failed as PromiseRejectedResult).reason;
-    logger.error(`피드 삽입 실패. 에러 내용: ${error}`);
+    logger.error(
+      `[MySQL] 피드 삽입 실패. 에러 메시지: ${error.message}\n스택 트레이스: ${error.stack}`
+    );
   });
 
-  const insertedIds = results
+  const insertedFeeds = results
     .filter((result) => result.status === "fulfilled")
-    .map(
-      (result) => (result as PromiseFulfilledResult<any>).value[0][INSERT_ID]
-    );
-  const successCount = insertedIds.length;
+    .map((result, index) => {
+      const insertId = (result as PromiseFulfilledResult<any>).value[0][
+        INSERT_ID
+      ];
+      return {
+        ...resultData[index],
+        id: insertId,
+      };
+    });
 
   logger.info(
-    `${successCount}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
+    `[MySQL] ${insertedFeeds.length}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
   );
-  return insertedIds;
+  return insertedFeeds;
 };
 
 export const deleteRecentFeed = async () => {
@@ -109,43 +118,39 @@ export const deleteRecentFeed = async () => {
     if (keysToDelete.length > 0) {
       await redis.del(...keysToDelete);
     }
-    await redis.set(redisConstant.FEED_RECENT_KEY, "false");
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 삭제하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
+      `[Redis] 최근 게시글 캐시를 삭제하는 도중 에러가 발생했습니다. 에러 메시지: ${error.message}\n스택 트레이스: ${error.stack}`
     );
   } finally {
     if (redis) await redis.quit();
   }
-  logger.info(`Redis의 feed:recent:* 값이 정상적으로 삭제되었습니다.`);
+  logger.info(`[Redis] 최근 게시글 캐시가 정상적으로 삭제되었습니다.`);
 };
 
-export const setRecentFeedList = async (feedIds: number[]) => {
+export const setRecentFeedList = async (resultList: FeedDetail[]) => {
   const redis = await createRedisClient();
   try {
-    const query = `SELECT f.feed_id AS id ,
-                          f.feed_created_at AS createdAt,
-                          f.feed_title AS title,
-                          f.feed_view_count AS viewCount,
-                          f.feed_path AS path,
-                          f.feed_thumbnail AS thumbnail,
-                          f.blog_name AS blogName,
-                          f.blog_platform AS blogPlatform
-                   FROM feed_view f
-                   WHERE f.feed_id IN (${feedIds.map(() => "?").join(", ")})`;
-    const resultList = await executeQuery<RssObj>(query, feedIds);
     const pipeLine = redis.pipeline();
     for (const feed of resultList) {
-      pipeLine.hset(`feed:recent:${feed.id}`, feed);
+      pipeLine.hset(`feed:recent:${feed.id}`, {
+        id: feed.id,
+        blogPlatform: feed.blogPlatform,
+        createdAt: feed.pubDate,
+        viewCount: 0,
+        blogName: feed.blogName,
+        thumbnail: feed.imageUrl,
+        path: feed.link,
+        title: feed.title,
+      });
     }
-    pipeLine.set(redisConstant.FEED_RECENT_KEY, "true");
     await pipeLine.exec();
   } catch (error) {
     logger.error(
-      `Redis의 feed:recent:*를 저장하는 도중 에러가 발생했습니다. 에러 내용: ${error}`
+      `[Redis] 최근 게시글 캐시를 저장하는 도중 에러가 발생했습니다. 에러 메시지: ${error.message}\n스택 트레이스: ${error.stack}`
     );
   } finally {
     if (redis) await redis.quit();
   }
-  logger.info(`Redis의 feed:recent:* 값이 정상적으로 저장되었습니다.`);
+  logger.info(`[Redis] 최근 게시글 캐시가 정상적으로 저장되었습니다.`);
 };

@@ -10,6 +10,7 @@ import { RssObj, FeedDetail, RawFeed } from "./common/types.js";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 import { unescape } from "html-escaper";
+import { ONE_MINUTE } from "./common/constant.js";
 
 const getImageUrl = async (link: string): Promise<string> => {
   const response = await fetch(link, {
@@ -82,7 +83,7 @@ const findNewFeeds = async (
 
     const filteredFeeds = feeds.filter((item) => {
       const pubDate = new Date(item.pubDate).setSeconds(0, 0);
-      const timeDiff = (now - pubDate) / (1000 * 60 * TIME_INTERVAL);
+      const timeDiff = (now - pubDate) / (ONE_MINUTE * TIME_INTERVAL);
       return timeDiff >= 0 && timeDiff < 1;
     });
 
@@ -93,7 +94,10 @@ const findNewFeeds = async (
         const formattedDate = date.toISOString().slice(0, 19).replace("T", " ");
 
         return {
+          id: null,
           blogId: rssObj.id,
+          blogName: rssObj.blogName,
+          blogPlatform: rssObj.blogPlatform,
           pubDate: formattedDate,
           title: feed.title,
           link: decodeURIComponent(feed.link),
@@ -127,11 +131,10 @@ const customUnescape = (text: string): string => {
 
 const feedGroupByRss = (rssObjects: RssObj[]) => {
   const currentTime = new Date();
-  let idx = 0;
   return Promise.all(
     rssObjects.map(async (rssObj: RssObj) => {
       logger.info(
-        `[${++idx}번째 rss [${rssObj.rssUrl}] 에서 데이터 조회하는 중...`
+        `${rssObj.blogName}(${rssObj.rssUrl}) 에서 데이터 조회하는 중...`
       );
       return await findNewFeeds(rssObj, currentTime.setSeconds(0, 0));
     })
@@ -143,7 +146,7 @@ export const performTask = async () => {
 
   const rssObjects = await selectAllRss();
 
-  if (rssObjects.length === 0) {
+  if (!rssObjects.length) {
     logger.info("등록된 RSS가 없습니다.");
     return;
   }
@@ -151,13 +154,12 @@ export const performTask = async () => {
   const newFeedsByRss = await feedGroupByRss(rssObjects);
   const newFeeds = newFeedsByRss.flat();
 
-  if (newFeeds.length === 0) {
+  if (!newFeeds.length) {
     logger.info("새로운 피드가 없습니다.");
     return;
   }
   logger.info(`총 ${newFeeds.length}개의 새로운 피드가 있습니다.`);
 
-  const recentFeedIds = await insertFeeds(newFeeds);
-
-  await setRecentFeedList(recentFeedIds);
+  const insertedData = await insertFeeds(newFeeds);
+  await setRecentFeedList(insertedData);
 };
