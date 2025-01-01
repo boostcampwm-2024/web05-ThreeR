@@ -36,8 +36,8 @@ export class MySQLRepository {
     } catch (error) {
       logger.error(
         `${this.nameTag} 쿼리 ${query} 실행 중 오류 발생
-        오류 메시지: ${error.message}
-        스택 트레이스: ${error.stack}`
+          오류 메시지: ${error.message}
+          스택 트레이스: ${error.stack}`
       );
     } finally {
       if (connection) {
@@ -79,9 +79,9 @@ export class MySQLRepository {
     const promiseResults = await Promise.all(insertPromises);
 
     const insertedFeeds = promiseResults
-      .map((result, index) => {
+      .map((result: any, index) => {
         if (result) {
-          const insertId = result["insert_id"];
+          const insertId = result.insertId;
           return {
             ...resultData[index],
             id: insertId,
