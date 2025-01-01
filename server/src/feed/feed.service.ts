@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { FeedRepository, FeedViewRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { Feed, FeedView } from './feed.entity';
+import { FeedView } from './feed.entity';
 import { FeedResponse, FeedResponseDto } from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -50,7 +50,7 @@ export class FeedService {
 
   private async checkNewFeeds(feedList: FeedView[]): Promise<FeedResponse[]> {
     const newFeedIds = (
-      await this.redisService.redisClient.keys('feed:recent:*')
+      await this.redisService.redisClient.keys(redisKeys.FEED_RECENT_ALL_KEY)
     ).map((key) => {
       const id = key.match(/feed:recent:(\d+)/);
       return parseInt(id[1]);
@@ -216,19 +216,24 @@ export class FeedService {
 
   async readRecentFeedList() {
     const redis = this.redisService.redisClient;
-    const recentFeedList: Feed[] = [];
-    if ((await redis.get(redisKeys.FEED_RECENT_KEY)) === 'true') {
-      const keys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
-      if (keys.length <= 0) {
-        return recentFeedList;
-      }
-      const pipeLine = redis.pipeline();
-      for (const key of keys) {
-        pipeLine.hgetall(key);
-      }
-      const result = await pipeLine.exec();
-      recentFeedList.push(...result.map(([, data]) => data as Feed));
+    const recentKeys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
+    const recentFeedList: FeedResponse[] = [];
+
+    if (!recentKeys.length) {
+      return recentFeedList;
     }
+
+    const pipeLine = redis.pipeline();
+    for (const key of recentKeys) {
+      pipeLine.hgetall(key);
+    }
+    const result = await pipeLine.exec();
+    recentFeedList.push(
+      ...result.map(([, feed]: [any, FeedResponse]) => {
+        feed.isNew = true;
+        return feed as FeedResponse;
+      }),
+    );
 
     return recentFeedList.sort((currentFeed, nextFeed) => {
       const dateCurrent = new Date(currentFeed.createdAt);
