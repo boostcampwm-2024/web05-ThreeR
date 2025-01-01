@@ -76,29 +76,19 @@ export class MySQLRepository {
       ]);
     });
 
-    const promiseResults = await Promise.allSettled(insertPromises);
-
-    const failedInserts = promiseResults.filter(
-      (result) => result.status === "rejected"
-    );
-    failedInserts.forEach((failed) => {
-      const error = (failed as PromiseRejectedResult).reason;
-      logger.error(
-        `${this.nameTag} 피드 삽입 실패
-        에러 메시지: ${error.message}
-        스택 트레이스: ${error.stack}`
-      );
-    });
+    const promiseResults = await Promise.all(insertPromises);
 
     const insertedFeeds = promiseResults
-      .filter((result) => result.status === "fulfilled")
       .map((result, index) => {
-        const insertId = (result as PromiseFulfilledResult<any>).value.insertId;
-        return {
-          ...resultData[index],
-          id: insertId,
-        };
-      });
+        if (result) {
+          const insertId = result["insert_id"];
+          return {
+            ...resultData[index],
+            id: insertId,
+          };
+        }
+      })
+      .filter((result) => result);
 
     logger.info(
       `${this.nameTag} ${insertedFeeds.length}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
