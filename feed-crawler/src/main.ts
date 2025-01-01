@@ -1,17 +1,17 @@
-import { pool } from "./common/db-access.js";
 import logger from "./common/logger.js";
-import { performTask } from "./feed-crawler.js";
+import { FeedCrawler } from "./feed-crawler.js";
+import { MySQLRepository } from "./common/mysql-access.js";
 
 async function runCrawler() {
   logger.info("==========작업 시작==========");
   const startTime = Date.now();
-  await performTask();
+  const feedCrawler = new FeedCrawler();
+  await feedCrawler.start();
   const endTime = Date.now();
-
   const executionTime = endTime - startTime;
-  logger.info(`Execution time: ${executionTime / 1000}seconds`);
+  await MySQLRepository.getInstance().end();
+  logger.info(`실행 시간: ${executionTime / 1000}seconds`);
   logger.info("==========작업 완료==========");
-  pool.end();
 }
 
 runCrawler();
