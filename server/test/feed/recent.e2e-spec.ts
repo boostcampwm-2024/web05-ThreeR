@@ -6,7 +6,6 @@ import { RssAcceptFixture } from '../fixture/rssAccept.fixture';
 import { FeedFixture } from '../fixture/feed.fixture';
 import { FeedRepository } from '../../src/feed/feed.repository';
 import { RedisService } from '../../src/common/redis/redis.service';
-import { redisKeys } from '../../src/common/redis/redis.constant';
 
 describe('GET /api/feed/recent E2E Test', () => {
   let app: INestApplication;
@@ -35,9 +34,8 @@ describe('GET /api/feed/recent E2E Test', () => {
     const redisService = app.get(RedisService);
     const feeds = await feedRepository.save(feedList);
     const pipeLine = redisService.redisClient.pipeline();
-    pipeLine.set(redisKeys.FEED_RECENT_KEY, 'true');
-    pipeLine.hset(`feed:recent:${feeds[0]['id']}`, feeds[0]);
-    pipeLine.hset(`feed:recent:${feeds[1]['id']}`, feeds[1]);
+    pipeLine.hset(`feed:recent:${feeds[0].id}`, feeds[0]);
+    pipeLine.hset(`feed:recent:${feeds[1].id}`, feeds[1]);
     await pipeLine.exec();
 
     //when
@@ -48,10 +46,10 @@ describe('GET /api/feed/recent E2E Test', () => {
     expect(response.body.data.map((feed) => feed.id)).toStrictEqual(['2', '1']);
   });
 
-  it('피드가 없다면 빈 배열을 반환한다.', async () => {
+  it('최신 피드가 없다면 빈 배열을 반환한다.', async () => {
     //given
     const redisService = app.get(RedisService);
-    await redisService.redisClient.set(redisKeys.FEED_RECENT_KEY, 'false');
+    redisService.redisClient.flushdb();
 
     //when
     const response = await request(app.getHttpServer()).get('/api/feed/recent');
