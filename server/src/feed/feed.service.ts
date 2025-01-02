@@ -30,7 +30,8 @@ export class FeedService {
   ) {}
 
   async readFeedPagination(queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedViewRepository.findFeed(queryFeedDto);
+    const feedList =
+      await this.feedViewRepository.findFeedPagination(queryFeedDto);
     const hasMore = this.existNextFeed(feedList, queryFeedDto.limit);
     if (hasMore) feedList.pop();
     const lastId = this.getLastIdFromFeedList(feedList);
@@ -71,19 +72,9 @@ export class FeedService {
       -1,
     );
     const trendFeeds = await Promise.all(
-      trendFeedIdList.map(async (feedId) => {
-        const feed = await this.feedRepository.findOne({
-          where: { id: parseInt(feedId) },
-          relations: ['blog'],
-        });
-        if (!feed) {
-          return null;
-        }
-        feed['author'] = feed.blog['name'];
-        feed['blogPlatform'] = feed.blog['blogPlatform'];
-        delete feed.blog;
-        return feed;
-      }),
+      trendFeedIdList.map(async (feedId) =>
+        this.feedViewRepository.findFeedById(parseInt(feedId)),
+      ),
     );
     return trendFeeds.filter((feed) => feed !== null);
   }

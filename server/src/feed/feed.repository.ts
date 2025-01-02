@@ -68,7 +68,7 @@ export class FeedViewRepository extends Repository<FeedView> {
     super(FeedView, dataSource.createEntityManager());
   }
 
-  async findFeed(queryFeedDto: QueryFeedDto) {
+  async findFeedPagination(queryFeedDto: QueryFeedDto) {
     const { lastId, limit } = queryFeedDto;
     const query = this.createQueryBuilder()
       .select('feed_id', 'feedId')
@@ -95,5 +95,25 @@ export class FeedViewRepository extends Repository<FeedView> {
       .take(limit + 1);
 
     return await query.getRawMany();
+  }
+
+  async findFeedById(feedId: number) {
+    const feed = await this.createQueryBuilder()
+      .select('feed_id', 'id')
+      .addSelect('feed_title', 'title')
+      .addSelect('feed_path', 'path')
+      .addSelect('feed_created_at', 'createdAt')
+      .addSelect('feed_thumbnail', 'thumbnail')
+      .addSelect('feed_view_count', 'viewCount')
+      .addSelect('blog_name', 'author')
+      .addSelect('blog_platform', 'blogPlatform')
+      .where('feed_id = :feedId', { feedId })
+      .getRawOne();
+
+    if (!feed) {
+      return null;
+    }
+
+    return feed;
   }
 }
