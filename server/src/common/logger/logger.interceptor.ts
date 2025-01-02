@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { finalize } from 'rxjs';
 import { WinstonLoggerService } from './logger.service';
+import { Request } from 'express';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -18,11 +19,7 @@ export class LoggingInterceptor implements NestInterceptor {
     if (!url.includes('register') && !url.includes('login')) {
       this.logger.log(
         JSON.stringify({
-          host:
-            request.headers['x-forwarded-for'] ||
-            request.headers['CF-Connecting-IP'] ||
-            request.socket?.remoteAddress ||
-            'unknown',
+          host: this.getIp(request),
           method: request.method,
           url: request.url,
           body: request.body,
@@ -38,5 +35,16 @@ export class LoggingInterceptor implements NestInterceptor {
         }
       }),
     );
+  }
+
+  private getIp(request: Request) {
+    const forwardedFor = request.headers['x-forwarded-for'];
+
+    if (typeof forwardedFor === 'string') {
+      const forwardedIps = forwardedFor.split(',');
+      return forwardedIps[0].trim();
+    }
+
+    return request.socket.remoteAddress;
   }
 }

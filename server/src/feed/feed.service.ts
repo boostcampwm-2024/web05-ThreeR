@@ -132,11 +132,7 @@ export class FeedService {
     response: Response,
   ) {
     const cookie = request.headers.cookie;
-    const ip =
-      request.headers['CF-Connecting-IP'] ||
-      request.headers['x-forwarded-for'] ||
-      request.socket?.remoteAddress ||
-      'unknown';
+    const ip = this.getIp(request);
     if (ip && this.isString(ip)) {
       const redis = this.redisService.redisClient;
       const [feed, hasCookie, hasIpFlag] = await Promise.all([
@@ -218,5 +214,16 @@ export class FeedService {
       const dateNext = new Date(nextFeed.createdAt);
       return dateNext.getTime() - dateCurrent.getTime();
     });
+  }
+
+  private getIp(request: Request) {
+    const forwardedFor = request.headers['x-forwarded-for'];
+
+    if (typeof forwardedFor === 'string') {
+      const forwardedIps = forwardedFor.split(',');
+      return forwardedIps[0].trim();
+    }
+
+    return request.socket.remoteAddress;
   }
 }

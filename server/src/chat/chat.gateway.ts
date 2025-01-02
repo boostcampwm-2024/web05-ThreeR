@@ -103,7 +103,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (this.dayInit) {
       this.dayInit = false;
-      this.emitMidnightMessage();
+      await this.emitMidnightMessage();
     }
 
     this.server.emit('message', broadcastPayload);
