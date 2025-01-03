@@ -4,17 +4,12 @@ import { PoolConnection } from "mysql2/promise";
 import logger from "./logger";
 import { FeedDetail, RssObj } from "./types";
 
-export class MySQLRepository {
-  private static instance: MySQLRepository;
-  private pool = this.createPool();
-  private nameTag: string = "[MySQL]";
-  private constructor() {}
-
-  static getInstance(): MySQLRepository {
-    if (!MySQLRepository.instance) {
-      MySQLRepository.instance = new MySQLRepository();
-    }
-    return MySQLRepository.instance;
+class MySQLRepository {
+  private pool: mysql.Pool;
+  private nameTag: string;
+  constructor() {
+    this.pool = this.createPool();
+    this.nameTag = "[MySQL]";
   }
 
   private createPool() {
@@ -100,3 +95,5 @@ export class MySQLRepository {
     await this.pool.end();
   }
 }
+
+export const mysqlRepository = new MySQLRepository();

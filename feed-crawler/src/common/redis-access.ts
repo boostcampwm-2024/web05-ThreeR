@@ -3,11 +3,14 @@ import logger from "./logger";
 import { redisConstant } from "./constant";
 import { FeedDetail } from "./types";
 
-export class RedisRepository {
-  private static instance: RedisRepository;
+class RedisRepository {
   private redis: Redis;
-  private nameTag: string = "[Redis]";
-  private constructor() {}
+  private nameTag: string;
+
+  constructor() {
+    this.nameTag = "[Redis]";
+  }
+
   private connect() {
     this.redis = new Redis({
       host: process.env.REDIS_HOST,
@@ -15,13 +18,6 @@ export class RedisRepository {
       username: process.env.REDIS_USERNAME,
       password: process.env.REDIS_PASSWORD,
     });
-  }
-
-  static getInstance() {
-    if (!RedisRepository.instance) {
-      RedisRepository.instance = new RedisRepository();
-    }
-    return RedisRepository.instance;
   }
 
   async deleteRecentFeed() {
@@ -109,3 +105,5 @@ export class RedisRepository {
     );
   }
 }
+
+export const redisRepository = new RedisRepository();
