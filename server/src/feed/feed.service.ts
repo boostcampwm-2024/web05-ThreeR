@@ -6,7 +6,11 @@ import {
 import { FeedRepository, FeedViewRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { FeedView } from './feed.entity';
-import { FeedResponse, FeedResponseDto } from './dto/feed-response.dto';
+import {
+  FeedPaginationResult,
+  FeedPaginationResponseDto,
+  FeedTrendResponseDto,
+} from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -37,7 +41,9 @@ export class FeedService {
     const lastId = this.getLastIdFromFeedList(feedList);
     const newCheckFeedList = await this.checkNewFeeds(feedList);
     const result =
-      FeedResponseDto.mapFeedsToFeedResponseDtoArray(newCheckFeedList);
+      FeedPaginationResponseDto.mapToPaginationResponseDtoArray(
+        newCheckFeedList,
+      );
     return { result, lastId, hasMore };
   }
 
@@ -49,7 +55,7 @@ export class FeedService {
     return feedList.length ? feedList[feedList.length - 1].feedId : 0;
   }
 
-  private async checkNewFeeds(feedList: FeedView[]): Promise<FeedResponse[]> {
+  private async checkNewFeeds(feedList: FeedView[]) {
     const newFeedIds = (
       await this.redisService.redisClient.keys(redisKeys.FEED_RECENT_ALL_KEY)
     ).map((key) => {
@@ -57,7 +63,7 @@ export class FeedService {
       return parseInt(id[1]);
     });
 
-    return feedList.map((feed): FeedResponse => {
+    return feedList.map((feed): FeedPaginationResult => {
       return {
         ...feed,
         isNew: newFeedIds.includes(feed.feedId),
@@ -76,7 +82,9 @@ export class FeedService {
         this.feedViewRepository.findFeedById(parseInt(feedId)),
       ),
     );
-    return trendFeeds.filter((feed) => feed !== null);
+    return FeedTrendResponseDto.toFeedTrendResponseDtoArray(
+      trendFeeds.filter((feed) => feed !== null),
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -208,7 +216,7 @@ export class FeedService {
   async readRecentFeedList() {
     const redis = this.redisService.redisClient;
     const recentKeys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
-    const recentFeedList: FeedResponse[] = [];
+    const recentFeedList: FeedPaginationResult[] = [];
 
     if (!recentKeys.length) {
       return recentFeedList;
@@ -220,9 +228,9 @@ export class FeedService {
     }
     const result = await pipeLine.exec();
     recentFeedList.push(
-      ...result.map(([, feed]: [any, FeedResponse]) => {
+      ...result.map(([, feed]: [any, FeedPaginationResult]) => {
         feed.isNew = true;
-        return feed as FeedResponse;
+        return feed;
       }),
     );
 

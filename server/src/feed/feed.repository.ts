@@ -17,10 +17,9 @@ export class FeedRepository extends Repository<Feed> {
     offset: number,
   ) {
     const queryBuilder = this.createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.blog', 'rss_accept')
+      .innerJoinAndSelect('feed.blog', 'rss_accept')
       .addSelect(this.getMatchAgainstExpression(type, 'find'), 'relevance')
-      .where(this.getWhereCondition(type))
-      .setParameters({ find })
+      .where(this.getWhereCondition(type), { find })
       .orderBy('relevance', 'DESC')
       .addOrderBy('feed.createdAt', 'DESC')
       .skip(offset)
@@ -71,14 +70,6 @@ export class FeedViewRepository extends Repository<FeedView> {
   async findFeedPagination(queryFeedDto: QueryFeedDto) {
     const { lastId, limit } = queryFeedDto;
     const query = this.createQueryBuilder()
-      .select('feed_id', 'feedId')
-      .addSelect('blog_name', 'blogName')
-      .addSelect('blog_platform', 'blogPlatform')
-      .addSelect('feed_title', 'title')
-      .addSelect('feed_path', 'path')
-      .addSelect('feed_created_at', 'createdAt')
-      .addSelect('feed_thumbnail', 'thumbnail')
-      .addSelect('feed_view_count', 'viewCount')
       .where((qb) => {
         if (lastId) {
           const subQuery = qb
@@ -94,21 +85,13 @@ export class FeedViewRepository extends Repository<FeedView> {
       .orderBy('order_id', 'DESC')
       .take(limit + 1);
 
-    return await query.getRawMany();
+    return await query.getMany();
   }
 
   async findFeedById(feedId: number) {
     const feed = await this.createQueryBuilder()
-      .select('feed_id', 'id')
-      .addSelect('feed_title', 'title')
-      .addSelect('feed_path', 'path')
-      .addSelect('feed_created_at', 'createdAt')
-      .addSelect('feed_thumbnail', 'thumbnail')
-      .addSelect('feed_view_count', 'viewCount')
-      .addSelect('blog_name', 'author')
-      .addSelect('blog_platform', 'blogPlatform')
       .where('feed_id = :feedId', { feedId })
-      .getRawOne();
+      .getOne();
 
     if (!feed) {
       return null;
