@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  ViewColumn,
   ViewEntity,
 } from 'typeorm';
 import { RssAccept } from '../rss/rss.entity';
@@ -72,4 +73,49 @@ export class Feed extends BaseEntity {
       .orderBy('feed_created_at'),
   name: 'feed_view',
 })
-export class FeedView {}
+export class FeedView {
+  @ViewColumn({
+    name: 'order_id',
+  })
+  orderId: number;
+
+  @ViewColumn({
+    name: 'feed_id',
+  })
+  feedId: number;
+
+  @ViewColumn({
+    name: 'feed_title',
+  })
+  title: string;
+
+  @ViewColumn({
+    name: 'feed_path',
+  })
+  path: string;
+
+  @ViewColumn({
+    name: 'feed_created_at',
+  })
+  createdAt: Date;
+
+  @ViewColumn({
+    name: 'feed_thumbnail',
+  })
+  thumbnail: string;
+
+  @ViewColumn({
+    name: 'feed_view_count',
+  })
+  viewCount: number;
+
+  @ViewColumn({
+    name: 'blog_name',
+  })
+  blogName: string;
+
+  @ViewColumn({
+    name: 'blog_platform',
+  })
+  blogPlatform: string;
+}

@@ -3,10 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FeedRepository } from './feed.repository';
+import { FeedRepository, FeedViewRepository } from './feed.repository';
 import { QueryFeedDto } from './dto/query-feed.dto';
-import { Feed } from './feed.entity';
-import { FeedResponseDto } from './dto/feed-response.dto';
+import { FeedView } from './feed.entity';
+import {
+  FeedPaginationResult,
+  FeedPaginationResponseDto,
+  FeedTrendResponseDto,
+} from './dto/feed-response.dto';
 import { RedisService } from '../common/redis/redis.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -24,27 +28,47 @@ import { redisKeys } from '../common/redis/redis.constant';
 export class FeedService {
   constructor(
     private readonly feedRepository: FeedRepository,
+    private readonly feedViewRepository: FeedViewRepository,
     private readonly redisService: RedisService,
     private readonly eventService: EventEmitter2,
   ) {}
 
-  async readFeedList(queryFeedDto: QueryFeedDto) {
-    const feedList = await this.feedRepository.findFeed(queryFeedDto);
+  async readFeedPagination(queryFeedDto: QueryFeedDto) {
+    const feedList =
+      await this.feedViewRepository.findFeedPagination(queryFeedDto);
     const hasMore = this.existNextFeed(feedList, queryFeedDto.limit);
     if (hasMore) feedList.pop();
     const lastId = this.getLastIdFromFeedList(feedList);
-    const result = FeedResponseDto.mapFeedsToFeedResponseDtoArray(feedList);
+    const newCheckFeedList = await this.checkNewFeeds(feedList);
+    const result =
+      FeedPaginationResponseDto.mapToPaginationResponseDtoArray(
+        newCheckFeedList,
+      );
     return { result, lastId, hasMore };
   }
 
-  private existNextFeed(feedList: Feed[], limit: number) {
+  private existNextFeed(feedList: FeedView[], limit: number) {
     return feedList.length > limit;
   }
 
-  private getLastIdFromFeedList(feedList: Feed[]) {
-    if (feedList.length === 0) return 0;
-    const lastFeed = feedList[feedList.length - 1];
-    return lastFeed.id;
+  private getLastIdFromFeedList(feedList: FeedView[]) {
+    return feedList.length ? feedList[feedList.length - 1].feedId : 0;
+  }
+
+  private async checkNewFeeds(feedList: FeedView[]) {
+    const newFeedIds = (
+      await this.redisService.redisClient.keys(redisKeys.FEED_RECENT_ALL_KEY)
+    ).map((key) => {
+      const id = key.match(/feed:recent:(\d+)/);
+      return parseInt(id[1]);
+    });
+
+    return feedList.map((feed): FeedPaginationResult => {
+      return {
+        ...feed,
+        isNew: newFeedIds.includes(feed.feedId),
+      };
+    });
   }
 
   async readTrendFeedList() {
@@ -54,21 +78,13 @@ export class FeedService {
       -1,
     );
     const trendFeeds = await Promise.all(
-      trendFeedIdList.map(async (feedId) => {
-        const feed = await this.feedRepository.findOne({
-          where: { id: parseInt(feedId) },
-          relations: ['blog'],
-        });
-        if (!feed) {
-          return null;
-        }
-        feed['author'] = feed.blog['name'];
-        feed['blogPlatform'] = feed.blog['blogPlatform'];
-        delete feed.blog;
-        return feed;
-      }),
+      trendFeedIdList.map(async (feedId) =>
+        this.feedViewRepository.findFeedById(parseInt(feedId)),
+      ),
     );
-    return trendFeeds.filter((feed) => feed !== null);
+    return FeedTrendResponseDto.toFeedTrendResponseDtoArray(
+      trendFeeds.filter((feed) => feed !== null),
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -195,19 +211,24 @@ export class FeedService {
 
   async readRecentFeedList() {
     const redis = this.redisService.redisClient;
-    const recentFeedList: Feed[] = [];
-    if ((await redis.get(redisKeys.FEED_RECENT_KEY)) === 'true') {
-      const keys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
-      if (keys.length <= 0) {
-        return recentFeedList;
-      }
-      const pipeLine = redis.pipeline();
-      for (const key of keys) {
-        pipeLine.hgetall(key);
-      }
-      const result = await pipeLine.exec();
-      recentFeedList.push(...result.map(([, data]) => data as Feed));
+    const recentKeys = await redis.keys(redisKeys.FEED_RECENT_ALL_KEY);
+    const recentFeedList: FeedPaginationResult[] = [];
+
+    if (!recentKeys.length) {
+      return recentFeedList;
     }
+
+    const pipeLine = redis.pipeline();
+    for (const key of recentKeys) {
+      pipeLine.hgetall(key);
+    }
+    const result = await pipeLine.exec();
+    recentFeedList.push(
+      ...result.map(([, feed]: [any, FeedPaginationResult]) => {
+        feed.isNew = true;
+        return feed;
+      }),
+    );
 
     return recentFeedList.sort((currentFeed, nextFeed) => {
       const dateCurrent = new Date(currentFeed.createdAt);

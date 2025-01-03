@@ -20,7 +20,7 @@ import { SearchFeedReq } from './dto/search-feed.dto';
 import { Response, Request } from 'express';
 import { Observable } from 'rxjs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ApiReadFeedList } from './api-docs/readFeedList.api-docs';
+import { ApiReadFeedPagination } from './api-docs/readFeedPagination.api-docs';
 import { ApiReadTrendFeedList } from './api-docs/readTrendFeedList.api-docs';
 import { ApiSearchFeedList } from './api-docs/searchFeedList.api-docs';
 import { ApiUpdateFeedViewCount } from './api-docs/updateFeedViewCount.api-docs';
@@ -35,7 +35,7 @@ export class FeedController {
     private readonly eventService: EventEmitter2,
   ) {}
 
-  @ApiReadFeedList()
+  @ApiReadFeedPagination()
   @Get('')
   @HttpCode(HttpStatus.OK)
   @UsePipes(
@@ -43,10 +43,10 @@ export class FeedController {
       transform: true,
     }),
   )
-  async readFeedList(@Query() queryFeedDto: QueryFeedDto) {
+  async readFeedPagination(@Query() queryFeedDto: QueryFeedDto) {
     return ApiResponse.responseWithData(
       '피드 조회 완료',
-      await this.feedService.readFeedList(queryFeedDto),
+      await this.feedService.readFeedPagination(queryFeedDto),
     );
   }
 

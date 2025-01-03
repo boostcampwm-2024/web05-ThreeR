@@ -1,6 +1,6 @@
 import { DataSource, LessThan, Repository } from 'typeorm';
-import { Feed } from './feed.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Feed, FeedView } from './feed.entity';
+import { Injectable } from '@nestjs/common';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { SearchType } from './dto/search-feed.dto';
 
@@ -10,17 +10,6 @@ export class FeedRepository extends Repository<Feed> {
     super(Feed, dataSource.createEntityManager());
   }
 
-  async findFeed(queryFeedDto: QueryFeedDto) {
-    const { lastId, limit } = queryFeedDto;
-
-    return await this.find({
-      where: lastId ? { id: LessThan(lastId) } : {},
-      order: { id: 'DESC' },
-      take: limit + 1,
-      relations: ['blog'],
-    });
-  }
-
   async searchFeedList(
     find: string,
     limit: number,
@@ -28,10 +17,9 @@ export class FeedRepository extends Repository<Feed> {
     offset: number,
   ) {
     const queryBuilder = this.createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.blog', 'rss_accept')
+      .innerJoinAndSelect('feed.blog', 'rss_accept')
       .addSelect(this.getMatchAgainstExpression(type, 'find'), 'relevance')
-      .where(this.getWhereCondition(type))
-      .setParameters({ find })
+      .where(this.getWhereCondition(type), { find })
       .orderBy('relevance', 'DESC')
       .addOrderBy('feed.createdAt', 'DESC')
       .skip(offset)
@@ -70,5 +58,45 @@ export class FeedRepository extends Repository<Feed> {
       },
       take: limit,
     });
+  }
+}
+
+@Injectable()
+export class FeedViewRepository extends Repository<FeedView> {
+  constructor(private dataSource: DataSource) {
+    super(FeedView, dataSource.createEntityManager());
+  }
+
+  async findFeedPagination(queryFeedDto: QueryFeedDto) {
+    const { lastId, limit } = queryFeedDto;
+    const query = this.createQueryBuilder()
+      .where((qb) => {
+        if (lastId) {
+          const subQuery = qb
+            .subQuery()
+            .select('order_id')
+            .from('feed_view', 'fv')
+            .where('fv.feed_id = :lastId', { lastId })
+            .getQuery();
+          return `order_id < (${subQuery})`;
+        }
+        return '';
+      })
+      .orderBy('order_id', 'DESC')
+      .take(limit + 1);
+
+    return await query.getMany();
+  }
+
+  async findFeedById(feedId: number) {
+    const feed = await this.createQueryBuilder()
+      .where('feed_id = :feedId', { feedId })
+      .getOne();
+
+    if (!feed) {
+      return null;
+    }
+
+    return feed;
   }
 }

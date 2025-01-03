@@ -7,10 +7,15 @@ export interface RawFeed {
 export interface RssObj {
   id: number;
   rssUrl: string;
+  blogName: string;
+  blogPlatform: string;
 }
 
 export interface FeedDetail {
+  id: number;
   blogId: number;
+  blogName: string;
+  blogPlatform: string;
   pubDate: string;
   title: string;
   link: string;

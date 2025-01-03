@@ -6,7 +6,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 
-export function ApiReadFeedList() {
+export function ApiReadFeedPagination() {
   return applyDecorators(
     ApiOperation({
       summary: `메인 화면 게시글 조회 API`,
@@ -49,6 +49,7 @@ export function ApiReadFeedList() {
                     createAt: { type: 'string', format: 'date-time' },
                     thumbnail: { type: 'string', format: 'url' },
                     viewCount: { type: 'number' },
+                    isNew: { type: 'boolean' },
                   },
                 },
               },
@@ -71,6 +72,7 @@ export function ApiReadFeedList() {
               createAt: '2024-06-16T20:00:57.000Z',
               thumbnail: 'https://test.com/image.png',
               viewCount: 1,
+              isNew: false,
             },
           ],
           lastId: 3,
