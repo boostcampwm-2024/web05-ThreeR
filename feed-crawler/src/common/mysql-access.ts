@@ -2,9 +2,13 @@ import * as mysql from "mysql2/promise";
 import { CONNECTION_LIMIT } from "./constant";
 import { PoolConnection } from "mysql2/promise";
 import logger from "./logger";
-import { FeedDetail, RssObj } from "./types";
+import * as dotenv from "dotenv";
 
-class MySQLRepository {
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? "feed-crawler/.env" : ".env",
+});
+
+class MySQLConnection {
   private pool: mysql.Pool;
   private nameTag: string;
   constructor() {
@@ -22,7 +26,7 @@ class MySQLRepository {
     });
   }
 
-  private async executeQuery<T>(query: string, params: any[] = []) {
+  async executeQuery<T>(query: string, params: any[] = []) {
     let connection: PoolConnection;
     try {
       connection = await this.pool.getConnection();
@@ -49,51 +53,9 @@ class MySQLRepository {
     }
   }
 
-  public async selectAllRss(): Promise<RssObj[]> {
-    const query = `SELECT id, rss_url as rssUrl, name as blogName, blog_platform as blogPlatform
-    FROM rss_accept`;
-    return this.executeQuery(query);
-  }
-
-  public async insertFeeds(resultData: FeedDetail[]) {
-    const query = `
-        INSERT INTO feed (blog_id, created_at, title, path, thumbnail)
-        VALUES (?, ?, ?, ?, ?)
-    `;
-
-    const insertPromises = resultData.map(async (feed) => {
-      return this.executeQuery(query, [
-        feed.blogId,
-        feed.pubDate,
-        feed.title,
-        feed.link,
-        feed.imageUrl,
-      ]);
-    });
-
-    const promiseResults = await Promise.all(insertPromises);
-
-    const insertedFeeds = promiseResults
-      .map((result: any, index) => {
-        if (result) {
-          const insertId = result.insertId;
-          return {
-            ...resultData[index],
-            id: insertId,
-          };
-        }
-      })
-      .filter((result) => result);
-
-    logger.info(
-      `${this.nameTag} ${insertedFeeds.length}개의 피드 데이터가 성공적으로 데이터베이스에 삽입되었습니다.`
-    );
-    return insertedFeeds;
-  }
-
   public async end() {
     await this.pool.end();
   }
 }
 
-export const mysqlRepository = new MySQLRepository();
+export const mysqlConnection = new MySQLConnection();

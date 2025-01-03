@@ -1,16 +1,11 @@
-import { redisRepository } from "./common/redis-access.js";
-import { mysqlRepository } from "./common/mysql-access.js";
-import logger from "./common/logger.js";
-import { RssObj, FeedDetail, RawFeed } from "./common/types.js";
+import { feedRepository } from "./repository/feed.repository";
+import { rssRepository } from "./repository/rss.repository";
+import logger from "./common/logger";
+import { RssObj, FeedDetail, RawFeed } from "./common/types";
 import { XMLParser } from "fast-xml-parser";
 import { parse } from "node-html-parser";
 import { unescape } from "html-escaper";
-import { ONE_MINUTE } from "./common/constant.js";
-import * as dotenv from "dotenv";
-
-dotenv.config({
-  path: process.env.NODE_ENV === "production" ? "feed-crawler/.env" : ".env",
-});
+import { ONE_MINUTE } from "./common/constant";
 
 export class FeedCrawler {
   private urlParser: URLParser;
@@ -20,9 +15,9 @@ export class FeedCrawler {
   }
 
   async start() {
-    await redisRepository.deleteRecentFeed();
+    await feedRepository.deleteRecentFeed();
 
-    const rssObjects = await mysqlRepository.selectAllRss();
+    const rssObjects = await rssRepository.selectAllRss();
 
     if (!rssObjects || !rssObjects.length) {
       logger.info("등록된 RSS가 없습니다.");
@@ -38,9 +33,9 @@ export class FeedCrawler {
     }
     logger.info(`총 ${newFeeds.length}개의 새로운 피드가 있습니다.`);
 
-    const insertedData = await mysqlRepository.insertFeeds(newFeeds);
+    const insertedData = await feedRepository.insertFeeds(newFeeds);
 
-    await redisRepository.setRecentFeedList(insertedData);
+    await feedRepository.setRecentFeedList(insertedData);
   }
 
   private async findNewFeeds(
