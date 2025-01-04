@@ -1,4 +1,4 @@
-import { mysqlConnection } from "src/common/mysql-access";
+import { mysqlConnection } from "../common/mysql-access";
 import { RssObj } from "../common/types";
 
 class RssRepository {

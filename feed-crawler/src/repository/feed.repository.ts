@@ -1,8 +1,8 @@
 import { FeedDetail } from "../common/types";
 import logger from "../common/logger";
-import { mysqlConnection } from "src/common/mysql-access";
+import { mysqlConnection } from "../common/mysql-access";
 import { redisConstant } from "../common/constant";
-import { redisConnection } from "src/common/redis-access";
+import { redisConnection } from "../common/redis-access";
 
 class FeedRepository {
   public async insertFeeds(resultData: FeedDetail[]) {
