@@ -12,6 +12,7 @@ import { RssRegisterDto } from './dto/rss-register.dto';
 import { EmailService } from '../common/email/email.service';
 import { DataSource } from 'typeorm';
 import { Rss, RssReject, RssAccept } from './rss.entity';
+import { FeedCrawlerService } from './feed-crawler.service';
 
 @Injectable()
 export class RssService {
@@ -21,6 +22,7 @@ export class RssService {
     private readonly rssRejectRepository: RssRejectRepository,
     private readonly emailService: EmailService,
     private readonly dataSource: DataSource,
+    private readonly feedCrawlerService: FeedCrawlerService,
   ) {}
 
   async createRss(rssRegisterDto: RssRegisterDto) {
@@ -63,13 +65,17 @@ export class RssService {
 
     const blogPlatform = this.identifyPlatformFromRssUrl(rss.rssUrl);
 
-    await this.dataSource.transaction(async (manager) => {
-      await Promise.all([
+    const result = await this.dataSource.transaction(async (manager) => {
+      const [saveResult, deleteResult] = await Promise.all([
         manager.save(RssAccept.fromRss(rss, blogPlatform)),
         manager.delete(Rss, id),
       ]);
+
+      return saveResult;
     });
-    this.emailService.sendMail(rss, true);
+
+    this.emailService.sendMail(result, true);
+    await this.feedCrawlerService.loadRssFeed(result);
   }
 
   async rejectRss(id: number, description: string) {
