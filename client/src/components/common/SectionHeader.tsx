@@ -9,14 +9,16 @@ interface SectionHeaderProps {
 
 export const SectionHeader = ({ icon: Icon, text, iconColor, description }: SectionHeaderProps) => {
   return (
-    <div className="flex items-center gap-2">
-      {Icon && (
-        <div>
-          <Icon className={`w-5 h-5 ${iconColor}`} />
-        </div>
-      )}
-      <h2 className="text-xl font-semibold">{text}</h2>
-      <p className="text-sm text-gray-400 mt-1">{description}</p>
+    <div className="flex justify-between">
+      <div className="flex items-center gap-2">
+        {Icon && (
+          <div>
+            <Icon className={`w-5 h-5 ${iconColor}`} />
+          </div>
+        )}
+        <h2 className="text-xl font-semibold">{text}</h2>
+        <p className="text-sm text-gray-400 mt-1">{description}</p>
+      </div>
     </div>
   );
 };

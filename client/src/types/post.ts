@@ -9,6 +9,7 @@ export interface Post {
   authorImageUrl?: string;
   tags?: string[];
   likes?: number;
+  isNew?: boolean;
   blogPlatform?: string;
 }
 
@@ -30,4 +31,9 @@ export interface InfiniteScrollResponse<T> {
   result: T[];
   hasMore: boolean;
   lastId: number | null;
+}
+
+export interface UpdatePostsApiResponse {
+  message: string;
+  data: Post[];
 }

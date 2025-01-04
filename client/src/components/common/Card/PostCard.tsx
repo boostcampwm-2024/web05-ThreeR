@@ -14,7 +14,6 @@ interface PostCardProps {
 
 export const PostCard = ({ post, className }: PostCardProps) => {
   const { handlePostClick } = usePostCardActions(post);
-
   return (
     <Card
       onClick={handlePostClick}
@@ -23,7 +22,7 @@ export const PostCard = ({ post, className }: PostCardProps) => {
         className
       )}
     >
-      <PostCardImage thumbnail={post.thumbnail} alt={post.title} />
+      <PostCardImage thumbnail={post.thumbnail} alt={post.title} isNew={post.isNew} />
       <PostCardContent post={post} />
     </Card>
   );
