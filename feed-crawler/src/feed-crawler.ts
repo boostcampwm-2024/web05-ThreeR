@@ -109,15 +109,16 @@ class FeedCrawler {
     }
     const xmlData = await response.text();
     const objFromXml = xmlParser.parse(xmlData);
-    if (Array.isArray(objFromXml.rss.channel.item)) {
-      return objFromXml.rss.channel.item.map((item) => ({
-        title: this.rssParser.customUnescape(item.title),
-        link: item.link,
-        pubDate: item.pubDate,
-      }));
-    } else {
-      return [Object.assign({}, objFromXml.rss.channel.item)];
+
+    if (!Array.isArray(objFromXml.rss.channel.item)) {
+      objFromXml.rss.channel.item = [objFromXml.rss.channel.item];
     }
+
+    return objFromXml.rss.channel.item.map((feed: RawFeed) => ({
+      title: this.rssParser.customUnescape(feed.title),
+      link: feed.link,
+      pubDate: feed.pubDate,
+    }));
   }
 }
 
