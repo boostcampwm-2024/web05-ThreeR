@@ -4,11 +4,9 @@
     "fast-xml-parser": "^4.5.0",
     "html-escaper": "^3.0.3",
     "ioredis": "^5.4.1",
-    "js-yaml": "^4.1.0",
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
     "node-html-parser": "^6.1.13",
-    "rss-parser": "^3.13.0",
     "winston": "^3.16.0"
   },
   "devDependencies": {
