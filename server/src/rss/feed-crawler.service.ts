@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { XMLParser } from 'fast-xml-parser';
 import { FeedRepository } from '../feed/feed.repository';
 import { RssParserService } from './rss-parser.service';
@@ -25,7 +25,7 @@ export class FeedCrawlerService {
     });
 
     if (!response.ok) {
-      throw new Error(`${rssUrl}에서 xml 추출 실패`);
+      throw new BadRequestException(`${rssUrl}에서 xml 추출 실패`);
     }
 
     const xmlData = await response.text();

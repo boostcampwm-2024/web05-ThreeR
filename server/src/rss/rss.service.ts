@@ -65,17 +65,17 @@ export class RssService {
 
     const blogPlatform = this.identifyPlatformFromRssUrl(rss.rssUrl);
 
-    const result = await this.dataSource.transaction(async (manager) => {
+    const saveResult = await this.dataSource.transaction(async (manager) => {
       const [saveResult, deleteResult] = await Promise.all([
         manager.save(RssAccept.fromRss(rss, blogPlatform)),
         manager.delete(Rss, id),
       ]);
 
+      await this.feedCrawlerService.loadRssFeed(saveResult);
       return saveResult;
     });
 
-    this.emailService.sendMail(result, true);
-    await this.feedCrawlerService.loadRssFeed(result);
+    this.emailService.sendMail(saveResult, true);
   }
 
   async rejectRss(id: number, description: string) {
