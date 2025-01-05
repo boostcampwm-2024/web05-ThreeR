@@ -7,7 +7,6 @@ import { RedisModule } from './common/redis/redis.module';
 import { RssModule } from './rss/rss.module';
 import { FeedModule } from './feed/feed.module';
 import { WinstonLoggerModule } from './common/logger/logger.module';
-import { EmailModule } from './common/email/email.module';
 import { ChatModule } from './chat/chat.module';
 import { StatisticModule } from './statistic/statistic.module';
 @Module({
@@ -29,7 +28,6 @@ import { StatisticModule } from './statistic/statistic.module';
     WinstonLoggerModule,
     RssModule,
     FeedModule,
-    EmailModule,
     ChatModule,
     StatisticModule,
   ],

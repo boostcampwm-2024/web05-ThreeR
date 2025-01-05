@@ -9,9 +9,10 @@ import {
 import { FeedCrawlerService } from './feed-crawler.service';
 import { FeedRepository } from '../feed/feed.repository';
 import { RssParserService } from './rss-parser.service';
+import { EmailModule } from '../common/email/email.module';
 
 @Module({
-  imports: [],
+  imports: [EmailModule],
   controllers: [RssController],
   providers: [
     RssService,
