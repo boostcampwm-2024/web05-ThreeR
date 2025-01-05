@@ -13,7 +13,7 @@ export class FeedCrawlerService {
 
   async loadRssFeed(rssObj: RssAccept) {
     const feedData = await this.fetchRss(rssObj.rssUrl);
-    this.feedRepository.insertFeedByCrawler(feedData, rssObj);
+    await this.feedRepository.insertFeedByCrawler(feedData, rssObj);
   }
 
   private async fetchRss(rssUrl: string) {
