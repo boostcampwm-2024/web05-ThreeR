@@ -3,6 +3,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { FeedRepository } from '../feed/feed.repository';
 import { RssParserService } from './rss-parser.service';
 import { RssAccept } from './rss.entity';
+import { Feed } from '../feed/feed.entity';
 
 @Injectable()
 export class FeedCrawlerService {
@@ -11,12 +12,15 @@ export class FeedCrawlerService {
     private readonly rssParser: RssParserService,
   ) {}
 
-  async loadRssFeed(rssObj: RssAccept) {
-    const feedData = await this.fetchRss(rssObj.rssUrl);
-    await this.feedRepository.insertFeedByCrawler(feedData, rssObj);
+  async loadRssFeeds(rssUrl: string) {
+    return await this.fetchRss(rssUrl);
   }
 
-  private async fetchRss(rssUrl: string) {
+  async saveRssFeeds(feeds: Partial<Feed>[]) {
+    return await this.feedRepository.insertFeedByCrawler(feeds);
+  }
+
+  private async fetchRss(rssUrl: string): Promise<Partial<Feed>[]> {
     const xmlParser = new XMLParser();
     const response = await fetch(rssUrl, {
       headers: {

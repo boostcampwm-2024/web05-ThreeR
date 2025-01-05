@@ -1,9 +1,8 @@
-import { DataSource, LessThan, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Feed, FeedView } from './feed.entity';
 import { Injectable } from '@nestjs/common';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { SearchType } from './dto/search-feed.dto';
-import { RssAccept } from '../rss/rss.entity';
 
 @Injectable()
 export class FeedRepository extends Repository<Feed> {
@@ -61,10 +60,7 @@ export class FeedRepository extends Repository<Feed> {
     });
   }
 
-  async insertFeedByCrawler(feeds: Feed[], rssObj: RssAccept) {
-    for (const feed of feeds) {
-      feed.blog = rssObj;
-    }
+  async insertFeedByCrawler(feeds: Partial<Feed>[]) {
     await this.insert(feeds);
   }
 }
@@ -100,11 +96,6 @@ export class FeedViewRepository extends Repository<FeedView> {
     const feed = await this.createQueryBuilder()
       .where('feed_id = :feedId', { feedId })
       .getOne();
-
-    if (!feed) {
-      return null;
-    }
-
     return feed;
   }
 }
