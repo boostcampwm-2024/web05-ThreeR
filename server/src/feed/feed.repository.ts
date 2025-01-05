@@ -59,10 +59,6 @@ export class FeedRepository extends Repository<Feed> {
       take: limit,
     });
   }
-
-  async insertFeedByCrawler(feeds: Partial<Feed>[]) {
-    await this.insert(feeds);
-  }
 }
 
 @Injectable()

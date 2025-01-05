@@ -17,7 +17,7 @@ export class FeedCrawlerService {
   }
 
   async saveRssFeeds(feeds: Partial<Feed>[]) {
-    return await this.feedRepository.insertFeedByCrawler(feeds);
+    return await this.feedRepository.insert(feeds);
   }
 
   private async fetchRss(rssUrl: string): Promise<Partial<Feed>[]> {
