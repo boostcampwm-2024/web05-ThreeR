@@ -33,7 +33,7 @@ type BroadcastPayload = {
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
-  private dayInit: boolean;
+  private dayInit: boolean = false;
 
   constructor(private readonly redisService: RedisService) {}
 
