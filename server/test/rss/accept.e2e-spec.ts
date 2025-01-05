@@ -33,7 +33,9 @@ describe('Rss Accept E2E Test', () => {
     describe('정상적인 요청을 한다.', () => {
       it('정상적으로 RSS를 승인한다.', async () => {
         // given
-        const rssFixture = RssFixture.createRssFixture();
+        const rssFixture = RssFixture.createRssFixture({
+          rssUrl: 'https://v2.velog.io/rss/@seok3765',
+        });
         const rss = await rssRepository.save(rssFixture);
 
         // when

@@ -7,11 +7,11 @@ import { parse } from "node-html-parser";
 import { unescape } from "html-escaper";
 import { ONE_MINUTE } from "./common/constant";
 
-export class FeedCrawler {
-  private urlParser: URLParser;
+class FeedCrawler {
+  private rssParser: RssParser;
 
   constructor() {
-    this.urlParser = new URLParser();
+    this.rssParser = new RssParser();
   }
 
   async start() {
@@ -56,7 +56,7 @@ export class FeedCrawler {
 
       const detailedFeeds = await Promise.all(
         filteredFeeds.map(async (feed) => {
-          const imageUrl = await this.urlParser.getImageUrl(feed.link);
+          const imageUrl = await this.rssParser.getThumbnailUrl(feed.link);
           const date = new Date(feed.pubDate);
           const formattedDate = date
             .toISOString()
@@ -109,65 +109,71 @@ export class FeedCrawler {
     }
     const xmlData = await response.text();
     const objFromXml = xmlParser.parse(xmlData);
-    if (Array.isArray(objFromXml.rss.channel.item)) {
-      return objFromXml.rss.channel.item.map((item) => ({
-        title: this.urlParser.customUnescape(item.title),
-        link: item.link,
-        pubDate: item.pubDate,
-      }));
-    } else {
-      return [Object.assign({}, objFromXml.rss.channel.item)];
+
+    if (!Array.isArray(objFromXml.rss.channel.item)) {
+      objFromXml.rss.channel.item = [objFromXml.rss.channel.item];
     }
+
+    return objFromXml.rss.channel.item.map((feed: RawFeed) => ({
+      title: this.rssParser.customUnescape(feed.title),
+      link: feed.link,
+      pubDate: feed.pubDate,
+    }));
   }
 }
 
-class URLParser {
-  async getImageUrl(link: string) {
-    const response = await fetch(link, {
+class RssParser {
+  async getThumbnailUrl(feedUrl: string) {
+    const response = await fetch(feedUrl, {
       headers: {
         Accept: "text/html",
       },
     });
 
     if (!response.ok) {
-      throw new Error(`${link}에 GET 요청 실패`);
+      throw new Error(`${feedUrl}에 GET 요청 실패`);
     }
 
     const htmlData = await response.text();
-    const root = parse(htmlData);
-    const metaImage = root.querySelector('meta[property="og:image"]');
-    let imageUrl = metaImage?.getAttribute("content") ?? "";
-    if (!imageUrl.length) {
-      logger.warn(`${link}에서 사진 추출 실패`);
-      return imageUrl;
+    const htmlRootElement = parse(htmlData);
+    const metaImage = htmlRootElement.querySelector(
+      'meta[property="og:image"]'
+    );
+    let thumbnailUrl = metaImage?.getAttribute("content") ?? "";
+
+    if (!thumbnailUrl.length) {
+      logger.warn(`${feedUrl}에서 썸네일 추출 실패`);
+      return thumbnailUrl;
     }
-    if (!this.isUrlPath(imageUrl)) {
-      imageUrl = this.getHttpOriginPath(link) + imageUrl;
+
+    if (!this.isUrlPath(thumbnailUrl)) {
+      thumbnailUrl = this.getHttpOriginPath(feedUrl) + thumbnailUrl;
     }
-    return imageUrl;
+    return thumbnailUrl;
   }
 
-  private isUrlPath(imageUrl: string) {
+  private isUrlPath(thumbnailUrl: string) {
     const reg = /^(http|https):\/\//;
-    return reg.test(imageUrl);
+    return reg.test(thumbnailUrl);
   }
 
-  private getHttpOriginPath(imageUrl: string) {
-    const url = new URL(imageUrl);
-    return url.origin;
+  private getHttpOriginPath(feedUrl: string) {
+    return new URL(feedUrl).origin;
   }
 
-  customUnescape(text: string): string {
-    const htmlEntities = {
+  customUnescape(feedTitle: string): string {
+    const escapeEntity = {
       "&middot;": "·",
       "&nbsp;": " ",
     };
-    Object.keys(htmlEntities).forEach((entity) => {
-      const value = htmlEntities[entity];
-      const regex = new RegExp(entity, "g");
-      text = text.replace(regex, value);
+    Object.keys(escapeEntity).forEach((escapeKey) => {
+      const value = escapeEntity[escapeKey];
+      const regex = new RegExp(escapeKey, "g");
+      feedTitle = feedTitle.replace(regex, value);
     });
 
-    return unescape(text);
+    return unescape(feedTitle);
   }
 }
+
+export const feedCrawler = new FeedCrawler();

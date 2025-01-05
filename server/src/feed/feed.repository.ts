@@ -1,4 +1,4 @@
-import { DataSource, LessThan, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Feed, FeedView } from './feed.entity';
 import { Injectable } from '@nestjs/common';
 import { QueryFeedDto } from './dto/query-feed.dto';
@@ -92,11 +92,6 @@ export class FeedViewRepository extends Repository<FeedView> {
     const feed = await this.createQueryBuilder()
       .where('feed_id = :feedId', { feedId })
       .getOne();
-
-    if (!feed) {
-      return null;
-    }
-
     return feed;
   }
 }

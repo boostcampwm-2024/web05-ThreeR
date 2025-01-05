@@ -12,6 +12,7 @@ import { RssRegisterDto } from './dto/rss-register.dto';
 import { EmailService } from '../common/email/email.service';
 import { DataSource } from 'typeorm';
 import { Rss, RssReject, RssAccept } from './rss.entity';
+import { FeedCrawlerService } from './feed-crawler.service';
 
 @Injectable()
 export class RssService {
@@ -21,6 +22,7 @@ export class RssService {
     private readonly rssRejectRepository: RssRejectRepository,
     private readonly emailService: EmailService,
     private readonly dataSource: DataSource,
+    private readonly feedCrawlerService: FeedCrawlerService,
   ) {}
 
   async createRss(rssRegisterDto: RssRegisterDto) {
@@ -63,13 +65,21 @@ export class RssService {
 
     const blogPlatform = this.identifyPlatformFromRssUrl(rss.rssUrl);
 
-    await this.dataSource.transaction(async (manager) => {
-      await Promise.all([
-        manager.save(RssAccept.fromRss(rss, blogPlatform)),
-        manager.delete(Rss, id),
-      ]);
-    });
-    this.emailService.sendMail(rss, true);
+    const [newRssAccept, feeds] = await this.dataSource.transaction(
+      async (manager) => {
+        const [newRssAccept] = await Promise.all([
+          manager.save(RssAccept.fromRss(rss, blogPlatform)),
+          manager.delete(Rss, id),
+        ]);
+        const feeds = await this.feedCrawlerService.loadRssFeeds(
+          newRssAccept.rssUrl,
+        );
+        feeds.forEach((feed) => (feed.blog = newRssAccept));
+        return [newRssAccept, feeds];
+      },
+    );
+    await this.feedCrawlerService.saveRssFeeds(feeds);
+    this.emailService.sendMail(newRssAccept, true);
   }
 
   async rejectRss(id: number, description: string) {
